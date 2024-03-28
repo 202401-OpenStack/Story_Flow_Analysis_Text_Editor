@@ -2,7 +2,8 @@ const express = require('express')
 const app = express()
 const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session)
-
+const bodyParser = require('body-parser') // 폼 데이터 파싱
+const path = require('path')
 
 const options = {
     host: 'localhost',
@@ -13,6 +14,8 @@ const options = {
 }
 
 const sessionStore = new MySQLStore(options)
+
+app.use(express.static(path.join(__dirname, 'client')))
 
 app.use(session({ // 세션이 시작됨, 객체 전달
     name: 'session_cookie_name',
@@ -31,13 +34,16 @@ app.use(session({ // 세션이 시작됨, 객체 전달
 
 app.get('/', function (req, res, next) {
     console.log(req.session) // 객체 추가
+    res.sendFile(path.join(__dirname, 'client', 'auth.html'))
     if(req.session.num === undefined) { // 저장이 기본적으로는 메모리에 됨 -> 휘발성임
         req.session.num = 1;
     } else {
         req.session.num = req.session.num + 1
     }
-    res.send(`Views : ${req.session.num} `)
+    //res.send(`Views : ${req.session.num} `)
 })
+
+
 
 app.listen(3000, function(){
     console.log('3000!');
