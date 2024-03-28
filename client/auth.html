@@ -2,14 +2,18 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>로그인 및 회원가입 폼</title>
+    <title>로그인</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        .form-container {
+        .login-container {
             width: 300px;
-            margin: 0 auto;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -17,10 +21,11 @@
         h2 {
             text-align: center;
         }
-        input[type="text"], input[type="password"] {
-            width: calc(100% - 22px);
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
@@ -36,29 +41,16 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
-        .signup-form {
-            margin-top: 40px;
-        }
     </style>
 </head>
 <body>
 
-<div class="form-container">
+<div class="login-container">
     <h2>로그인</h2>
     <form action="/login" method="post">
-        <input type="text" name="username" placeholder="아이디" required>
+        <input type="text" name="id" placeholder="아이디" required>
         <input type="password" name="password" placeholder="비밀번호" required>
         <input type="submit" value="로그인">
-    </form>
-</div>
-
-<div class="form-container signup-form">
-    <h2>회원가입</h2>
-    <form action="/signup" method="post">
-        <input type="text" name="newUsername" placeholder="아이디" required>
-        <input type="password" name="newPassword" placeholder="비밀번호" required>
-        <input type="password" name="confirmPassword" placeholder="비밀번호 확인" required>
-        <input type="submit" value="회원가입">
     </form>
 </div>
 
