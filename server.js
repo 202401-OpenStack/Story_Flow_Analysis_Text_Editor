@@ -19,7 +19,12 @@ app.use(session({ // 세션이 시작됨, 객체 전달
     secret: 'session_cookie_secret', // Required option(필수)
     resave: false, // 그냥 false
     saveUninitialized: true, // 세션이 필요한 경우에만 구동됨 (false로 하면 서버에 부담 줌)
-    store: sessionStore
+    store: sessionStore,
+    cookie: {
+        httpOnly: true,
+        expires: new Date(Date.now() + 1000*60*60*24), // 24시간 이후 만료됨 1000*60*60*24
+        maxAge: 1000 * 60
+    }
 }))
 
 
