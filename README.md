@@ -10,7 +10,7 @@
 - 240329 express-mysql-session로 세션 스토어 구현
 
 ## 3. 개발 상세
-### 세션 인증
+### 세션 관리
 - 로그인 상태를 확인하기 위해 필요
 - express-mysql-session 미들웨어 사용하여 세션 정보 저장
 ![image](https://github.com/ahnl1297/Story_Flow_Analysis_Text_Editor/assets/76491203/d51dca34-4fec-4c48-8670-932bb533949a)
