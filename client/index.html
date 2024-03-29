@@ -8,18 +8,25 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-        .logout-button {
+        .button {
             padding: 10px 20px;
-            background-color: #f44336;
+            margin: 10px;
+            background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 3px;
             cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .logout-button {
+            background-color: #f44336;
         }
         .logout-button:hover {
             background-color: #d32f2f;
@@ -30,16 +37,34 @@
 
 <h1>메인 페이지</h1>
 <!-- 로그아웃 버튼 -->
-<button class="logout-button" onclick="logout()">로그아웃</button>
+<button class="button logout-button" onclick="logout()">로그아웃</button>
+<!-- 세션 테스트 버튼 -->
+<button class="button session-test-button" onclick="sessionTest()">세션 테스트</button>
 
 <script>
 // 로그아웃 함수
 function logout() {
-    // 서버에 로그아웃을 요청하고, 응답이 오면 로그인 페이지로 리다이렉트
     fetch('/logout', {
         method: 'POST'
     }).then(() => {
         window.location.href = '/auth.html';
+    }).catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+// 세션 테스트 함수
+function sessionTest() {
+    fetch('/session-test', {
+        method: 'GET'
+    }).then(response => response.json())
+    .then(data => {
+        if (data.loggedIn) {
+            window.location.href = '/editor.html';
+        } else {
+            alert('Failed: You are not logged in.');
+            window.location.href = '/auth.html';
+        }
     }).catch((error) => {
         console.error('Error:', error);
     });
