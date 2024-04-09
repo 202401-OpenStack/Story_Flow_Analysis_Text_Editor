@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Photo.belongsTo(models.Post, {
         foreignKey: 'postId',
+        as: 'post',
         onDelete: 'CASCADE'
       });
     };

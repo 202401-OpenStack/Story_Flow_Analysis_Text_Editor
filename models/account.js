@@ -10,7 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Account.hasMany(models.Post, {
+        foreignKey: 'accountId',
+        as: 'posts', // Account 인스턴스에서 Post 데이터를 가져올 때 사용할 이름
+        onDelete: 'CASCADE' // 계정이 삭제되면 해당 계정의 글도 모두 삭제된다.
+      });
     }
   }
   Account.init({
