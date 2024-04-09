@@ -6,7 +6,9 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 // 라우터 임포트
-
+const accountRoutes = require('./routes/accountRoutes');
+const authRoutes = require('./routes/authRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 // app 설정
 const app = express();
@@ -21,7 +23,7 @@ app.use(cors({
     origin: (origin, callback) => {
       callback(null, true);
     },
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true
   }));
 
@@ -63,7 +65,9 @@ sequelize.authenticate()
   .catch(err => console.error('Unable to connect to the database:', err));
 
 // 라우터 설정
-
+//app.use('/api/accounts', accountRoutes);
+//app.use('/api/auth', authRoutes);
+//app.use('/api/blog', blogRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {
