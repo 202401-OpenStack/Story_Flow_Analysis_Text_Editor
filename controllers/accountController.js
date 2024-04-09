@@ -1,4 +1,4 @@
-const { Account } = require('../models'); // Sequelize 모델을 불러옵니다.
+const { Account } = require('../models');
 const bcrypt = require('bcrypt');
 
 const saltRounds = 10; // 해시할 때의 salt 복잡도 결정 값. 보통 10~12 사용
@@ -6,29 +6,32 @@ const saltRounds = 10; // 해시할 때의 salt 복잡도 결정 값. 보통 10~
 // register
 exports.register = async (req, res) => {
     try {
-    const { username, password } = req.body;
 
-    // 비밀번호를 해시합니다.
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+        // 클라이언트로부터 username, password 받아옴
+        const { username, password } = req.body;
 
-    // 사용자 정보를 데이터베이스에 저장합니다.
-    const newUser = await Account.create({
-        username,
-        password: hashedPassword
-    });
+        // 비밀번호 해시
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    res.status(201).send({
-        message: 'User registered successfully',
-        user: {
-        id: newUser.id,
-        username: newUser.username
-        }
-    });
+        // 데이터베이스에 사용자 정보 저장
+        const newUser = await Account.create({
+            username,
+            password: hashedPassword
+        });
+
+        // 성공했다면 201 응답 보냄
+        res.status(201).send({
+            message: 'User registered successfully',
+            user: {
+                id: newUser.id,
+                username: newUser.username
+            }
+        });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).send({
-        message: 'Error registering the user'
-    });
+            message: 'Error registering the user'
+        });
     }
 };
 
@@ -53,7 +56,7 @@ exports.login = async (req, res) => {
             req.session.accountId = user.id; // 세션에 id 저장
             console.log('User logged in:', username);
             // 비밀번호가 일치하면 사용자 ID를 세션에 저장합니다.
-            return res.status(200).json({ message: 'Logged in successfully', username: user.username});
+            return res.status(200).json({ message: 'Logged in successfully', username: user.username });
         } else {
             return res.status(401).json({ message: 'Login failed' });
         }
