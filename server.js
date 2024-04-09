@@ -65,9 +65,9 @@ sequelize.authenticate()
   .catch(err => console.error('Unable to connect to the database:', err));
 
 // 라우터 설정
-//app.use('/api/accounts', accountRoutes);
-//app.use('/api/auth', authRoutes);
-//app.use('/api/blog', blogRoutes);
+app.use('/api/accounts', accountRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/blog', blogRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {
