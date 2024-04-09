@@ -38,26 +38,30 @@ exports.register = async (req, res) => {
 // login
 exports.login = async (req, res) => {
     try {
+        // 클라이언트로부터 username, password 요청받음
         const { username, password } = req.body;
 
-        // 사용자를 찾습니다.
-        const user = await Account.findOne({ where: { username } }); // username을 기준으로 조회합니다.
+        // username 기준으로 사용자 조회
+        const user = await Account.findOne({ where: { username: username } }); // username을 기준으로 조회합니다.
 
+        // username이 없을 때
         if (!user) {
-            // 사용자가 데이터베이스에 없으면 실패 응답을 반환합니다.
             return res.status(401).json({ message: 'Login failed' });
         }
 
-        // 비밀번호를 비교합니다.
+        // username이 있을 때
+        // 비밀번호 비교
         const match = await bcrypt.compare(password, user.password);
 
+        // 같다면 로그인
         if (match) {
             req.session.username = user.username; // 세션에 username 저장
             req.session.accountId = user.id; // 세션에 id 저장
             console.log('User logged in:', username);
-            // 비밀번호가 일치하면 사용자 ID를 세션에 저장합니다.
+            // 비밀번호가 일치하면 사용자 ID를 세션에 저장
             return res.status(200).json({ message: 'Logged in successfully', username: user.username });
         } else {
+            // 비밀번호 잘못 입력했을 때
             return res.status(401).json({ message: 'Login failed' });
         }
 
@@ -71,7 +75,7 @@ exports.login = async (req, res) => {
 
 // logout
 exports.logout = (req, res) => {
-    // 세션 정보가 존재하는지 확인합니다.
+    // 세션에 username이 저장돼있다면 (= 로그인된 상태라면) 삭제
     if (req.session.username) {
         req.session.destroy(err => {
             if (err) {
@@ -79,13 +83,15 @@ exports.logout = (req, res) => {
                     message: 'Error during logout'
                 });
             }
+            // 삭제했다면 쿠키도 삭제
             res.clearCookie('session_cookie_name'); // express-session이 기본적으로 사용하는 쿠키 이름
+            // 성공 응답 반환
             return res.status(200).send({
                 message: 'Logged out successfully'
             });
         });
     } else {
-        // 세션이 없다면 사용자는 이미 로그아웃 상태입니다.
+        // 세션이 없다면 사용자는 이미 로그아웃 상태임
         return res.status(200).send({
             message: 'Already logged out'
         });
