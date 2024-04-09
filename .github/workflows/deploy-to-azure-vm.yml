@@ -29,7 +29,7 @@ jobs:
         username: ${{ secrets.AZURE_VM_USERNAME }}
         key: ${{ secrets.AZURE_VM_SSH_KEY }}
         script: |
-          cd /Story_Flow_Analysis_Text_Editor
+          cd Story_Flow_Analysis_Text_Editor
           npm install
           pm2 restart all
  
