@@ -5,6 +5,7 @@
   "dependencies": {
     "@artibet/react-sidebar-layout": "^1.11.4",
     "@mui/material": "^5.15.15",
+    "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
