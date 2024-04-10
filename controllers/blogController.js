@@ -7,7 +7,7 @@ exports.getPosts = async (req, res) => {
 
       // 사용자가 로그인하지 않았다면 에러 처리
       if (!accountId) {
-        return res.status(401).json({error: 'You must be logged in to check posts'})
+        return res.status(401).json({message: 'You must be logged in to check posts'})
       }
 
       // 로그인한 사용자의 글만 출력.
@@ -16,10 +16,10 @@ exports.getPosts = async (req, res) => {
           accountId: accountId
         }
       });
-      res.json(posts);
+      res.status(200).json(posts);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'An error occurred while retrieving posts' });
+      res.status(500).json({ message: 'An error occurred while retrieving posts' });
     }
   };
 
@@ -30,7 +30,7 @@ exports.createPost = async (req, res) => {
         const accountId = req.session.accountId;
         if (!accountId) {
             // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(403).json({ error: 'You must be logged in to create a post' });
+            return res.status(403).json({ message: 'You must be logged in to create a post' });
         }
 
         const { title, content } = req.body;
@@ -38,26 +38,21 @@ exports.createPost = async (req, res) => {
         res.status(201).json(newPost);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'An error occurred while creating the post' });
+        res.status(500).json({ message: 'An error occurred while creating the post' });
     }
 };
 
 // 특정 글 가져오기
 exports.getPost = async (req, res) => {
     try {
-        const post = await Post.findByPk(req.params.id, {
-          include: [{
-            model: Account,
-            as: 'author'
-          }]
-        });
+        const post = await Post.findByPk(req.params.id);
         if (!post) {
-        return res.status(404).json({ error: 'Post not found' });
+        return res.status(404).json({ message: 'Post not found' });
         }
-        res.json(post);
+        res.status(200).json(post);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'An error occurred while retrieving the post' });
+        res.status(500).json({ message: 'An error occurred while retrieving the post' });
     }
 };
 
@@ -67,13 +62,13 @@ exports.updatePost = async (req, res) => {
       const post = await Post.findByPk(req.params.id);
       if (post) {
         await post.update(req.body);
-        res.json(post);
+        res.status(200).json(post);
       } else {
-        res.status(404).json({ error: 'Post not found' });
+        res.status(404).json({ message: 'Post not found' });
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'An error occurred while updating the post' });
+      res.status(500).json({ message: 'An error occurred while updating the post' });
     }
   };
 
@@ -82,12 +77,12 @@ exports.deletePost = async (req, res) => {
     try {
       const post = await Post.findByPk(req.params.id);
       if (!post) {
-        return res.status(404).json({ error: 'Post not found' });
+        return res.status(404).json({ message: 'Post not found' });
       }
       await post.destroy();
       res.status(200).json({ message: 'Post deleted successfully' });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'An error occurred while deleting the post' });
+      res.status(500).json({ message: 'An error occurred while deleting the post' });
     }
   };

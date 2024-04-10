@@ -46,7 +46,7 @@ exports.login = async (req, res) => {
 
         // username이 없을 때
         if (!user) {
-            return res.status(401).json({ message: 'Login failed' });
+            return res.status(401).json({ message: '사용자 이름 또는 비밀번호가 잘못되었습니다.' });
         }
 
         // username이 있을 때
@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
             return res.status(200).json({ message: 'Logged in successfully', username: user.username });
         } else {
             // 비밀번호 잘못 입력했을 때
-            return res.status(401).json({ message: 'Login failed' });
+            return res.status(401).json({ message: '사용자 이름 또는 비밀번호가 잘못되었습니다.' });
         }
 
     } catch (error) {

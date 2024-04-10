@@ -71,7 +71,7 @@ app.use('/api/blog', blogRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {
-  return res.send("development server: GitHub Action Test final");
+  return res.send("development server: LLM API");
 });
 
 app.listen(PORT, ()=> console.log(`Server is running on port ${PORT}.`));
