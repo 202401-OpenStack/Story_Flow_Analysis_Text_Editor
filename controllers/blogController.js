@@ -3,11 +3,18 @@ const { Post } = require('../models');
 // 글 목록 가져오기
 exports.getPosts = async (req, res) => {
     try {
+      const accountId = req.session.accountId;
+
+      // 사용자가 로그인하지 않았다면 에러 처리
+      if (!accountId) {
+        return res.status(401).json({error: 'You must be logged in to check posts'})
+      }
+
+      // 로그인한 사용자의 글만 출력.
       const posts = await Post.findAll({
-        include: [{
-          model: Account,
-          as: 'author'
-        }]
+        where: {
+          accountId: accountId
+        }
       });
       res.json(posts);
     } catch (err) {
