@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
         const { username, password } = req.body;
 
         // username 기준으로 사용자 조회
-        const user = await Account.findOne({ where: { username: username } }); // username을 기준으로 조회합니다.
+        const user = await Account.findOne({ where: { username: username } });
 
         // username이 없을 때
         if (!user) {

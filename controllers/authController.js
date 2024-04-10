@@ -5,4 +5,3 @@ exports.checkAuth = (req, res) => {
       return res.status(200).json({ authenticated: false });
     }
 };
-
