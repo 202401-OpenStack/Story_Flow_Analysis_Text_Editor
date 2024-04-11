@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const accountRoutes = require('./routes/accountRoutes');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const analysisRoutes = require('./routes/analysisController');
 
 // app 설정
 const app = express();
@@ -68,6 +69,7 @@ sequelize.authenticate()
 app.use('/api/accounts', accountRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/analysis', analysisRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {

@@ -69,9 +69,9 @@ exports.login = async (req, res) => {
             req.session.accountId = user.id; // 세션에 id 저장
             console.log('User logged in:', username);
             // 비밀번호가 일치하면 사용자 ID를 세션에 저장
-            return res.status(200).json({ 
-                message: 'Logged in successfully', 
-                data: {username: user.username}
+            return res.status(200).json({
+                message: 'Logged in successfully',
+                data: { username: user.username }
             });
         } else {
             // 비밀번호 잘못 입력했을 때
@@ -105,7 +105,7 @@ exports.logout = async (req, res) => {
         });
     } else {
         // 세션이 없다면 사용자는 이미 로그아웃 상태임
-        return res.status(200).json({
+        return res.status(401).json({
             message: 'Already logged out'
         });
     }
