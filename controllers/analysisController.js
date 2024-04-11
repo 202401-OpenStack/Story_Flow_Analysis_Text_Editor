@@ -11,7 +11,7 @@ exports.summarizeArticle = async (req, res) => {
             return res.status(401).json({ message: 'You must be logged in to access summarizeArticle API' });
         }
         // 클라이언트로부터 데이터 받아오기
-        const { title, content } = req.body;
+        const { content } = req.body;
 
         // OpenAI API에 필요한 헤더 설정
         const headers = {
@@ -59,7 +59,7 @@ exports.findTopic = async (req, res) => {
             return res.status(401).json({ message: 'You must be logged in to access findTopic API' });
         }
         // 클라이언트로부터 데이터 받아오기
-        const { title, content } = req.body;
+        const { content } = req.body;
 
         // OpenAI API에 필요한 헤더 설정
         const headers = {
