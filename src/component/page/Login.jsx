@@ -75,7 +75,7 @@ function Login() {
       dispatch(clearErrors());
     }
 
-    // 수정된 부분: isAuthenticated 상태가 true 일때만 홈으로 리디렉션
+    // isAuthenticated 상태가 true 일때만 post-list로 보냄
     if (isAuthenticated) {
       navigate('/post-list');
     }

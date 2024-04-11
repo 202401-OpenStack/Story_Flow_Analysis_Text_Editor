@@ -32,6 +32,8 @@ function PostList(props) {
       alert('User not found or not logged in.');
       navigate('/login', { replace: true });
     }
+
+    // 글 가져오는 코드
   }, [loading, isAuthenticated, navigate]);
 
   const handleLogout = () => {
