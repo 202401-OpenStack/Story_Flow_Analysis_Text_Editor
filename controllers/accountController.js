@@ -10,6 +10,16 @@ exports.register = async (req, res) => {
         // 클라이언트로부터 username, password 받아옴
         const { username, password } = req.body;
 
+        // username 기준으로 기존 사용자 조회
+        const existingUser = await Account.findOne({ where: { username: username } });
+
+        // 이미 존재하는 username일 경우
+        if (existingUser) {
+            return res.status(409).json({ // 409 Conflict 상태 코드 사용
+                message: 'Username is already taken'
+            });
+        }
+
         // 비밀번호 해시
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -20,16 +30,16 @@ exports.register = async (req, res) => {
         });
 
         // 성공했다면 201 응답 보냄
-        res.status(201).send({
+        res.status(201).json({
             message: 'User registered successfully',
-            user: {
+            data: {
                 id: newUser.id,
                 username: newUser.username
             }
         });
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).send({
+        res.status(500).json({
             message: 'Error registering the user'
         });
     }
@@ -46,7 +56,7 @@ exports.login = async (req, res) => {
 
         // username이 없을 때
         if (!user) {
-            return res.status(401).json({ message: '사용자 이름 또는 비밀번호가 잘못되었습니다.' });
+            return res.status(401).json({ message: 'The username or password is incorrect' });
         }
 
         // username이 있을 때
@@ -59,10 +69,13 @@ exports.login = async (req, res) => {
             req.session.accountId = user.id; // 세션에 id 저장
             console.log('User logged in:', username);
             // 비밀번호가 일치하면 사용자 ID를 세션에 저장
-            return res.status(200).json({ message: 'Logged in successfully', username: user.username });
+            return res.status(200).json({ 
+                message: 'Logged in successfully', 
+                data: {username: user.username}
+            });
         } else {
             // 비밀번호 잘못 입력했을 때
-            return res.status(401).json({ message: '사용자 이름 또는 비밀번호가 잘못되었습니다.' });
+            return res.status(401).json({ message: 'The username or password is incorrect' });
         }
 
     } catch (error) {
@@ -74,25 +87,25 @@ exports.login = async (req, res) => {
 };
 
 // logout
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
     // 세션에 username이 저장돼있다면 (= 로그인된 상태라면) 삭제
     if (req.session.username) {
         req.session.destroy(err => {
             if (err) {
-                return res.status(500).send({
+                return res.status(500).json({
                     message: 'Error during logout'
                 });
             }
             // 삭제했다면 쿠키도 삭제
             res.clearCookie('session_cookie_name'); // express-session이 기본적으로 사용하는 쿠키 이름
             // 성공 응답 반환
-            return res.status(200).send({
+            return res.status(200).json({
                 message: 'Logged out successfully'
             });
         });
     } else {
         // 세션이 없다면 사용자는 이미 로그아웃 상태임
-        return res.status(200).send({
+        return res.status(200).json({
             message: 'Already logged out'
         });
     }
