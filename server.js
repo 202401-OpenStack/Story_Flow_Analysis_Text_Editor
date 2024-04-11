@@ -73,7 +73,7 @@ app.use('/api/analysis', analysisRoutes);
 
 // 기본 라우트
 app.get('/', (req, res) => {
-  return res.send("development server: Analysis API");
+  return res.send("development server: GitHub Action Test");
 });
 
 app.listen(PORT, ()=> console.log(`Server is running on port ${PORT}.`));
