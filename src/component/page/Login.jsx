@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { login, clearErrors } from '../../redux/actions/authActions';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -56,7 +58,37 @@ const AuthBtns = styled.div`
 
 function Login() {
   const title = "한국어 이야기\n흐름 분석 시스템";
+
+  const [values, setValues] = useState({
+    username: '',
+    password: ''
+  });
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { error, isAuthenticated } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      dispatch(clearErrors());
+    }
+
+    // 수정된 부분: isAuthenticated 상태가 true 일때만 홈으로 리디렉션
+    if (isAuthenticated) {
+      navigate('/post-list');
+    }
+  }, [error, isAuthenticated, dispatch, navigate]);
+
+  const handleInput = (event) => {
+    setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    dispatch(login(values.username, values.password));
+  };
 
   return (
     <Wrapper>
@@ -78,36 +110,33 @@ function Login() {
         >
           {title}
         </Title>
-        <InputForm>
+        <InputForm onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="formbasicEmail">
             <Form.Label> ID </Form.Label>
-            <Form.Control type="text" name="id" />
+            <Form.Control type="text" name="username" onChange={handleInput} />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label> 비밀번호 </Form.Label>
-            <Form.Control type="password" name="pw" />
+            <Form.Control type="password" name="password" onChange={handleInput} />
           </Form.Group>
+          <AuthBtns className="d-grid gap-2">
+            <Button
+              variant="primary"
+              style={{ height: "45px" }}
+              type="submit"
+            >
+              로그인
+            </Button>
+            <button
+              className="btn"
+              onClick={() => {
+                navigate("/sign-up");
+              }}
+            >
+              회원가입
+            </button>
+          </AuthBtns>
         </InputForm>
-
-        <AuthBtns className="d-grid gap-2">
-          <Button
-            variant="primary"
-            style={{ height: "45px" }}
-            onClick={() => {
-              navigate("/post-list");
-            }}
-          >
-            로그인
-          </Button>
-          <button
-            className="btn"
-            onClick={() => {
-              navigate("/sign-up");
-            }}
-          >
-            회원가입
-          </button>
-        </AuthBtns>
       </Container>
     </Wrapper>
   );

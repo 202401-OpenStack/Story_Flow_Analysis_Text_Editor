@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import List from "../list/List";
 import Header from "../ui/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/actions/authActions";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -19,27 +21,40 @@ const Container = styled.div`
 `;
 
 function PostList(props) {
-  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
 
-  // 게시물 목록 가져오기
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        // 서버의 엔드포인트 주소 업데이트
-        const response = await fetch("http://54.161.32.32/rest-api/posts");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setPosts(data); // 상태 업데이트
-      } catch (error) {
-        console.error("Failed to fetch posts:", error);
-      }
-    };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, loading, error, isAuthenticated } = useSelector(state => state.auth);
 
-    fetchPosts();
-  }, []);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      alert('User not found or not logged in.');
+      navigate('/login', { replace: true });
+    }
+  }, [loading, isAuthenticated, navigate]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/', { replace: true });
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    alert(error);
+    navigate('/login', { replace: true });
+    return <></>;
+  }
+
+  if (!isAuthenticated) {
+    // 이미 리다이렉트되었기 때문에 여기서 추가적인 렌더링을 방지합니다.
+    return <></>;
+  }
+
+
 
   return (
     <Wrapper>

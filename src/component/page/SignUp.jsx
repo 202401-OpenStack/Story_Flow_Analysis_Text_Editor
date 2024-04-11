@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import Validation from '../../utils/SignupValidation';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -57,17 +58,66 @@ const AuthBtns = styled.div`
 
 function SignUp() {
   const title = "한국어 이야기\n흐름 분석 시스템";
+
+  // UseState 훅 사용하여 각 입력 필드의 상태 추적
+  const [values, setValues] = useState({
+    username: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const handleSignIn = () => {
-    //회원가입 완료?
-    alert("회원가입이 완료되었습니다.");
-    navigate("/login");
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    const validationErrors = Validation(values);
+    setErrors(validationErrors);
+
+    // 둘 다 이상이 없을 때만 API 요청 보냄
+    if (!validationErrors.username && !validationErrors.password) {
+      axios.post('http://20.41.113.158/api/accounts/register', {
+        username: values.username,
+        password: values.password
+      })
+      .then(res => {
+        alert("User registered successfully");
+        navigate('/login');
+      })
+      .catch(err => {
+        // Check if error response exists and handle different status codes
+        if (err.response) {
+          switch (err.response.status) {
+            case 409:
+              alert(err.response.data.message);
+              break;
+            case 500:
+              alert(err.response.data.message);
+              break;
+            default:
+              alert("An unknown error occurred.");
+              break;
+          }
+        } else {
+          console.error(err);
+          alert("An error occurred during sign up.");
+        }
+      });
+    } else {
+      console.log("Validation errors", validationErrors);
+    }
+  };
+
+  // Handling input changes
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setValues({ ...values, [name]: value });
   };
 
   return (
     <Wrapper>
       <Container>
-        <CloseButton>
+      <CloseButton>
           <button
             type="button"
             class="btn-close"
@@ -77,45 +127,29 @@ function SignUp() {
             }}
           />
         </CloseButton>
-        <Title
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          {title}
-        </Title>
-        <InputForm>
-          <Form.Group className="mb-3" controlId="formbasicEmail">
-            <Form.Label> ID </Form.Label>
-            <Form.Control type="text" name="new-id" />
+        <Title onClick={() => navigate("/")}>{title}</Title>
+        <InputForm onSubmit={handleSignUp}>
+          <Form.Group className="mb-3">
+          <Form.Label>ID {errors.username && <span style={{color: 'red', fontSize: '0.8rem'}}>{errors.username}</span>}</Form.Label>
+          <Form.Control type="text" name="username" onChange={handleInputChange} isInvalid={!!errors.username} />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label> 비밀번호 </Form.Label>
-            <Form.Control type="text" name="new-pw" />
+          <Form.Label>비밀번호 {errors.password && <span style={{color: 'red', fontSize: '0.8rem'}}>{errors.password}</span>}</Form.Label>
+          <Form.Control type="password" name="password" onChange={handleInputChange} />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label> 비밀번호 확인 </Form.Label>
-            <Form.Control type="text" name="check-pw" />
+          <Form.Label>비밀번호 확인 {errors.confirmPassword && <span style={{color: 'red', fontSize: '0.8rem'}}>{errors.confirmPassword}</span>}</Form.Label>
+          <Form.Control type="password" name="confirmPassword" onChange={handleInputChange} />
           </Form.Group>
-        </InputForm>
-
-        <AuthBtns className="d-grid gap-2">
-          <Button
-            variant="primary"
-            style={{ height: "45px" }}
-            onClick={handleSignIn}
-          >
+          <AuthBtns className="d-grid gap-2">
+          <Button variant="primary" style={{ height: "45px" }} type="submit">
             회원가입
           </Button>
-          <button
-            className="btn"
-            onClick={() => {
-              navigate("/login");
-            }}
-          >
+          <Button variant="secondary" onClick={() => navigate("/login")}>
             로그인
-          </button>
+          </Button>
         </AuthBtns>
+        </InputForm>
       </Container>
     </Wrapper>
   );
