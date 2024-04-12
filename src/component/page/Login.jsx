@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { login, clearErrors } from '../../redux/actions/authActions';
+import { useDispatch, useSelector } from "react-redux";
+import { login, clearErrors } from "../../redux/actions/authActions";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -50,7 +50,7 @@ const InputForm = styled.form`
 `;
 
 const AuthBtns = styled.div`
-  width: calc(100% - 50px);
+  width: calc(100% - 80px);
   position: absolute;
   bottom: 45px;
   margin-top: 15px;
@@ -60,14 +60,14 @@ function Login() {
   const title = "한국어 이야기\n흐름 분석 시스템";
 
   const [values, setValues] = useState({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { error, isAuthenticated } = useSelector(state => state.auth);
+  const { error, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (error) {
@@ -77,12 +77,12 @@ function Login() {
 
     // isAuthenticated 상태가 true 일때만 post-list로 보냄
     if (isAuthenticated) {
-      navigate('/post-list');
+      navigate("/post-list");
     }
   }, [error, isAuthenticated, dispatch, navigate]);
 
   const handleInput = (event) => {
-    setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
+    setValues((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
   const handleSubmit = (event) => {
@@ -117,14 +117,14 @@ function Login() {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label> 비밀번호 </Form.Label>
-            <Form.Control type="password" name="password" onChange={handleInput} />
+            <Form.Control
+              type="password"
+              name="password"
+              onChange={handleInput}
+            />
           </Form.Group>
           <AuthBtns className="d-grid gap-2">
-            <Button
-              variant="primary"
-              style={{ height: "45px" }}
-              type="submit"
-            >
+            <Button variant="primary" style={{ height: "45px" }} type="submit">
               로그인
             </Button>
             <button
