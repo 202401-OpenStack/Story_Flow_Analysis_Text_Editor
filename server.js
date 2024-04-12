@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 const accountRoutes = require('./routes/accountRoutes');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
-const analysisRoutes = require('./routes/analysisController');
+const analysisRoutes = require('./routes/analysisRoutes');
 
 // app 설정
 const app = express();
