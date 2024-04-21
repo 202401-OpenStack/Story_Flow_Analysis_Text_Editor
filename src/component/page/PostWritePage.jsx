@@ -4,71 +4,90 @@ import React, {
   RefObject,
   useMemo,
   useState,
-} from 'react';
+} from "react";
 
-import styled from 'styled-components';
-
+import styled from "styled-components";
+import { Button } from "react-bootstrap";
 
 import Sidebar from "../ui/Sidebar";
 import Editor from "../ui/QuillEditor";
-import TextInput from '../ui/TextInput';
-
+import TextInput from "../ui/TextInput";
 
 const Wrapper = styled.div`
-    padding: 16px;
-    width: calc(100% - 32px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-`;
-
-const InputContainer = styled.div`
-    :not(:last-child) {
-        margin-bottom: 16px;
-    }
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
 `;
 
 const Layout = styled.div`
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  width: calc(100% - 320px);
-  height: 90%;
-  position: fixed;
-  left: 300px;
+  padding: 16px;
+  gap: 16px;
+`;
+
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   ${(props) =>
     props.top &&
     `
-    top: ${props.top}px;
+  top: ${props.top}px;
 `}
 `;
 
+const EditorBtn = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: auto;
+  gap: 16px;
+`;
+
 function EditorPage() {
+  const [title, setTitle] = useState("");
 
-  const [title, setTitle] = useState('');
-
-	return(
+  return (
     <Wrapper>
-        <Sidebar />
-          <InputContainer>
-            <Layout
-              top={50}>
-                    <TextInput
-                        height={20}
-                        placeholder="제목을 입력하세요"
-                        value={title}
-                        onChange={(event) => {
-                            setTitle(event.target.value);
-                        }}
-                    />
-                    </Layout>
-                </InputContainer>
-        <Layout
-          top={100}>
+      <Sidebar />
+      <Layout>
+        <Container>
+          <TextInput
+            height={20}
+            placeholder="제목을 입력하세요"
+            value={title}
+            onChange={(event) => {
+              setTitle(event.target.value);
+            }}
+          />
+        </Container>
+        <Container>
           <Editor />
-        </Layout>
+        </Container>
+        <EditorBtn>
+          <Button
+            onClick={() => {
+              alert("delete");
+            }}
+          >
+            삭제하기
+          </Button>
+          <Button
+            onClick={() => {
+              alert("submit");
+            }}
+          >
+            저장하기
+          </Button>
+        </EditorBtn>
+      </Layout>
     </Wrapper>
-    );
+  );
 }
 
 export default EditorPage;

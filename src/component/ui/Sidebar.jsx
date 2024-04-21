@@ -10,31 +10,31 @@ const Side = styled.div`
   flex-direction: column;
   width: 280px;
   height: 100vh;
-  position: fixed;
+  gap: 1vh;
+  position: relative;
   left: 0px;
   top: 0px;
   background: rgb(227, 227, 227);
 `;
 
 const HeaderContainer = styled.header`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-top: 20px;
-    cursor: default; /* 커서: 기본 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 20px;
+  cursor: default; /* 커서: 기본 */
 `;
 
 const Title = styled.h1`
-    color: #333; /* 글자색: 검은색 */
-    font-size: 1.5rem;
-    font-weight: bold;
-    white-space: pre-wrap;
+  color: #333; /* 글자색: 검은색 */
+  font-size: 1.5rem;
+  font-weight: bold;
+  white-space: pre-wrap;
 `;
 
 function Sidebar() {
-
   const navigate = useNavigate();
   const title = "한국어 이야기\n흐름 분석 시스템";
 
@@ -66,30 +66,33 @@ function Sidebar() {
   return (
     <Side>
       <HeaderContainer>
-            <Title onClick={redirectToHome} style={{ cursor: "pointer" }}>
-        {title}
+        <Title onClick={redirectToHome} style={{ cursor: "pointer" }}>
+          {title}
         </Title>
       </HeaderContainer>
       <List
-          posts={posts}
-          onClickItem={(item) => {
-            navigate(`/post/${item.id}`);
-          }}
+        posts={posts}
+        onClickItem={(item) => {
+          navigate(`/post/${item.id}`);
+        }}
       />
-      <div 
-      className="d-grid gap-2"
-      style={{margin : "10px", 
-            width : "260px",
-            position : "fixed", 
-            bottom : "10px"}}>
+      <div
+        className="d-grid gap-2"
+        style={{
+          margin: "10px",
+          width: "260px",
+          position: "relative",
+          bottom: "5px",
+        }}
+      >
         <Button
-            variant="primary"
-            style={{ height: "40px" }}
-            onClick={() => {
-              navigate("/post-list");
-            }}
-          >
-            글 목록 보기
+          variant="primary"
+          style={{ height: "40px" }}
+          onClick={() => {
+            navigate("/post-list");
+          }}
+        >
+          글 목록 보기
         </Button>
         <Button
           variant="primary"
@@ -98,7 +101,7 @@ function Sidebar() {
             navigate("/");
           }}
         >
-        로그아웃
+          로그아웃
         </Button>
       </div>
     </Side>
