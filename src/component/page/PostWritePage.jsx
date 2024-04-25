@@ -6,12 +6,12 @@ import React, {
   useState,
 } from "react";
 
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
 
 import Sidebar from "../ui/Sidebar";
-import Editor from "../ui/QuillEditor";
-import TextInput from "../ui/TextInput";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -40,6 +40,25 @@ const Container = styled.div`
 `}
 `;
 
+const formats = [
+  "font",
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "align",
+  "color",
+  "background",
+  "size",
+  "h1",
+];
+
 const EditorBtn = styled.div`
   width: 100%;
   display: flex;
@@ -51,6 +70,26 @@ const EditorBtn = styled.div`
 
 function EditorPage() {
   const [title, setTitle] = useState("");
+  const [values, setValues] = useState();
+
+  const modules = useMemo(() => {
+    return {
+      toolbar: {
+        container: [
+          [{ size: ["small", false, "large", "huge"] }],
+          [{ align: [] }],
+          ["bold", "italic", "underline", "strike"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [
+            {
+              color: [],
+            },
+            { background: [] },
+          ],
+        ],
+      },
+    };
+  }, []);
 
   return (
     <Wrapper>
@@ -67,8 +106,17 @@ function EditorPage() {
           />
         </Container>
         <Container>
-          <Editor />
+          <ReactQuill
+            theme="snow"
+            style={{ height: "calc(100vh - 180px)" }}
+            modules={modules}
+            formats={formats}
+            onChange={setValues}
+          />
         </Container>
+        <div dangerouslySetInnerHTML={{ __html :  values  }} 
+          // 텍스트 에디터 내용 불러오기 확인(임시)
+          />
         <EditorBtn>
           <Button
             onClick={() => {
