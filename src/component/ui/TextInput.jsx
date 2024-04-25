@@ -1,13 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 
-const StyledTextarea = styled.textarea`
+const StyledTitle = styled.input`
   width: 100%;
-  ${(props) =>
-    props.height &&
-    `
-        height: ${props.height}px;
-    `}
+  height: 20px;
   padding: 20px;
   font-size: 16px; /* 글자 크기 */
   line-height: 0px;
@@ -23,11 +19,11 @@ const StyledTextarea = styled.textarea`
 `;
 
 function TextInput(props) {
-  const { height, value, onChange, placeholder } = props;
+  const { value, onChange, placeholder } = props;
 
   return (
-    <StyledTextarea
-      height={height}
+    <StyledTitle
+      type="text"
       value={value}
       onChange={onChange}
       placeholder={placeholder}

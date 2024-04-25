@@ -11,6 +11,7 @@ import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
 
+import TextInput from "../ui/TextInput";
 import Sidebar from "../ui/Sidebar";
 
 const Wrapper = styled.div`
@@ -97,7 +98,6 @@ function EditorPage() {
       <Layout>
         <Container>
           <TextInput
-            height={20}
             placeholder="제목을 입력하세요"
             value={title}
             onChange={(event) => {
@@ -114,9 +114,10 @@ function EditorPage() {
             onChange={setValues}
           />
         </Container>
-        <div dangerouslySetInnerHTML={{ __html :  values  }} 
+        <div
+          dangerouslySetInnerHTML={{ __html: values }}
           // 텍스트 에디터 내용 불러오기 확인(임시)
-          />
+        />
         <EditorBtn>
           <Button
             onClick={() => {
