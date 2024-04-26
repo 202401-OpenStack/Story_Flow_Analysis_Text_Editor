@@ -21,7 +21,7 @@ exports.summarizeArticle = async (req, res) => {
         // OpenAI API에 요청 보내기
         const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
         
-        const prompt = `20자 이내로 아래 텍스트를 요약하시오.: \n\n${content}`;
+        const prompt = `아래 입력된 숫자들을 그대로 반환하시오. 따로 다른 말 붙이지 말고, "숫자만" 반환하시오. 예시: 3 3 3 -> 3 3 3, 5 7 1 -> 5 7 1: \n\n${content}`;
         const dataAPI = {
             messages: [{
                 "role": "system",
@@ -79,6 +79,7 @@ exports.findTopic = async (req, res) => {
         };
 
         const response = await axios.post(apiUrl, dataAPI, {headers});
+        console.log('openAI API access');
 
         // message의 content 부분만 추출
         const messageContent = response.data.choices[0].message.content;
