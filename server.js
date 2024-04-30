@@ -53,7 +53,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: false,
-    maxAge: 1000*60*60*24 // 쿠키 만료: 24시간
+    maxAge: 1000*60*60*24, // 쿠키 만료: 24시간
+    sameSite: 'None' // 크로스 사이트 요청에 대해 쿠키를 허용
   }
 }));
 
