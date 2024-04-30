@@ -54,7 +54,6 @@ app.use(session({
   cookie: {
     secure: false,
     maxAge: 1000*60*60*24, // 쿠키 만료: 24시간
-    sameSite: 'None' // 크로스 사이트 요청에 대해 쿠키를 허용
   }
 }));
 
@@ -72,9 +71,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/analysis', analysisRoutes);
 
-// 기본 라우트
-app.get('/', (req, res) => {
-  return res.send("development server: GitHub Action Test");
+// 리액트 정적 파일 제공
+const buildPath = path.join(__dirname, 'build');
+app.use(express.static(buildPath));
+
+// 모든 라우트를 리액트 앱으로 리다이렉트
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
 });
+
 
 app.listen(PORT, ()=> console.log(`Server is running on port ${PORT}.`));
