@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/actions/authActions';
 
 const HeaderContainer = styled.header`
   width: 100%;
@@ -29,10 +31,16 @@ const Line = styled.div`
 
 function Header(props) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const title = "한국어 이야기\n흐름 분석 시스템";
 
   const redirectToHome = () => {
     navigate("/"); // 헤더 클릭 시 메인 페이지로 이동하기 위해 훅 사용
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());  // 로그아웃 액션 호출
+    navigate("/login");  // 로그아웃 후 로그인 페이지로 리다이렉트
   };
 
   return (
@@ -42,9 +50,7 @@ function Header(props) {
       </Title>
       <Button
         className="btn-sm"
-        onClick={() => {
-          navigate("/");
-        }}
+        onClick={handleLogout}
         style={{ alignSelf: "flex-end" }}
       >
         로그아웃

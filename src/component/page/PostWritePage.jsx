@@ -14,6 +14,8 @@ import { Button } from "react-bootstrap";
 import TextInput from "../ui/TextInput";
 import Sidebar from "../ui/Sidebar";
 
+import axios from 'axios';
+
 const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
@@ -73,6 +75,23 @@ function EditorPage() {
   const [title, setTitle] = useState("");
   const [values, setValues] = useState();
 
+  const summarizeArticle = async () => {
+    try {
+      const response = await axios.post('http://20.41.113.158/api/analysis/summarize', { content: values }, {
+        withCredentials: true
+      })
+      .then((res) => {
+        alert("Article successfully summarized");
+      });
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        alert('You must be logged in to access the summarizeArticle API');
+      } else {
+        alert('An error occurred while accessing the summarizeArticle API');
+      }
+    }
+  }
+
   const modules = useMemo(() => {
     return {
       toolbar: {
@@ -119,6 +138,11 @@ function EditorPage() {
           // 텍스트 에디터 내용 불러오기 확인(임시)
         />
         <EditorBtn>
+          <Button
+            onClick={summarizeArticle}
+          >
+            요약하기
+          </Button>
           <Button
             onClick={() => {
               alert("delete");

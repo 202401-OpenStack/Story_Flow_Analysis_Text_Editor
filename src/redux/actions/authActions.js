@@ -56,13 +56,14 @@ export const login = (username, password) => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
   try {
-      await axios.post('http://20.41.113.158/api/accounts/logout');
-      dispatch({
-          type: LOGOUT,
-      });
-      // 주의: 여기서 직접적인 네비게이션을 처리하는 대신, 로그아웃 후의 리다이렉션은 컴포넌트 또는 미들웨어를 통해 처리하는 것이 좋습니다.
+    await axios.post('http://20.41.113.158/api/accounts/logout', {}, {
+      withCredentials: true  // 쿠키를 전송하도록 설정
+    });
+    dispatch({
+      type: LOGOUT,
+    });
   } catch (err) {
-      console.log('Logout error:', err);
+    console.log('Logout error:', err);
   }
 };
 
