@@ -18,6 +18,8 @@ import { Button } from "react-bootstrap";
 import TextInput from "../ui/TextInput";
 import Sidebar from "../ui/Sidebar";
 
+import axios from "axios";
+
 const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
@@ -78,7 +80,29 @@ function EditorPage() {
   const location = useLocation();
 
   const [title, setTitle] = useState("");
-  const [contents, setContents] = useState();
+  const [values, setValues] = useState();
+
+  const summarizeArticle = async () => {
+    try {
+      const response = await axios
+        .post(
+          "http://20.41.113.158/api/analysis/summarize",
+          { content: values },
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          alert("Article successfully summarized");
+        });
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        alert("You must be logged in to access the summarizeArticle API");
+      } else {
+        alert("An error occurred while accessing the summarizeArticle API");
+      }
+    }
+  };
 
   const [isEdit, setIsEdit] = useState(false);
   const [postId, setPostId] = useState(null);
@@ -111,7 +135,7 @@ function EditorPage() {
         .then((res) => {
           alert("Post retrieved successfully");
           setTitle(res.data.data.title);
-          setContents(res.data.data.content);
+          setValues(res.data.data.content);
         })
         .catch((err) => {
           // Check if error response exists and handle different status codes
@@ -158,12 +182,12 @@ function EditorPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!title.trim() || isQuillEmpty(contents)) {
+    if (!title.trim() || isQuillEmpty(values)) {
       alert("모든 필드를 채워주세요");
       return;
     }
 
-    const postInfo = { title, contents };
+    const postInfo = { title, values };
 
     if (isEdit) {
       if (postId) {
@@ -303,15 +327,30 @@ function EditorPage() {
             style={{ height: "calc(100vh - 180px)" }}
             modules={modules}
             formats={formats}
-            onChange={setContents}
+            onChange={setValues}
             placeholder="내용을 입력하세요"
           />
         </Container>
         <div
-          dangerouslySetInnerHTML={{ __html: contents }}
+          dangerouslySetInnerHTML={{ __html: values }}
           // 텍스트 에디터 내용 불러오기 확인(임시)
         />
         <EditorBtn>
+          <Button onClick={summarizeArticle}>요약하기</Button>
+          <Button
+            onClick={() => {
+              alert("delete");
+            }}
+          >
+            삭제하기
+          </Button>
+          <Button
+            onClick={() => {
+              alert("submit");
+            }}
+          >
+            저장하기
+          </Button>
           <Button onClick={handleDelete}>삭제하기</Button>
           <Button onClick={handleSubmit}>저장하기</Button>
         </EditorBtn>
