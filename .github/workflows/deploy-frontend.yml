@@ -1,0 +1,58 @@
+name: Deploy Frontend to Azure VM
+
+on:
+  push:
+    branches:
+      - frontend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build React app
+      run: npm run build
+
+    - name: Delete old build directory
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_VM_USERNAME }}
+        key: ${{ secrets.AZURE_VM_SSH_KEY }}
+        port: 22
+        script: |
+          rm -rf Story_Flow_Analysis_Text_Editor/build
+
+    - name: Copy files to Azure VM
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_VM_USERNAME }}
+        key: ${{ secrets.AZURE_VM_SSH_KEY }}
+        port: 22
+        source: "build/"
+        target: "/Story_Flow_Analysis_Text_Editor"
+
+    - name: Restart server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AZURE_VM_IP }}
+        username: ${{ secrets.AZURE_VM_USERNAME }}
+        key: ${{ secrets.AZURE_VM_SSH_KEY }}
+        port: 22
+        script: |
+          cd Story_Flow_Analysis_Text_Editor
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
+          pm2 restart server
