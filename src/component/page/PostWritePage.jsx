@@ -18,8 +18,6 @@ import { Button } from "react-bootstrap";
 import TextInput from "../ui/TextInput";
 import Sidebar from "../ui/Sidebar";
 
-import axios from "axios";
-
 const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
@@ -359,4 +357,4 @@ function EditorPage() {
   );
 }
 
-export default EditorPage;
+export default EditorPage; //
