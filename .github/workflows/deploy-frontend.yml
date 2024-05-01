@@ -45,7 +45,7 @@ jobs:
         key: ${{ secrets.AZURE_VM_SSH_KEY }}
         port: 22
         source: "build/"
-        target: "/Story_Flow_Analysis_Text_Editor"
+        target: "Story_Flow_Analysis_Text_Editor"
 
     - name: Restart server
       uses: appleboy/ssh-action@master
