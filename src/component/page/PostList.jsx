@@ -25,7 +25,7 @@ function PostList(props) {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, loading, error, isAuthenticated } = useSelector(state => state.auth);
+  const { loading, error, isAuthenticated } = useSelector(state => state.auth);
 
   useEffect(() => {
     if (!isAuthenticated) {

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import { useDispatch, useSelector } from 'react-redux';
-import { login, clearErrors } from '../../redux/actions/authActions';
+import { clearErrors } from '../../redux/actions/authActions';
 
 const Wrapper = styled.div`
   width: 100vw;
