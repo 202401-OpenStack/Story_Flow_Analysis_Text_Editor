@@ -22,43 +22,45 @@ function App() {
   }, [dispatch]);
 
   return (
-    <Routes>
-      <Route index element={<Main/>}/>
-      <Route path="login" element={<Login />} />
-      <Route path="sign-up" element={<SignUp />} />
-      <Route
-        path="post-list"
-        element={
-          <ProtectedRoute>
-            <PostList />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="post-write"
-        element={
-          <ProtectedRoute>
-            <PostWritePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="post-write/:postId"
-        element={
-          <ProtectedRoute>
-            <PostWritePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="post-jisu"
-        element={
-          <ProtectedRoute>
-            <EditorJisu />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <BrowserRouter> {/* BrowserRouter 추가 */}
+      <Routes>
+        <Route index element={<Main/>}/>
+        <Route path="login" element={<Login />} />
+        <Route path="sign-up" element={<SignUp />} />
+        <Route
+          path="post-list"
+          element={
+            <ProtectedRoute>
+              <PostList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="post-write"
+          element={
+            <ProtectedRoute>
+              <PostWritePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="post-write/:postId"
+          element={
+            <ProtectedRoute>
+              <PostWritePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="post-jisu"
+          element={
+            <ProtectedRoute>
+              <EditorJisu />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
