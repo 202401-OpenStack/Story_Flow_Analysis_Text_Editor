@@ -137,7 +137,6 @@ function EditorJisu() {
                     <Button variant="secondary" onClick={() => navigate('/some-other-page')}>Cancel</Button>
                 </EditorBtn>
             </Layout>
-            <MessageContainer>Hello, edit your content below</MessageContainer>
         </Wrapper>
     );
 }
