@@ -6,6 +6,7 @@ import { Button } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import TextInput from '../ui/TextInput';
 import CommandPalette from '../ui/CommandPalatte';
+import axios from 'axios'
 
 // 스타일 컴포넌트 정의
 const Wrapper = styled.div`
@@ -80,14 +81,34 @@ function EditorJisu() {
         }
     };
 
-    const handleSelectCommand = (command) => {
+    const handleSelectCommand = async (command) => {
         if (command === 'summarize') {
             const quill = quillRef.current.getEditor();
-            const length = quill.getLength(); // 에디터의 전체 길이를 가져옵니다.
-            quill.insertText(length, '\n안녕하세요\n', { background: '#FFFF00', color: '#000000' }); // 줄 시작과 끝에 개행 문자를 추가하여 배경색 적용 준비
-            quill.formatLine(length + 1, 1, 'background', '#D8D8D8'); // 새로 추가된 줄 전체에 배경색 적용
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/summarize', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
         }
-        console.log(`Command selected: ${command}`);
         setShowPalette(false);
     };
 
