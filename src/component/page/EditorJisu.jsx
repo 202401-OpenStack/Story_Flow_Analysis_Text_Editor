@@ -83,7 +83,9 @@ function EditorJisu() {
     const handleSelectCommand = (command) => {
         if (command === 'summarize') {
             const quill = quillRef.current.getEditor();
-            quill.insertText(quill.getLength(), ' 안녕하세요', 'user');
+            const length = quill.getLength(); // 에디터의 전체 길이를 가져옵니다.
+            quill.insertText(length, '\n안녕하세요\n', { background: '#FFFF00', color: '#000000' }); // 줄 시작과 끝에 개행 문자를 추가하여 배경색 적용 준비
+            quill.formatLine(length + 1, 1, 'background', '#D8D8D8'); // 새로 추가된 줄 전체에 배경색 적용
         }
         console.log(`Command selected: ${command}`);
         setShowPalette(false);
