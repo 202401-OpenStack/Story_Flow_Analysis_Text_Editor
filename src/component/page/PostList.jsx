@@ -33,13 +33,7 @@ function PostList(props) {
       navigate('/login', { replace: true });
     }
 
-    // 글 가져오는 코드
   }, [loading, isAuthenticated, navigate]);
-
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate('/', { replace: true });
-  };
 
   if (loading) {
     return <div>Loading...</div>;
