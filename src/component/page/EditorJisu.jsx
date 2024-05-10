@@ -1,33 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useRef, useMemo } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import styled from 'styled-components';
 import { Button } from 'react-bootstrap';
-
+import { useNavigate } from "react-router-dom";
 import TextInput from '../ui/TextInput';
-import Sidebar from '../ui/Sidebar';
+import CommandPalette from '../ui/CommandPalatte';
 
-const formats = [
-    "font",
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "align",
-    "color",
-    "background",
-    "size",
-    "h1",
-];
-
+// 스타일 컴포넌트 정의
 const Wrapper = styled.div`
     width: 100%;
     height: 100vh;
@@ -48,11 +28,6 @@ const Container = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-    ${(props) =>
-        props.top &&
-        `
-    top: ${props.top}px;
-  `}
 `;
 
 const EditorBtn = styled.div`
@@ -64,21 +39,13 @@ const EditorBtn = styled.div`
     gap: 16px;
 `;
 
-const MessageContainer = styled.div`
-  width: 100%;
-  display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-top: 20px;
-`;
-
 function EditorJisu() {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { loading, error, isAuthenticated } = useSelector(state => state.auth);
-    const [editorContent, setEditorContent] = useState(''); // 에디터 내용을 위한 상태
-    const [title, setTitle] = useState("");
+    const [editorContent, setEditorContent] = useState('');
+    const [title, setTitle] = useState('');
+    const [showPalette, setShowPalette] = useState(false);
+    const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
+    const quillRef = useRef(null);
 
     const modules = useMemo(() => ({
         toolbar: {
@@ -92,23 +59,30 @@ function EditorJisu() {
         },
     }), []);
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            alert('User not found or not logged in.');
-            navigate('/login', { replace: true });
-        }
-    }, [loading, isAuthenticated, navigate]);
+    const formats = [
+        "font", "header", "bold", "italic", "underline", "strike",
+        "blockquote", "list", "bullet", "indent", "link", "align",
+        "color", "background", "size", "h1",
+    ];
 
-    if (loading) return <div>Loading...</div>;
-    if (error) {
-        alert(error);
-        navigate('/login', { replace: true });
-        return null;
-    }
-    if (!isAuthenticated) return null;
-
-    const handleEditorChange = (content) => {
+    const handleEditorChange = (content, delta, source, editor) => {
         setEditorContent(content);
+        const cursorPosition = editor.getSelection()?.index;
+        if (cursorPosition) {
+            const textBeforeCursor = editor.getText(0, cursorPosition);
+            if (textBeforeCursor.endsWith('/')) {
+                const bounds = editor.getBounds(cursorPosition);
+                setShowPalette(true);
+                setPalettePosition({ top: bounds.bottom, left: bounds.left });
+            } else {
+                setShowPalette(false);
+            }
+        }
+    };
+
+    const handleSelectCommand = (command) => {
+        console.log(`Command selected: ${command}`);
+        setShowPalette(false);
     };
 
     return (
@@ -123,6 +97,7 @@ function EditorJisu() {
                 </Container>
                 <Container>
                     <ReactQuill
+                        ref={quillRef}
                         theme="snow"
                         style={{ height: "calc(100vh - 180px)" }}
                         modules={modules}
@@ -131,6 +106,14 @@ function EditorJisu() {
                         onChange={handleEditorChange}
                         placeholder="내용을 입력하세요"
                     />
+                    {showPalette && (
+                        <CommandPalette
+                            show={showPalette}
+                            top={palettePosition.top}
+                            left={palettePosition.left}
+                            onSelect={handleSelectCommand}
+                        />
+                    )}
                 </Container>
                 <EditorBtn>
                     <Button onClick={() => console.log('Save Content:', editorContent)}>Save</Button>
