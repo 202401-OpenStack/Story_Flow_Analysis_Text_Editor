@@ -60,6 +60,9 @@ function EditorJisu() {
     const { loading, error, isAuthenticated } = useSelector(state => state.auth);
     const [editorContent, setEditorContent] = useState(''); // 에디터 내용을 위한 상태
 
+    const [title, setTitle] = useState("");
+    const [values, setValues] = useState();
+
     useEffect(() => {
         if (!isAuthenticated) {
             alert('User not found or not logged in.');
@@ -88,6 +91,15 @@ function EditorJisu() {
     return (
         <Wrapper>
             <Layout>
+                <Container>
+                    <TextInput
+                        placeholder="제목을 입력하세요"
+                        value={title}
+                        onChange={(event) => {
+                            setTitle(event.target.value);
+                        }}
+                    />
+                </Container>
                 <Container>
                     <ReactQuill
                         theme="snow"
