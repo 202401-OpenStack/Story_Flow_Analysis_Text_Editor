@@ -19,7 +19,7 @@ const Dropdown = styled.div`
   border-radius: 8px;
   overflow: hidden;
   z-index: 1000;
-  width: 300px;
+  width: 350px;
   animation: ${fadeInDown} 0.3s ease-out;
 `;
 

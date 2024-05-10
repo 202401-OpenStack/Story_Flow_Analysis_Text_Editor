@@ -81,6 +81,10 @@ function EditorJisu() {
     };
 
     const handleSelectCommand = (command) => {
+        if (command === 'summarize') {
+            const quill = quillRef.current.getEditor();
+            quill.insertText(quill.getLength(), ' 안녕하세요', 'user');
+        }
         console.log(`Command selected: ${command}`);
         setShowPalette(false);
     };
