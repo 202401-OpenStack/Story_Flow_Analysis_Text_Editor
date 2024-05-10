@@ -82,12 +82,120 @@ function EditorJisu() {
     };
 
     const handleSelectCommand = async (command) => {
-        if (command === 'summarize') {
+        if (command === 'summarizeArticle') {
             const quill = quillRef.current.getEditor();
             const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
     
             try {
                 const response = await axios.post('http://20.41.113.158/api/analysis/summarize', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'findTopic') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/topic', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'extractKeywords') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/keywords', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'analyzeCharacterCount') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/character-count', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'judgeStoryFlow') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/story-flow', { content }, {
                     withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
                     headers: {
                         'Content-Type': 'application/json'

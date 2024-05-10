@@ -53,31 +53,31 @@ const CommandPalette = ({ show, top, left, onSelect }) => {
   return (
     <Dropdown style={{ top, left }}>
       <ul>
-        <Item onClick={() => onSelect('summarize')}>
+        <Item onClick={() => onSelect('summarizeArticle')}>
           요약하기
           <Description>지금까지 작성한 글의 줄거리를 요약합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('find_topics')}>
+        <Item onClick={() => onSelect('findTopic')}>
           주제 찾기
           <Description>지금까지 작성한 글의 핵심 주제를 찾습니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('extract_keywords')}>
+        <Item onClick={() => onSelect('extractKeywords')}>
           키워드 추출
           <Description>지금까지 작성한 글에서 중요한 키워드를 3가지 추출합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('find_topics')}>
+        <Item onClick={() => onSelect('analysisCharacterCount')}>
           인물 수 분석
           <Description>지금까지 작성한 글에 등장하는 모든 등장인물을 카운트합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('extract_keywords')}>
+        <Item onClick={() => onSelect('analysisCharacterRelationships')}>
           인물 관계 분석
           <Description>지금까지 작성한 글에 등장하는 모든 등장인물들 간의 관계를 분석하여 시각화된 자료로 제공합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('extract_keywords')}>
+        <Item onClick={() => onSelect('analyzeTimeline')}>
           타임 라인 분석
           <Description>지금까지 작성한 글에 등장하는 모든 사건의 타임 라인을 분석하여 시각화된 자료로 제공합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('extract_keywords')}>
+        <Item onClick={() => onSelect('judgeStoryFlow')}>
           이야기 흐름 판단
           <Description>지금까지 작성한 글의 내용에 대해 AI가 피드백을 제공합니다.</Description>
         </Item>
