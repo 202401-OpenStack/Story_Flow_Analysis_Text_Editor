@@ -8,9 +8,11 @@ import Login from "./component/page/Login";
 import SignUp from "./component/page/SignUp";
 import PostList from "./component/page/PostList";
 import PostWritePage from "./component/page/PostWritePage";
+import EditorJisu from "./component/page/EditorJisu";
 import { useDispatch } from 'react-redux';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { loadUser } from './redux/actions/authActions';
+import Editor from "./component/ui/QuillEditor";
 
 function App() {
   const dispatch = useDispatch();
@@ -45,6 +47,14 @@ function App() {
         element={
           <ProtectedRoute>
             <PostWritePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="post-jisu"
+        element={
+          <ProtectedRoute>
+            <EditorJisu />
           </ProtectedRoute>
         }
       />

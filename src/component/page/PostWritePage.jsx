@@ -128,8 +128,7 @@ function EditorPage() {
 
     const fetchPost = async () => {
       // getPost
-      axios
-        .get("http://20.41.113.158/api/blog/posts/${postIdfromQuery}")
+      axios.get(`http://20.41.113.158/api/blog/posts/${postIdFromQuery}`)
         .then((res) => {
           alert("Post retrieved successfully");
           setTitle(res.data.data.title);
@@ -311,6 +310,21 @@ function EditorPage() {
       <Sidebar />
       <Layout>
         <Container>
+          {values ? (
+            <ReactQuill
+              theme="snow"
+              style={{ height: "calc(100vh - 180px)" }}
+              modules={modules}
+              formats={formats}
+              onChange={setValues}
+              value={values} // 상태를 직접 바인딩
+              placeholder="내용을 입력하세요"
+            />
+          ) : (
+            <p>로딩 중이거나 문제가 발생했습니다.</p>
+          )}
+        </Container>
+        <Container>
           <TextInput
             placeholder="제목을 입력하세요"
             value={title}
@@ -331,7 +345,7 @@ function EditorPage() {
         </Container>
         <div
           dangerouslySetInnerHTML={{ __html: values }}
-          // 텍스트 에디터 내용 불러오기 확인(임시)
+        // 텍스트 에디터 내용 불러오기 확인(임시)
         />
         <EditorBtn>
           <Button onClick={summarizeArticle}>요약하기</Button>
