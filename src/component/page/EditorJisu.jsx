@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ReactQuill from 'react-quill';
@@ -8,6 +8,25 @@ import { Button } from 'react-bootstrap';
 
 import TextInput from '../ui/TextInput';
 import Sidebar from '../ui/Sidebar';
+
+const formats = [
+    "font",
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "align",
+    "color",
+    "background",
+    "size",
+    "h1",
+];
 
 const Wrapper = styled.div`
     width: 100%;
@@ -48,10 +67,10 @@ const EditorBtn = styled.div`
 const MessageContainer = styled.div`
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  margin-top: 20px;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-top: 20px;
 `;
 
 function EditorJisu() {
@@ -59,9 +78,19 @@ function EditorJisu() {
     const navigate = useNavigate();
     const { loading, error, isAuthenticated } = useSelector(state => state.auth);
     const [editorContent, setEditorContent] = useState(''); // 에디터 내용을 위한 상태
-
     const [title, setTitle] = useState("");
-    const [values, setValues] = useState();
+
+    const modules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ size: ["small", false, "large", "huge"] }],  // 사이즈 조절
+                [{ align: [] }],  // 정렬
+                ["bold", "italic", "underline", "strike"],  // 스타일링
+                [{ list: "ordered" }, { list: "bullet" }],  // 리스트 옵션
+                [{ color: [] }, { background: [] }],  // 컬러 옵션
+            ],
+        },
+    }), []);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -70,19 +99,13 @@ function EditorJisu() {
         }
     }, [loading, isAuthenticated, navigate]);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
+    if (loading) return <div>Loading...</div>;
     if (error) {
         alert(error);
         navigate('/login', { replace: true });
-        return <></>;
+        return null;
     }
-
-    if (!isAuthenticated) {
-        return <></>;
-    }
+    if (!isAuthenticated) return null;
 
     const handleEditorChange = (content) => {
         setEditorContent(content);
@@ -90,21 +113,24 @@ function EditorJisu() {
 
     return (
         <Wrapper>
+            <Sidebar />
             <Layout>
                 <Container>
                     <TextInput
                         placeholder="제목을 입력하세요"
                         value={title}
-                        onChange={(event) => {
-                            setTitle(event.target.value);
-                        }}
+                        onChange={(event) => setTitle(event.target.value)}
                     />
                 </Container>
                 <Container>
                     <ReactQuill
                         theme="snow"
+                        style={{ height: "calc(100vh - 180px)" }}
+                        modules={modules}
+                        formats={formats}
                         value={editorContent}
                         onChange={handleEditorChange}
+                        placeholder="내용을 입력하세요"
                     />
                 </Container>
                 <EditorBtn>
