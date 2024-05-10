@@ -65,7 +65,7 @@ const CommandPalette = ({ show, top, left, onSelect }) => {
           키워드 추출
           <Description>지금까지 작성한 글에서 중요한 키워드를 3가지 추출합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('analysisCharacterCount')}>
+        <Item onClick={() => onSelect('analyzeCharacterCount')}>
           인물 수 분석
           <Description>지금까지 작성한 글에 등장하는 모든 등장인물을 카운트합니다.</Description>
         </Item>
