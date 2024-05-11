@@ -54,18 +54,12 @@ const Content = styled.div`
 `;
 
 const DeleteButton = styled.button`
-  padding: 10px 20px;
-  margin-top: 20px;
-  background-color: #ff6347; /* 토마토 색상 */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #e55347;
-  }
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: auto;
+  gap: 16px;
 `;
 
 // 날짜 포맷 함수
@@ -138,8 +132,8 @@ const PostViewPage = () => {
                 <Title>{post.title}</Title>
                 <DateText>{formatDate(post.createdAt)}</DateText>
                 <Content dangerouslySetInnerHTML={createMarkup(post.content)} />
-                <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
             </Container>
+            <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
         </Wrapper>
     );
 };
