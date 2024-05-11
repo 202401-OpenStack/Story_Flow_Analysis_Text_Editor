@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import Header from '../ui/Header';
+import DOMPurify from 'dompurify'
 
 // 스타일 컴포넌트 정의
 const Wrapper = styled.div`
