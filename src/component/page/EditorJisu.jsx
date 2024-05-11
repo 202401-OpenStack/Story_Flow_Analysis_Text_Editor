@@ -242,6 +242,12 @@ function EditorJisu() {
         }
     };
 
+    const handleCancel = () => {
+        if (window.confirm("저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?")) {
+            navigate('/post-list');
+        }
+    };
+
     return (
         <Wrapper>
             <Layout>
@@ -274,7 +280,7 @@ function EditorJisu() {
                 </Container>
                 <EditorBtn>
                     <Button onClick={saveContent}>Save</Button>
-                    <Button variant="secondary" onClick={() => navigate('/some-other-page')}>Cancel</Button>
+                    <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
                 </EditorBtn>
             </Layout>
         </Wrapper>
