@@ -4,7 +4,7 @@ import styled from "styled-components";
 import List from "../list/List";
 import Header from "../ui/Header";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/actions/authActions";
+import axios from 'axios';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -36,6 +36,18 @@ function PostList(props) {
 
   }, [loading, isAuthenticated, navigate]);
 
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get("http://20.41.113.158/api/blog/posts", {
+        withCredentials: true // Ensures cookies are sent with the request
+      });
+      setPosts(response.data.posts);
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+      alert('Failed to load posts.');
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -43,11 +55,6 @@ function PostList(props) {
   if (error) {
     alert(error);
     navigate('/login', { replace: true });
-    return <></>;
-  }
-
-  if (!isAuthenticated) {
-    // 이미 리다이렉트되었기 때문에 여기서 추가적인 렌더링을 방지합니다.
     return <></>;
   }
 
