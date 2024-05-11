@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import TextInput from '../ui/TextInput';
 import CommandPalette from '../ui/CommandPalatte';
 import axios from 'axios'
+import Sidebar from "../ui/Sidebar";
 
 // 스타일 컴포넌트 정의
 const Wrapper = styled.div`
