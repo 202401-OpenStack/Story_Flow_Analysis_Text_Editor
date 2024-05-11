@@ -25,6 +25,11 @@ const Info = styled.span`
   overflow-x: hidden;
 `;
 
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-CA'); // 'en-CA' locale은 YYYY-MM-DD 형식을 반환합니다.
+}
+
 function Item(props) {
   const { index, post, onClick } = props;
 
@@ -32,7 +37,7 @@ function Item(props) {
     <Wrapper onClick={onClick}>
       <Info style={{ textAlign: "left" }}>{index + 1}</Info>
       <Info style={{ textAlign: "center" }}>{post.title}</Info>
-      <Info style={{ textAlign: "right" }}>{post.createdAt}</Info>
+      <Info style={{ textAlign: "right" }}>{formatDate(post.createdAt)}</Info>
     </Wrapper>
   );
 }

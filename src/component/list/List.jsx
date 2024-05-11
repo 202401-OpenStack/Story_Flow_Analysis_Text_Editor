@@ -82,6 +82,7 @@ function List({ posts, onClickItem }) {
           return (
             <Item
               key={post.id}
+              index={index}
               post={post}
               onClick={() => {
                 onClickItem(post);
