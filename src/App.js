@@ -44,7 +44,7 @@ function App() {
         }
       />
       <Route
-        path="post-write/:postId"
+        path="post/:postId"
         element={
           <ProtectedRoute>
             <PostViewPage />

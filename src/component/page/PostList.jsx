@@ -65,9 +65,6 @@ function PostList(props) {
     return <></>;
   }
 
-  const navigateToPostJisu = () => {
-    navigate('/post-jisu');
-  };
 
   return (
     <Wrapper>
