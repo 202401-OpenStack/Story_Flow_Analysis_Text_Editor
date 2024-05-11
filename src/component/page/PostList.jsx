@@ -43,10 +43,15 @@ function PostList(props) {
       const response = await axios.get("http://20.41.113.158/api/blog/posts", {
         withCredentials: true // Ensures cookies are sent with the request
       });
-      setPosts(response.data.posts);
+      const { data } = response;
+      if (data.message === "Posts fetched successfully") {
+        setPosts(data.data); // Update the state with the fetched posts
+      } else {
+        throw new Error(data.message || "Error fetching posts");
+      }
     } catch (error) {
-      console.error('Failed to fetch posts:', error);
-      alert('Failed to load posts.');
+      console.error("Failed to fetch posts:", error);
+      alert(error.message || "An error occurred while retrieving posts"); // Display error to the user
     }
   };
 

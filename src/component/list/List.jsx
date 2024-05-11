@@ -67,6 +67,9 @@ const ContentButton = styled.button`
 function List({ posts, onClickItem }) {
   const navigate = useNavigate();
 
+  // posts가 undefined일 경우 빈 배열을 기본값으로 사용
+  const safePosts = posts || [];
+
   return (
     <Wrapper>
       <TableHeader>
