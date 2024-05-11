@@ -74,7 +74,7 @@ const PostViewPage = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get(`http://your-api-endpoint/api/blog/posts/${postId}`, {
+                const response = await axios.get(`http://http://20.41.113.158/api/blog/posts/${postId}`, {
                     withCredentials: true
                 });
                 if (response.data.message === "Post retrieved successfully") {
