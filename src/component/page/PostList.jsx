@@ -32,6 +32,8 @@ function PostList(props) {
     if (!isAuthenticated) {
       alert('User not found or not logged in.');
       navigate('/login', { replace: true });
+    } else {
+      fetchPosts();
     }
 
   }, [loading, isAuthenticated, navigate]);

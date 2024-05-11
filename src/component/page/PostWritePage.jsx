@@ -57,6 +57,7 @@ function PostWritePage() {
                 ["bold", "italic", "underline", "strike"],  // 스타일링
                 [{ list: "ordered" }, { list: "bullet" }],  // 리스트 옵션
                 [{ color: [] }, { background: [] }],  // 컬러 옵션
+                ["link", "image"], // 'image' 버튼 추가
             ],
         },
     }), []);
