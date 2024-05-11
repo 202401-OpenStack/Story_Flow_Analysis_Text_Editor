@@ -220,6 +220,28 @@ function EditorJisu() {
         setShowPalette(false);
     };
 
+    const saveContent = async () => {
+        try {
+            const response = await axios.post('http://20.41.113.158/api/blog/posts', {
+                title,
+                content: editorContent
+            }, {
+                withCredentials: true, // Needed to send cookies for the session
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            alert('Post created successfully! ID: ' + response.data.data.id);
+        } catch (error) {
+            if (error.response) {
+                // Handle responses outside the 2xx range
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert('An unexpected error occurred');
+            }
+        }
+    };
+
     return (
         <Wrapper>
             <Layout>
@@ -251,7 +273,7 @@ function EditorJisu() {
                     )}
                 </Container>
                 <EditorBtn>
-                    <Button onClick={() => console.log('Save Content:', editorContent)}>Save</Button>
+                    <Button onClick={saveContent}>Save</Button>
                     <Button variant="secondary" onClick={() => navigate('/some-other-page')}>Cancel</Button>
                 </EditorBtn>
             </Layout>
