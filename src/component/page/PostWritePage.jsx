@@ -49,6 +49,7 @@ function PostWritePage() {
     const [showPalette, setShowPalette] = useState(false);
     const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
     const quillRef = useRef(null);
+    const [uploadedImages, setUploadedImages] = useState([]); // 이미지 URL을 저장할 상태
 
     const imageHandler = useCallback(() => {
         const input = document.createElement('input');
@@ -57,9 +58,12 @@ function PostWritePage() {
         input.click();
         input.onchange = async () => {
             const file = input.files[0];
-            const range = quillRef.current.getEditor().getSelection(true);
             const imageUrl = URL.createObjectURL(file);
-            quillRef.current.getEditor().insertEmbed(range.index, 'image', imageUrl);
+            const range = quillRef.current.getEditor().getSelection(true);
+            if (range) {
+                quillRef.current.getEditor().insertEmbed(range.index, 'image', imageUrl, 'user');
+                setUploadedImages(prev => [...prev, imageUrl]); // URL을 상태에 추가
+            }
         };
     }, []);
 
@@ -255,6 +259,11 @@ function PostWritePage() {
                 }
             });
             alert('Post created successfully! ID: ' + response.data.data.id);
+
+            // 이미지 URL을 해제
+        uploadedImages.forEach(url => URL.revokeObjectURL(url));
+        setUploadedImages([]); // 이미지 URL 상태 초기화
+        
         } catch (error) {
             if (error.response) {
                 // Handle responses outside the 2xx range
