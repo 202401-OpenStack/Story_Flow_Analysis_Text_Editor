@@ -1,374 +1,292 @@
-import React, {
-  ReactChild,
-  ReactFragment,
-  RefObject,
-  useMemo,
-  useState,
-  useEffect,
-} from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-
-import ReactQuill, { Quill } from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import styled from "styled-components";
-import { Button } from "react-bootstrap";
-
-import TextInput from "../ui/TextInput";
+import React, { useState, useRef, useMemo } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import styled from 'styled-components';
+import { Button } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
+import TextInput from '../ui/TextInput';
+import CommandPalette from '../ui/CommandPalatte';
+import axios from 'axios'
 import Sidebar from "../ui/Sidebar";
 
+// 스타일 컴포넌트 정의
 const Wrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: row;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
 `;
 
 const Layout = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  gap: 16px;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
 `;
 
 const Container = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  ${(props) =>
-    props.top &&
-    `
-  top: ${props.top}px;
-`}
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 `;
-
-const formats = [
-  "font",
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "align",
-  "color",
-  "background",
-  "size",
-  "h1",
-];
 
 const EditorBtn = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-top: auto;
-  gap: 16px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: auto;
+    gap: 16px;
 `;
 
-function EditorPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
+function PostWritePage() {
+    const navigate = useNavigate();
+    const [editorContent, setEditorContent] = useState('');
+    const [title, setTitle] = useState('');
+    const [showPalette, setShowPalette] = useState(false);
+    const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
+    const quillRef = useRef(null);
 
-  const [title, setTitle] = useState("");
-  const [values, setValues] = useState();
+    const modules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ size: ["small", false, "large", "huge"] }],  // 사이즈 조절
+                [{ align: [] }],  // 정렬
+                ["bold", "italic", "underline", "strike"],  // 스타일링
+                [{ list: "ordered" }, { list: "bullet" }],  // 리스트 옵션
+                [{ color: [] }, { background: [] }],  // 컬러 옵션
+            ],
+        },
+    }), []);
 
-  const summarizeArticle = async () => {
-    try {
-      const response = await axios
-        .post(
-          "http://20.41.113.158/api/analysis/summarize",
-          { content: values },
-          {
-            withCredentials: true,
-          }
-        )
-        .then((res) => {
-          alert("Article successfully summarized");
-        });
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        alert("You must be logged in to access the summarizeArticle API");
-      } else {
-        alert("An error occurred while accessing the summarizeArticle API");
-      }
-    }
-  };
+    const formats = [
+        "font", "header", "bold", "italic", "underline", "strike",
+        "blockquote", "list", "bullet", "indent", "link", "align",
+        "color", "background", "size", "h1",
+    ];
 
-  const [isEdit, setIsEdit] = useState(false);
-  const [postId, setPostId] = useState(null);
-
-  const { user, loading, error, isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
-
-  useEffect(() => {
-    // 사용자 인증 확인
-    if (!isAuthenticated) {
-      alert("User not found or not logged in.");
-      navigate("/login", { replace: true });
-      return;
-    }
-
-    // queryParams 정의
-    const queryParams = new URLSearchParams(location.search);
-    const postIdFromQuery = queryParams.get("postId");
-    const isEditFromQuery = queryParams.get("edit") === "true";
-
-    // 상태 업데이트
-    setPostId(postIdFromQuery);
-    setIsEdit(isEditFromQuery);
-
-    const fetchPost = async () => {
-      // getPost
-      axios.get(`http://20.41.113.158/api/blog/posts/${postIdFromQuery}`)
-        .then((res) => {
-          alert("Post retrieved successfully");
-          setTitle(res.data.data.title);
-          setValues(res.data.data.content);
-        })
-        .catch((err) => {
-          // Check if error response exists and handle different status codes
-          if (err.response) {
-            switch (err.response.status) {
-              case 401: // Unauthoraized
-                alert(err.response.data.message);
-                break;
-              case 404: // Not found
-                alert(err.response.data.message);
-                break;
-              case 500: // Internal Server Error
-                alert(err.response.data.message);
-                break;
-              default:
-                alert("An unknown error occurred.");
-                break;
-            }
-          } else {
-            console.error(err);
-            alert("An error occurred while retrieving the post.");
-          }
-        });
-    };
-
-    // 수정 모드이고 postId가 있을 경우에만 서버로부터 데이터를 가져옴
-    if (isEditFromQuery && postIdFromQuery) {
-      fetchPost();
-    }
-  }, [location, loading, isAuthenticated, navigate]); // location이 변경될 때마다 useEffect가 실행됨
-
-  // 에디터가 비었는지 확인
-  const isQuillEmpty = (value) => {
-    if (value) {
-      if (
-        value.replace(/<(.|\n)*?>/g, "").trim().length === 0 &&
-        !value.includes("<img")
-      )
-        return true;
-      else return false;
-    }
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!title.trim() || isQuillEmpty(values)) {
-      alert("모든 필드를 채워주세요");
-      return;
-    }
-
-    const postInfo = { title, values };
-
-    if (isEdit) {
-      if (postId) {
-        // updatePost
-        axios
-          .put("http://20.41.113.158/api/blog/posts/${postId}", postInfo)
-          .then((res) => {
-            alert("Post updated successfully");
-          })
-          .catch((err) => {
-            // Check if error response exists and handle different status codes
-            if (err.response) {
-              switch (err.response.status) {
-                case 401: // Unauthoraized
-                  alert(err.response.data.message);
-                  break;
-                case 404: // Not found
-                  alert(err.response.data.message);
-                  break;
-                case 500: // Internal Server Error
-                  alert(err.response.data.message);
-                  break;
-                default:
-                  alert("An unknown error occurred.");
-                  break;
-              }
+    const handleEditorChange = (content, delta, source, editor) => {
+        setEditorContent(content);
+        const cursorPosition = editor.getSelection()?.index;
+        if (cursorPosition) {
+            const textBeforeCursor = editor.getText(0, cursorPosition);
+            if (textBeforeCursor.endsWith('/')) {
+                const bounds = editor.getBounds(cursorPosition);
+                setShowPalette(true);
+                setPalettePosition({ top: bounds.bottom, left: bounds.left });
             } else {
-              console.error(err);
-              alert("An error occurred while updating the post.");
+                setShowPalette(false);
             }
-          });
-      }
-    } else {
-      // createPost
-      axios
-        .post("http://20.41.113.158/api/blog/posts", postInfo)
-        .then((res) => {
-          alert("Post created successfully");
-        })
-        .catch((err) => {
-          // Check if error response exists and handle different status codes
-          if (err.response) {
-            alert(err.response.status);
-            switch (err.response.status) {
-              case 401: // Unauthorized
-                alert(err.response.data.message);
-                break;
-              case 500: // Internal Server Error
-                alert(err.response.data.message);
-                break;
-              default:
-                alert("An unknown error occurred.");
-                break;
-            }
-          } else {
-            console.error(err);
-            alert("An error occurred while creating the post");
-          }
-        });
-    }
-  };
-
-  const handleDelete = async (event) => {
-    if (!postId) {
-      alert("글이 저장되지 않았습니다.");
-      return;
-    }
-
-    const isConfirmed = window.confirm("정말로 글을 삭제하시겠습니까?");
-    if (isConfirmed) {
-      // deletePost
-      axios
-        .delete("http://20.41.113.158/api/blog/posts/${postId}")
-        .then((res) => {
-          alert("Post deleted successfully");
-        })
-        .catch((err) => {
-          // Check if error response exists and handle different status codes
-          if (err.response) {
-            switch (err.response.status) {
-              case 401: // Unauthoraized
-                alert(err.response.data.message);
-                break;
-              case 404: // Not found
-                alert(err.response.data.message);
-                break;
-              case 500: // Internal Server Error
-                alert(err.response.data.message);
-                break;
-              default:
-                alert("An unknown error occurred.");
-                break;
-            }
-          } else {
-            console.error(err);
-            alert("An error occurred while deleting the post.");
-          }
-        });
-    }
-  };
-
-  const modules = useMemo(() => {
-    return {
-      toolbar: {
-        container: [
-          [{ size: ["small", false, "large", "huge"] }],
-          [{ align: [] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          [
-            {
-              color: [],
-            },
-            { background: [] },
-          ],
-        ],
-      },
+        }
     };
-  }, []);
 
-  return (
-    <Wrapper>
-      <Sidebar />
-      <Layout>
-        <Container>
-          {values ? (
-            <ReactQuill
-              theme="snow"
-              style={{ height: "calc(100vh - 180px)" }}
-              modules={modules}
-              formats={formats}
-              onChange={setValues}
-              value={values} // 상태를 직접 바인딩
-              placeholder="내용을 입력하세요"
-            />
-          ) : (
-            <p>로딩 중이거나 문제가 발생했습니다.</p>
-          )}
-        </Container>
-        <Container>
-          <TextInput
-            placeholder="제목을 입력하세요"
-            value={title}
-            onChange={(event) => {
-              setTitle(event.target.value);
-            }}
-          />
-        </Container>
-        <Container>
-          <ReactQuill
-            theme="snow"
-            style={{ height: "calc(100vh - 180px)" }}
-            modules={modules}
-            formats={formats}
-            onChange={setValues}
-            placeholder="내용을 입력하세요"
-          />
-        </Container>
-        <div
-          dangerouslySetInnerHTML={{ __html: values }}
-        // 텍스트 에디터 내용 불러오기 확인(임시)
-        />
-        <EditorBtn>
-          <Button onClick={summarizeArticle}>요약하기</Button>
-          <Button
-            onClick={() => {
-              alert("delete");
-            }}
-          >
-            삭제하기
-          </Button>
-          <Button
-            onClick={() => {
-              alert("submit");
-            }}
-          >
-            저장하기
-          </Button>
-          <Button onClick={handleDelete}>삭제하기</Button>
-          <Button onClick={handleSubmit}>저장하기</Button>
-        </EditorBtn>
-      </Layout>
-    </Wrapper>
-  );
+    const handleSelectCommand = async (command) => {
+        if (command === 'summarizeArticle') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/summarize', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'findTopic') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/topic', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'extractKeywords') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/keywords', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'analyzeCharacterCount') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/character-count', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        else if (command === 'judgeStoryFlow') {
+            const quill = quillRef.current.getEditor();
+            const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    
+            try {
+                const response = await axios.post('http://20.41.113.158/api/analysis/story-flow', { content }, {
+                    withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+                quill.insertText(quill.getLength(), `\n${summary}\n`);
+            } catch (error) {
+                if (error.response) {
+                    // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+                    alert(`Error: ${error.response.data.message}`);
+                } else if (error.request) {
+                    // 요청이 이루어 졌으나 응답을 받지 못함
+                    alert('No response was received');
+                } else {
+                    // 요청 설정 중 문제가 발생한 경우
+                    alert('Error', error.message);
+                }
+            }
+        }
+        setShowPalette(false);
+    };
+
+    const saveContent = async () => {
+        try {
+            const response = await axios.post('http://20.41.113.158/api/blog/posts', {
+                title,
+                content: editorContent
+            }, {
+                withCredentials: true, // Needed to send cookies for the session
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            alert('Post created successfully! ID: ' + response.data.data.id);
+        } catch (error) {
+            if (error.response) {
+                // Handle responses outside the 2xx range
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert('An unexpected error occurred');
+            }
+        }
+    };
+
+    const handleCancel = () => {
+        if (window.confirm("저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?")) {
+            navigate('/post-list');
+        }
+    };
+
+    return (
+        <Wrapper>
+            <Sidebar />
+            <Layout>
+                <Container>
+                    <TextInput
+                        placeholder="제목을 입력하세요"
+                        value={title}
+                        onChange={(event) => setTitle(event.target.value)}
+                    />
+                </Container>
+                <Container>
+                    <ReactQuill
+                        ref={quillRef}
+                        theme="snow"
+                        style={{ height: "calc(100vh - 180px)" }}
+                        modules={modules}
+                        formats={formats}
+                        value={editorContent}
+                        onChange={handleEditorChange}
+                        placeholder="내용을 입력하세요"
+                    />
+                    {showPalette && (
+                        <CommandPalette
+                            show={showPalette}
+                            top={palettePosition.top}
+                            left={palettePosition.left}
+                            onSelect={handleSelectCommand}
+                        />
+                    )}
+                </Container>
+                <EditorBtn>
+                    <Button onClick={saveContent}>Save</Button>
+                    <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+                </EditorBtn>
+            </Layout>
+        </Wrapper>
+    );
 }
 
-export default EditorPage; //
+export default PostWritePage;
