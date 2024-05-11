@@ -250,6 +250,7 @@ function EditorJisu() {
 
     return (
         <Wrapper>
+            <Sidebar />
             <Layout>
                 <Container>
                     <TextInput

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
+import axios from "axios";
 
 import List from "../list/EditorList";
 
@@ -44,19 +45,21 @@ function Sidebar() {
 
   const [posts, setPosts] = useState([]);
 
-  // 게시물 목록 가져오기
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // 서버의 엔드포인트 주소 업데이트
-        const response = await fetch("http://20.41.113.158/api/blog/posts");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const response = await axios.get("http://20.41.113.158/api/blog/posts", {
+          withCredentials: true // Ensures cookies are sent with the request
+        });
+        const { data } = response;
+        if (data.message === "Posts fetched successfully") {
+          setPosts(data.data); // Update the state with the fetched posts
+        } else {
+          throw new Error(data.message || "Error fetching posts");
         }
-        const data = await response.json();
-        setPosts(data); // 상태 업데이트
       } catch (error) {
         console.error("Failed to fetch posts:", error);
+        alert(error.message || "An error occurred while retrieving posts"); // Display error to the user
       }
     };
 
