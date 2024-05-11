@@ -13,7 +13,8 @@ import PostViewPage from "./component/page/PostViewPage";
 import { useDispatch } from 'react-redux';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { loadUser } from './redux/actions/authActions';
-import Editor from "./component/ui/QuillEditor";
+
+import './styles/quillStyles.css';
 
 function App() {
   const dispatch = useDispatch();
