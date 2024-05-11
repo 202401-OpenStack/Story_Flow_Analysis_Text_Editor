@@ -78,6 +78,7 @@ function List({ posts, onClickItem }) {
         {posts.map((post, index) => (
           <Item
             key={post.id}
+            index={index}
             post={{ ...post, index: index + 1 }}  // 번호를 추가해 게시물에 표시
             onClick={() => onClickItem(post)}
           />
