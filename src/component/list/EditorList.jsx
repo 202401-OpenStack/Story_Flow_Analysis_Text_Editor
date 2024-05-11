@@ -75,34 +75,13 @@ function List({ posts, onClickItem }) {
         <HeaderInfo style={{ textAlign: "right" }}>작성일</HeaderInfo>
       </TableHeader>
       <TableBody>
-        {/*테스트용*/}
-        <Item key={1} post={{ title: "title1", createdAt: "2024.04.07." }} />
-        <Item key={2} post={{ title: "title2", createdAt: "2024.04.07." }} />
-        <Item key={3} post={{ title: "title3", createdAt: "2024.04.07." }} />
-        <Item key={4} post={{ title: "title4", createdAt: "2024.04.07." }} />
-        <Item key={5} post={{ title: "title5", createdAt: "2024.04.07." }} />
-        <Item key={6} post={{ title: "title6", createdAt: "2024.04.07." }} />
-        <Item key={7} post={{ title: "title7", createdAt: "2024.04.07." }} />
-        <Item key={8} post={{ title: "title8", createdAt: "2024.04.07." }} />
-        <Item key={9} post={{ title: "title9", createdAt: "2024.04.07." }} />
-        <Item key={10} post={{ title: "title10", createdAt: "2024.04.07." }} />
-        <Item key={11} post={{ title: "title11", createdAt: "2024.04.07." }} />
-        <Item key={12} post={{ title: "title12", createdAt: "2024.04.07." }} />
-        <Item key={13} post={{ title: "title13", createdAt: "2024.04.07." }} />
-        <Item key={14} post={{ title: "title14", createdAt: "2024.04.07." }} />
-        <Item key={15} post={{ title: "title15", createdAt: "2024.04.07." }} />
-
-        {posts.map((post, index) => {
-          return (
-            <Item
-              key={post.id}
-              post={post}
-              onClick={() => {
-                onClickItem(post);
-              }}
-            />
-          );
-        })}
+        {posts.map((post, index) => (
+          <Item
+            key={post.id}
+            post={{ ...post, index: index + 1 }}  // 번호를 추가해 게시물에 표시
+            onClick={() => onClickItem(post)}
+          />
+        ))}
       </TableBody>
       <ContentButton
         onClick={() => {
