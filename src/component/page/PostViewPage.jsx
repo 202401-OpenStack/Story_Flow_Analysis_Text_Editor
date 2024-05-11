@@ -66,7 +66,6 @@ function formatDate(dateString) {
     });
 }
 
-// PostViewPage 컴포넌트 정의
 const PostViewPage = () => {
     const [post, setPost] = useState(null);
     const { postId } = useParams();
@@ -74,7 +73,7 @@ const PostViewPage = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get(`http://20.41.113.158/api/blog/posts/${postId}`, {
+                const response = await axios.get(`http://your-api-endpoint/api/blog/posts/${postId}`, {
                     withCredentials: true
                 });
                 if (response.data.message === "Post retrieved successfully") {
@@ -93,14 +92,19 @@ const PostViewPage = () => {
 
     if (!post) return <div>Loading...</div>;
 
-    // PostViewPage 컴포넌트의 렌더 부분
+    const createMarkup = (htmlContent) => {
+        return {
+            __html: DOMPurify.sanitize(htmlContent)
+        };
+    };
+
     return (
         <Wrapper>
             <Header />
             <Container>
                 <Title>{post.title}</Title>
                 <DateText>{formatDate(post.createdAt)}</DateText>
-                <Content dangerouslySetInnerHTML={{ __html: post.content }}></Content>
+                <Content dangerouslySetInnerHTML={createMarkup(post.content)} />
             </Container>
         </Wrapper>
     );
