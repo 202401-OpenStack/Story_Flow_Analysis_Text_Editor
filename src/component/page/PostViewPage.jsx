@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
 import Header from '../ui/Header';
@@ -53,6 +53,21 @@ const Content = styled.div`
   }
 `;
 
+const DeleteButton = styled.button`
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #ff6347; /* 토마토 색상 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #e55347;
+  }
+`;
+
 // 날짜 포맷 함수
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -70,6 +85,7 @@ function formatDate(dateString) {
 const PostViewPage = () => {
     const [post, setPost] = useState(null);
     const { postId } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -99,6 +115,22 @@ const PostViewPage = () => {
         };
     };
 
+    const handleDelete = async () => {
+        if (window.confirm("정말로 이 글을 삭제하시겠습니까?")) {
+            try {
+                await axios.delete(`http://20.41.113.158/api/blog/posts/${postId}`, {
+                    withCredentials: true
+                });
+                navigate('/post-list'); // 삭제 후 글 목록 페이지로 이동
+            } catch (error) {
+                console.error('Failed to delete the post:', error);
+                alert('글을 삭제하는 도중 오류가 발생했습니다.');
+            }
+        }
+    };
+
+    if (!post) return <div>Loading...</div>;
+
     return (
         <Wrapper>
             <Header />
@@ -106,6 +138,7 @@ const PostViewPage = () => {
                 <Title>{post.title}</Title>
                 <DateText>{formatDate(post.createdAt)}</DateText>
                 <Content dangerouslySetInnerHTML={createMarkup(post.content)} />
+                <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
             </Container>
         </Wrapper>
     );
