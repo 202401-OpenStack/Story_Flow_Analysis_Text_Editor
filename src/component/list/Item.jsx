@@ -27,7 +27,12 @@ const Info = styled.span`
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-CA'); // 'en-CA' locale은 YYYY-MM-DD 형식을 반환합니다.
+  return date.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'Asia/Seoul'
+  });
 }
 
 function Item(props) {
