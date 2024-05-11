@@ -1,117 +1,92 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import styled from 'styled-components';
+import Header from '../ui/Header';
 
+// 스타일 컴포넌트 정의
 const Wrapper = styled.div`
-  width: 100%;
-  max-width: 800px;
-  padding: 25px;
+  width: 80%;
+  max-width: 600px;
+  padding: 20px;
+  margin: 40px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: auto;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
 `;
 
-const Title = styled.h2`
-  font-size: 2rem;
+const Title = styled.h1`
+  font-size: 24px;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
-const Date = styled.p`
-  font-size: 0.9rem;
+const DateText = styled.p`
+  font-size: 16px;
   color: #666;
   margin-bottom: 20px;
 `;
 
 const Content = styled.div`
-  font-size: 1.1rem;
+  font-size: 18px;
   color: #444;
-  line-height: 1.6;
-  white-space: pre-wrap;
+  line-height: 1.5;
+  text-align: left;
+  width: 100%;
 `;
 
-const Button = styled.button`
-  padding: 10px 20px;
-  margin: 5px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
+// 날짜 포맷 함수
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Asia/Seoul'
+    });
+}
 
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
+// PostViewPage 컴포넌트 정의
 const PostViewPage = () => {
-  const [post, setPost] = useState(null);
-  const { postId } = useParams();
-  const navigate = useNavigate();
+    const [post, setPost] = useState(null);
+    const { postId } = useParams();
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await axios.get(`http://20.41.113.158/api/blog/posts/${postId}`, {
-          withCredentials: true
-        });
-        if (response.data.message === "Post retrieved successfully") {
-          setPost(response.data.data);
-        } else {
-          throw new Error(response.data.message || "Unknown Error");
-        }
-      } catch (error) {
-        console.error('Error fetching the post:', error);
-        alert(error.message || "Failed to fetch post");
-      }
-    };
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await axios.get(`http://20.41.113.158/api/blog/posts/${postId}`, {
+                    withCredentials: true
+                });
+                if (response.data.message === "Post retrieved successfully") {
+                    setPost(response.data.data);
+                } else {
+                    throw new Error(response.data.message || "Unknown Error");
+                }
+            } catch (error) {
+                console.error('Error fetching the post:', error);
+                alert(error.message || "Failed to fetch post");
+            }
+        };
 
-    fetchPost();
-  }, [postId]);
+        fetchPost();
+    }, [postId]);
 
-  const handleEdit = () => {
-    navigate(`/post-write/${postId}`);
-  };
+    if (!post) return <div>Loading...</div>;
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      try {
-        await axios.delete(`http://20.41.113.158/api/blog/posts/${postId}`, {
-          withCredentials: true
-        });
-        alert("Post deleted successfully");
-        navigate('/post-list'); // Redirect to the post list after deletion
-      } catch (error) {
-        console.error('Failed to delete the post:', error);
-        alert('Error deleting post');
-      }
-    }
-  };
-
-  if (!post) return <div>Loading...</div>;
-
-  return (
-    <Wrapper>
-      <Title>{post.title}</Title>
-      <Date>{new Date(post.createdAt).toLocaleString('ko-KR')}</Date>
-      <Content>{post.content}</Content>
-      <ActionButtons>
-        <Button onClick={handleEdit}>수정</Button>
-        <Button onClick={handleDelete}>삭제</Button>
-      </ActionButtons>
-    </Wrapper>
-  );
+    return (
+        <Wrapper>
+            <Header />
+            <Title>{post.title}</Title>
+            <DateText>{formatDate(post.createdAt)}</DateText>
+            <Content>{post.content}</Content>
+        </Wrapper>
+    );
 };
 
 export default PostViewPage;
