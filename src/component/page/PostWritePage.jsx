@@ -41,6 +41,7 @@ const EditorBtn = styled.div`
     gap: 16px;
 `;
 
+
 function PostWritePage() {
     const navigate = useNavigate();
     const [editorContent, setEditorContent] = useState('');
@@ -48,6 +49,19 @@ function PostWritePage() {
     const [showPalette, setShowPalette] = useState(false);
     const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
     const quillRef = useRef(null);
+
+    const imageHandler = useCallback(() => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+        input.onchange = async () => {
+            const file = input.files[0];
+            const range = quillRef.current.getEditor().getSelection(true);
+            const imageUrl = URL.createObjectURL(file);
+            quillRef.current.getEditor().insertEmbed(range.index, 'image', imageUrl);
+        };
+    }, []);
 
     const modules = useMemo(() => ({
         toolbar: {
@@ -59,8 +73,11 @@ function PostWritePage() {
                 [{ color: [] }, { background: [] }],  // 컬러 옵션
                 ["link", "image"], // 'image' 버튼 추가
             ],
+            handlers: {
+                'image': imageHandler
+            }
         },
-    }), []);
+    }), [imageHandler]);
 
     const formats = [
         "font", "header", "bold", "italic", "underline", "strike",
