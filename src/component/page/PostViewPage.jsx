@@ -13,10 +13,15 @@ const PostViewPage = () => {
         const response = await axios.get(`http://20.41.113.158/api/blog/posts/${postId}`, {
           withCredentials: true
         });
-        setPost(response.data);
+        // 응답에서 'data' 필드 내의 'data' 객체를 추출하여 사용
+        if (response.data.message === "Post retrieved successfully") {
+          setPost(response.data.data);
+        } else {
+          throw new Error(response.data.message || "Unknown Error");
+        }
       } catch (error) {
         console.error('Error fetching the post:', error);
-        alert('Failed to fetch post');
+        alert(error.message || "Failed to fetch post");
       }
     };
 
