@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import styled from 'styled-components';
@@ -240,6 +240,10 @@ function PostWritePage() {
     };
 
     const saveContent = async () => {
+        if (!title.trim() || !editorContent.trim()) {
+            alert('제목과 내용을 모두 입력하세요.');
+            return;
+        }
         try {
             const response = await axios.post('http://20.41.113.158/api/blog/posts', {
                 title,
