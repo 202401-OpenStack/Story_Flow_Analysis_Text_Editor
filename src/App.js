@@ -51,14 +51,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="post-jisu"
-        element={
-          <ProtectedRoute>
-            <EditorJisu />
-          </ProtectedRoute>
-        }
-      />
     </Routes>
   );
 };

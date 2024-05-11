@@ -20,21 +20,6 @@ const Container = styled.div`
   width: 100%;
 `;
 
-// 임시 버튼 (추후 삭제 예정)
-const NavigateButton = styled.button`
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  color: white;
-  background-color: blue;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: darkblue;
-  }
-`;
 
 function PostList(props) {
   const [posts, setPosts] = useState([]);
@@ -81,9 +66,6 @@ function PostList(props) {
           }}
         />
       </Container>
-      <NavigateButton onClick={navigateToPostJisu}>
-        EditorJisu
-      </NavigateButton>
     </Wrapper>
   );
 }
