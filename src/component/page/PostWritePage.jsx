@@ -64,7 +64,7 @@ function PostWritePage() {
                 image: imageHandler
             }
         },
-    }), [imageHandler]);
+    }), []);
 
     function imageHandler() {
         const input = document.createElement('input');
@@ -300,7 +300,7 @@ function PostWritePage() {
                         value={editorContent}
                         onChange={handleEditorChange}
                         placeholder="내용을 입력하세요"
-                        defaultValue={""}
+                        defaultValue={editorContent}
                     />
                     {showPalette && (
                         <CommandPalette
