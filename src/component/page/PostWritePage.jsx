@@ -66,6 +66,8 @@ function PostWritePage() {
             const range = editor.getSelection(true);
             editor.insertEmbed(range.index, 'image', base64Image, 'user');
           };
+          setUploadedImages([...uploadedImages, base64Image]);
+      setEditorContent(editor.root.innerHTML); // 에디터 내용을 업데이트
           reader.readAsDataURL(file);
         };
       }
