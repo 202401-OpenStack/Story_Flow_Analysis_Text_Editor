@@ -49,7 +49,6 @@ function PostWritePage() {
     const [showPalette, setShowPalette] = useState(false);
     const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
     const quillRef = useRef(null);
-    const [uploadedImages, setUploadedImages] = useState([]); // 이미지 URL을 저장할 상태
 
     const modules = useMemo(() => ({
         toolbar: {
@@ -263,9 +262,6 @@ function PostWritePage() {
             });
             alert('Post created successfully! ID: ' + response.data.data.id);
 
-            // 이미지 URL을 해제
-        uploadedImages.forEach(url => URL.revokeObjectURL(url));
-        setUploadedImages([]); // 이미지 URL 상태 초기화
         
         } catch (error) {
             if (error.response) {
