@@ -51,7 +51,7 @@ function PostWritePage() {
     const quillRef = useRef(null);
     const [uploadedImages, setUploadedImages] = useState([]); // 이미지 URL을 저장할 상태
 
-    const modules = {
+    const modules = useMemo(() => ({
         toolbar: {
             container: [
                 [{ size: ["small", false, "large", "huge"] }],  // 사이즈 조절
@@ -65,7 +65,7 @@ function PostWritePage() {
                 image: imageHandler
             }
         },
-    };
+    }), [imageHandler]);
 
     function imageHandler() {
         const input = document.createElement('input');
