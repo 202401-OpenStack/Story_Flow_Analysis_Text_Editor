@@ -51,6 +51,22 @@ function PostWritePage() {
     const quillRef = useRef(null);
     const [uploadedImages, setUploadedImages] = useState([]); // 이미지 URL을 저장할 상태
 
+    const modules = {
+        toolbar: {
+            container: [
+                [{ size: ["small", false, "large", "huge"] }],  // 사이즈 조절
+                [{ align: [] }],  // 정렬
+                ["bold", "italic", "underline", "strike"],  // 스타일링
+                [{ list: "ordered" }, { list: "bullet" }],  // 리스트 옵션
+                [{ color: [] }, { background: [] }],  // 컬러 옵션
+                ["link", "image"], // 'image' 버튼 추가
+            ],
+            handlers: {
+                image: imageHandler
+            }
+        },
+    };
+
     function imageHandler() {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -66,32 +82,14 @@ function PostWritePage() {
             const range = editor.getSelection(true);
             editor.insertEmbed(range.index, 'image', base64Image, 'user');
           };
-          setUploadedImages([...uploadedImages, base64Image]);
-      setEditorContent(editor.root.innerHTML); // 에디터 내용을 업데이트
           reader.readAsDataURL(file);
         };
       }
 
-    const modules = useMemo(() => ({
-        toolbar: {
-            container: [
-                [{ size: ["small", false, "large", "huge"] }],  // 사이즈 조절
-                [{ align: [] }],  // 정렬
-                ["bold", "italic", "underline", "strike"],  // 스타일링
-                [{ list: "ordered" }, { list: "bullet" }],  // 리스트 옵션
-                [{ color: [] }, { background: [] }],  // 컬러 옵션
-                ["link", "image"], // 'image' 버튼 추가
-            ],
-            handlers: {
-                'image': imageHandler
-            }
-        },
-    }), [imageHandler]);
-
     const formats = [
         "font", "header", "bold", "italic", "underline", "strike",
         "blockquote", "list", "bullet", "indent", "link", "align",
-        "color", "background", "size", "h1",
+        "color", "background", "size", "h1", "image"
     ];
 
     const handleEditorChange = (content, delta, source, editor) => {
