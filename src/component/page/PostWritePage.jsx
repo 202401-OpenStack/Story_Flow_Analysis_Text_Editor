@@ -304,6 +304,7 @@ function PostWritePage() {
                         value={editorContent}
                         onChange={handleEditorChange}
                         placeholder="내용을 입력하세요"
+                        defaultValue={""}
                     />
                     {showPalette && (
                         <CommandPalette
