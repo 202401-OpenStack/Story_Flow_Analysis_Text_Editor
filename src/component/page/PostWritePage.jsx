@@ -51,21 +51,24 @@ function PostWritePage() {
     const quillRef = useRef(null);
     const [uploadedImages, setUploadedImages] = useState([]); // 이미지 URL을 저장할 상태
 
-    const imageHandler = useCallback(() => {
+    function imageHandler() {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
         input.click();
+    
         input.onchange = async () => {
-            const file = input.files[0];
-            const imageUrl = URL.createObjectURL(file);
-            const range = quillRef.current.getEditor().getSelection(true);
-            if (range) {
-                quillRef.current.getEditor().insertEmbed(range.index, 'image', imageUrl, 'user');
-                setUploadedImages(prev => [...prev, imageUrl]); // URL을 상태에 추가
-            }
+          const file = input.files[0];
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64Image = e.target.result;
+            const editor = quillRef.current.getEditor();
+            const range = editor.getSelection(true);
+            editor.insertEmbed(range.index, 'image', base64Image, 'user');
+          };
+          reader.readAsDataURL(file);
         };
-    }, []);
+      }
 
     const modules = useMemo(() => ({
         toolbar: {
