@@ -71,7 +71,7 @@ exports.createPost = async (req, res) => {
 
     const { title, content } = req.body;
 
-    // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체
+    // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체함
     let match;
     while ((match = base64Regex.exec(content)) !== null) {
       const base64Url = match[0];
