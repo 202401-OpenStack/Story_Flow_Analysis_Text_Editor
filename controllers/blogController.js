@@ -15,7 +15,9 @@ const uploadBase64ImageToBlob = async (base64String) => {
   const containerClient = blobServiceClient.getContainerClient(containerName);
   
   const matches = base64String.match(base64Regex);
-  if (!matches) return base64String;
+  if (!matches) {
+    throw new Error('Invalid Base64 string');
+  }
 
   const contentType = matches[1];
   const base64Data = matches[2];
@@ -70,13 +72,19 @@ exports.createPost = async (req, res) => {
 
     const { title, content } = req.body;
 
-    // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체함
-    let match;
-    while ((match = base64Regex.exec(content)) !== null) {
-      const base64Url = match[0];
-      const blobUrl = await uploadBase64ImageToBlob(base64Url);
-      content = content.replace(base64Url, blobUrl);
-    }
+     // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체함
+     const base64RegexGlobal = new RegExp(base64Regex.source, 'g');
+     let match;
+     while ((match = base64RegexGlobal.exec(content)) !== null) {
+       const base64Url = match[0];
+       try {
+         const blobUrl = await uploadBase64ImageToBlob(base64Url);
+         content = content.replace(base64Url, blobUrl);
+       } catch (uploadError) {
+         console.error('Error uploading image to Blob:', uploadError);
+         return res.status(500).json({ message: 'An error occurred while uploading the image' });
+       }
+     }
 
     const data = await Post.create({ title, content, accountId });
     res.status(201).json({
