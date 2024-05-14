@@ -77,7 +77,7 @@ exports.createPost = async (req, res) => {
       return res.status(401).json({ message: 'You must be logged in to create a post' });
     }
 
-    const { title, content } = req.body;
+    let { title, content } = req.body;
 
      // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체함
      const base64RegexGlobal = new RegExp(base64Regex.source, 'g');
