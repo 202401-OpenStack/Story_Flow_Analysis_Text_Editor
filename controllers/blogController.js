@@ -1,4 +1,37 @@
+require('dotenv').config();
 const { Post } = require('../models');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const Post = require('../models/Post'); // Post 모델 경로에 맞게 수정하세요.
+const { v4: uuidv4 } = require('uuid');
+
+// Azure Blob Storage 설정
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const containerName = process.env.CONTAINER_NAME;
+
+// Base64 URL 찾기 위한 정규 표현식
+const base64Regex = /data:image\/(png|jpeg|jpg);base64,([a-zA-Z0-9+/=]+)/g;
+
+const uploadBase64ImageToBlob = async (base64String) => {
+  const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  
+  const matches = base64String.match(base64Regex);
+  if (!matches) return base64String;
+
+  const contentType = matches[1];
+  const base64Data = matches[2];
+  const buffer = Buffer.from(base64Data, 'base64');
+  const blobName = `${uuidv4()}.${contentType}`;
+  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+  await blockBlobClient.uploadData(buffer, {
+    blobHTTPHeaders: {
+      blobContentType: `image/${contentType}`,
+    },
+  });
+
+  return blockBlobClient.url;
+};
 
 // 글 목록 가져오기
 exports.getPosts = async (req, res) => {
@@ -37,6 +70,15 @@ exports.createPost = async (req, res) => {
     }
 
     const { title, content } = req.body;
+
+    // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체
+    let match;
+    while ((match = base64Regex.exec(content)) !== null) {
+      const base64Url = match[0];
+      const blobUrl = await uploadBase64ImageToBlob(base64Url);
+      content = content.replace(base64Url, blobUrl);
+    }
+
     const data = await Post.create({ title, content, accountId });
     res.status(201).json({
       message: "Post created successfully",
