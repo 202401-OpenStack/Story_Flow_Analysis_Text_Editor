@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { Post } = require('../models');
 const { BlobServiceClient } = require('@azure/storage-blob');
-const Post = require('../models/Post'); // Post 모델 경로에 맞게 수정하세요.
 const { v4: uuidv4 } = require('uuid');
 
 // Azure Blob Storage 설정
