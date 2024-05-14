@@ -15,7 +15,8 @@ const analysisRoutes = require('./routes/analysisRoutes');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // CORS 설정: 배포 환경에서는 삭제
 // 모든 접근 허용
@@ -59,6 +60,8 @@ app.use(session({
 
 // PORT 설정
 const PORT = process.env.PORT || 3001;
+
+
 
 // 데이터베이스 연결 확인
 sequelize.authenticate()
