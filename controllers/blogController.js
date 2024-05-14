@@ -8,7 +8,7 @@ const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STR
 const containerName = process.env.CONTAINER_NAME;
 
 // Base64 URL 찾기 위한 정규 표현식
-const base64Regex = /data:image\/(png|jpeg|jpg);base64,([a-zA-Z0-9+/=]+)/g;
+const base64Regex = /data:image\/(png|jpeg|jpg);base64,([a-zA-Z0-9+/=]+)/;
 
 const uploadBase64ImageToBlob = async (base64String) => {
   const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
@@ -16,11 +16,18 @@ const uploadBase64ImageToBlob = async (base64String) => {
   
   const matches = base64String.match(base64Regex);
   if (!matches) {
-    throw new Error('Invalid Base64 string');
+    console.error('Invalid base64 string:', base64String);
+    throw new TypeError('Invalid base64 string');
   }
 
   const contentType = matches[1];
   const base64Data = matches[2];
+  
+  if (!base64Data) {
+    console.error('Base64 data is undefined:', base64String);
+    throw new TypeError('Base64 data is undefined');
+  }
+
   const buffer = Buffer.from(base64Data, 'base64');
   const blobName = `${uuidv4()}.${contentType}`;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
@@ -79,6 +86,7 @@ exports.createPost = async (req, res) => {
        const base64Url = match[0];
        try {
          const blobUrl = await uploadBase64ImageToBlob(base64Url);
+         console.log('Blob URL:', blobUrl);
          content = content.replace(base64Url, blobUrl);
        } catch (uploadError) {
          console.error('Error uploading image to Blob:', uploadError);
