@@ -166,7 +166,7 @@ exports.analyzeCharacterCount = async (req, res) => {
         // OpenAI API에 요청 보내기
         const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
         
-        const prompt = `아래 글에서 등장하는 인물의 수와 이름을 작성하세요. 만약 이름이 명시되지 않았다면 글에 나온 대로(그 사람, 선생 등) 작성하세요. 사설 달지 말고 "3, 철수, 영희, 길동" 처럼 작성하세요. 맨 처음 적은 숫자와 뒤에 나오는 인물 수는 동일해야 합니다.: \n\n${content}`;
+        const prompt = `아래 글에서 등장하는 인물들을 작성하세요. 만약 이름이 명시되지 않았다면 글에 나온 대로(그 사람, 선생 등) 작성하세요. 사설 달지 말고 "철수, 영희, 길동" 처럼 작성하세요.: \n\n${content}`;
         const dataAPI = {
             messages: [{
                 "role": "system",
