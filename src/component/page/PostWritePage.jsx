@@ -293,27 +293,36 @@ function PostWritePage() {
         }
       }
     } else if (command === "analyzeTimeline") {
-      //타임라인 컴포넌트 모달
-      const items = [
-        {
-          cardTitle: "Title0",
-          cardDetailedText: "테스트용 하드코딩 데이터 Text0",
-        },
-        {
-          cardTitle: "Title1",
-          cardDetailedText: "테스트용 하드코딩 데이터 Text1",
-        },
-        {
-          cardTitle: "Title2",
-          cardDetailedText: "테스트용 하드코딩 데이터 Text2",
-        },
-        {
-          cardTitle: "Title3",
-          cardDetailedText: "테스트용 하드코딩 데이터 Text3",
-        },
-      ];
-      setTimelineItems(items);
-      setTimelineModalOpen(true);
+      const quill = quillRef.current.getEditor();
+      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+
+      try {
+        const response = await axios.get(
+          "http://20.41.113.158/api/analysis/timeline",
+          { content },
+          {
+            withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
+        setTimelineItems(items);
+        setTimelineModalOpen(true);
+      } catch (error) {
+        if (error.response) {
+          // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+          alert(`Error: ${error.response.data.message}`);
+        } else if (error.request) {
+          // 요청이 이루어 졌으나 응답을 받지 못함
+          alert("No response was received");
+        } else {
+          // 요청 설정 중 문제가 발생한 경우
+          alert("Error", error.message);
+        }
+      }
     } else if (command === "judgeStoryFlow") {
       const quill = quillRef.current.getEditor();
       const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
