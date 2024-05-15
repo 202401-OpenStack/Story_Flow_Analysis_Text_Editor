@@ -308,7 +308,10 @@ function PostWritePage() {
         );
 
         const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
-        setTimelineItems(items);
+        const items_parsed = JSON.parse(response.data.data);
+        console.log(items);
+        console.log(items_parsed);
+        setTimelineItems(items_parsed);
         setTimelineModalOpen(true);
       } catch (error) {
         if (error.response) {
