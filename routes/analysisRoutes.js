@@ -14,13 +14,15 @@ router.post('/keywords', analysisController.extractKeywords);
 // 인물수 분석
 router.post('/character-count', analysisController.analyzeCharacterCount);
 
+// 이야기 흐름 판단
+router.post('/story-flow', analysisController.judgeStoryFlow);
+
+// 시각화
+
 // 타임라인 분석
 router.post('/timeline', analysisController.analyzeTimeline);
 
 // 인물 관계 분석
 router.post('/character-relationships', analysisController.analyzeCharacterRelationships);
-
-// 이야기 흐름 판단
-router.post('/story-flow', analysisController.judgeStoryFlow);
 
 module.exports = router;
