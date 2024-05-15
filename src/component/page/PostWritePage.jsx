@@ -263,7 +263,7 @@ function PostWritePage() {
         }
       }
     } else if (command === "analyzeCharacterCount") {
-      const quill = quillRef.current.getEditor();
+      /*const quill = quillRef.current.getEditor();
       const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
       try {
@@ -291,7 +291,27 @@ function PostWritePage() {
           // 요청 설정 중 문제가 발생한 경우
           alert("Error", error.message);
         }
-      }
+      }*/
+      const items = [
+        {
+          cardTitle: "Title0",
+          cardDetailedText: "테스트용 하드코딩 데이터 Text0",
+        },
+        {
+          cardTitle: "Title1",
+          cardDetailedText: "테스트용 하드코딩 데이터 Text1",
+        },
+        {
+          cardTitle: "Title2",
+          cardDetailedText: "테스트용 하드코딩 데이터 Text2",
+        },
+        {
+          cardTitle: "Title3",
+          cardDetailedText: "테스트용 하드코딩 데이터 Text3",
+        },
+      ];
+      setTimelineItems(items);
+      setTimelineModalOpen(true);
     } else if (command === "analyzeTimeline") {
       const quill = quillRef.current.getEditor();
       const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
