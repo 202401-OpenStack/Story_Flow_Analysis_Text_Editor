@@ -69,7 +69,7 @@ const CommandPalette = ({ show, top, left, onSelect }) => {
           인물 수 분석
           <Description>지금까지 작성한 글에 등장하는 모든 등장인물을 카운트합니다.</Description>
         </Item>
-        <Item onClick={() => onSelect('analysisCharacterRelationships')}>
+        <Item onClick={() => onSelect('analyzeCharacterRelationships')}>
           인물 관계 분석
           <Description>지금까지 작성한 글에 등장하는 모든 등장인물들 간의 관계를 분석하여 시각화된 자료로 제공합니다.</Description>
         </Item>
