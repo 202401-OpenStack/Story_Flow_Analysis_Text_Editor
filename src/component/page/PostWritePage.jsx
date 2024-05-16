@@ -315,11 +315,11 @@ function PostWritePage() {
         );
 
         const items = response.data.data;
-        const items_stringify = JSON.stringify(items);
+        const items_parsed = JSON.parse(items);
 
         console.log(items);
-        console.log(items_stringify);
-        setTimelineItems(items);
+        console.log(items_parsed);
+        setTimelineItems(items_parsed);
         setTimelineModalOpen(true);
       } catch (error) {
         console.error(error);
