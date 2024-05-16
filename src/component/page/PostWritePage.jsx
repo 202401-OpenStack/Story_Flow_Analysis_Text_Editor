@@ -6,6 +6,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
+import html2canvas from "html2canvas";
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -398,6 +399,16 @@ function PostWritePage() {
     }
   };
 
+  const handleTimelineInsert = async () => {
+    const timelineElement = document.querySelector(".timeline-component");
+    const canvas = await html2canvas(timelineElement);
+    const base64Image = canvas.toDataURL("image/png");
+    const quill = quillRef.current.getEditor();
+    const range = quill.getSelection(true);
+    quill.insertEmbed(range.index, "image", base64Image, "user");
+    setTimelineModalOpen(false);
+  };
+
   return (
     <Wrapper>
       <Sidebar />
@@ -455,7 +466,7 @@ function PostWritePage() {
                     className="timeline-btn"
                     onClick={() => {
                       alert("yes");
-                      setTimelineModalOpen(false);
+                      onClick={handleTimelineInsert};
                     }}
                   >
                     예
