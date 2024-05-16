@@ -278,6 +278,12 @@ function PostWritePage() {
           }
         );
 
+        console.log(response.data);
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers);
+        console.log(response.config);
+
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
         quill.insertText(quill.getLength(), `\n${summary}\n`);
       } catch (error) {
@@ -310,7 +316,6 @@ function PostWritePage() {
             },
           }
         );
-        const items = await response.json();
 
         console.log(response.data);
         console.log(response.status);
@@ -318,6 +323,7 @@ function PostWritePage() {
         console.log(response.headers);
         console.log(response.config);
 
+        const items = response.data;
         //const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
         const items_stringify = JSON.stringify(items);
 
