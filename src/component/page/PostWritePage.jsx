@@ -310,16 +310,16 @@ function PostWritePage() {
             },
           }
         );
+        const items = await response.json();
 
         console.log(response.data);
-        console.log(response.data.data);
         console.log(response.status);
         console.log(response.statusText);
         console.log(response.headers);
         console.log(response.config);
 
-        const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
-        const items_stringify = JSON.stringify(response.data.data);
+        //const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
+        const items_stringify = JSON.stringify(items);
 
         console.log(items);
         console.log(items_stringify);
