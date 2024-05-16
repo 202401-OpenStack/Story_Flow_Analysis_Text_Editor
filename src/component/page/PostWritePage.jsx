@@ -303,15 +303,19 @@ function PostWritePage() {
       const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           "http://20.41.113.158/api/analysis/timeline",
+          { content },
           {
-            params: { content },
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
         console.log("response:", response);
         console.log("response.data:", response.data);
+        console.log("response.data.data:", response.data);
         console.log("response.status:", response.status);
         console.log("response.statusText:", response.statusText);
         console.log("response.headers:", response.headers);
