@@ -161,6 +161,26 @@ exports.updatePost = async (req, res) => {
   }
 };
 
+const deleteBlobImage = async (url) => {
+  // URL에서 컨테이너 이름과 Blob 이름을 추출하는 로직이 필요합니다.
+  // 예시로 URL 형식이 'https://<account_name>.blob.core.windows.net/<container_name>/<blob_name>'이라고 가정합니다.
+  
+  const urlParts = url.split('/');
+  const containerName = urlParts[3]; // 컨테이너 이름
+  const blobName = urlParts.slice(4).join('/'); // Blob 이름
+
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  const blobClient = containerClient.getBlobClient(blobName);
+
+  try {
+    await blobClient.delete();
+    console.log(`Blob deleted successfully: ${url}`);
+  } catch (error) {
+    console.error(`Error deleting blob: ${url}`, error);
+    throw error;
+  }
+};
+
 // 글 삭제하기
 exports.deletePost = async (req, res) => {
   try {
