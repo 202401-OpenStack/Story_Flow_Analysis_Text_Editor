@@ -308,9 +308,13 @@ function PostWritePage() {
           }
         );
 
-        const items = response.data.data;
-
+        const data = response.data.data;
+        const items = JSON.parse(data);
+        console.log(data);
         console.log(items);
+        console.log(typeof data);
+        console.log(typeof items);
+
         setTimelineItems(items);
         setTimelineModalOpen(true);
       } catch (error) {
