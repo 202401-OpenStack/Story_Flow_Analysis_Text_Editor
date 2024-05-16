@@ -313,25 +313,14 @@ function PostWritePage() {
             },
           }
         );
-        console.log("response:", response);
-        console.log("response.data:", response.data);
-        console.log("response.data.data:", response.data);
-        console.log("response.status:", response.status);
-        console.log("response.statusText:", response.statusText);
-        console.log("response.headers:", response.headers);
-        console.log("response.config:", response.config);
-        console.log("Type of response.data:", typeof response.data);
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
-        /*        const items = response.data;
-        //const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
+        const items = response.data.data;
         const items_stringify = JSON.stringify(items);
 
         console.log(items);
         console.log(items_stringify);
         setTimelineItems(items);
-        setTimelineModalOpen(true);*/
+        setTimelineModalOpen(true);
       } catch (error) {
         console.error(error);
         if (error.response) {
