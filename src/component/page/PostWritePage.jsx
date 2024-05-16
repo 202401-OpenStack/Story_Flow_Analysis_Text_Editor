@@ -305,16 +305,28 @@ function PostWritePage() {
             headers: {
               "Content-Type": "application/json",
             },
+            transitional: {
+              silentJSONParsing: false,
+            },
           }
         );
 
+        console.log(response.data);
+        console.log(response.status);
+        console.log(response.statusText);
+        console.log(response.headers);
+        console.log(response.config);
+
         const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
+        const items_stringify = JSON.stringify(response.data.data);
         const items_parsed = JSON.parse(response.data.data);
         console.log(items);
+        console.log(items_stringify);
         console.log(items_parsed);
-        setTimelineItems(items_parsed);
+        setTimelineItems(items_stringify);
         setTimelineModalOpen(true);
       } catch (error) {
+        console.error(error);
         if (error.response) {
           // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
           alert(`Error: ${error.response.data.message}`);
@@ -498,9 +510,9 @@ function PostWritePage() {
           )}
         </Container>
         <EditorBtn>
-          <Button onClick={saveContent}>Save</Button>
+          <Button onClick={saveContent}>저장</Button>
           <Button variant="secondary" onClick={handleCancel}>
-            Cancel
+            취소
           </Button>
         </EditorBtn>
       </Layout>
