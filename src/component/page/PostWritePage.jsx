@@ -300,7 +300,11 @@ function PostWritePage() {
         const response = await axios.get(
           "http://20.41.113.158/api/analysis/timeline",
           {
+            params: { content },
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
 
