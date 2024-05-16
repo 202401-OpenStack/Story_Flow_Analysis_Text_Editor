@@ -312,6 +312,7 @@ function PostWritePage() {
         );
 
         console.log(response.data);
+        console.log(response.data.data);
         console.log(response.status);
         console.log(response.statusText);
         console.log(response.headers);
@@ -322,7 +323,7 @@ function PostWritePage() {
 
         console.log(items);
         console.log(items_stringify);
-        setTimelineItems(items_stringify);
+        setTimelineItems(items);
         setTimelineModalOpen(true);
       } catch (error) {
         console.error(error);
