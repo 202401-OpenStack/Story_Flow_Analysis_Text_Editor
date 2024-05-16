@@ -308,28 +308,23 @@ function PostWritePage() {
           {
             params: { content },
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
-            headers: {
-              "Content-Type": "application/json",
-            },
-            transitional: {
-              silentJSONParsing: false,
-            },
           }
         );
-        const { data } = response;
-        console.log(data.data);
-        console.log(data.status);
-        console.log(data.statusText);
-        console.log(data.headers);
-        console.log(data.config);
-
-        const items = data.data;
+        console.log("response:", response);
+        console.log("response.data:", response.data);
+        console.log("response.status:", response.status);
+        console.log("response.statusText:", response.statusText);
+        console.log("response.headers:", response.headers);
+        console.log("response.config:", response.config);
+        console.log("Type of response.data:", typeof response.data);
+        /*        const items = response.data;
+        //const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
         const items_stringify = JSON.stringify(items);
 
         console.log(items);
         console.log(items_stringify);
         setTimelineItems(items);
-        setTimelineModalOpen(true);
+        setTimelineModalOpen(true);*/
       } catch (error) {
         console.error(error);
         if (error.response) {
