@@ -6,7 +6,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
-import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -401,12 +401,16 @@ function PostWritePage() {
 
   const handleTimelineInsert = async () => {
     const timelineElement = document.querySelector(".timeline-component");
-    const canvas = await html2canvas(timelineElement);
-    const base64Image = canvas.toDataURL("image/png");
-    const quill = quillRef.current.getEditor();
-    const range = quill.getSelection(true);
-    quill.insertEmbed(range.index, "image", base64Image, "user");
-    setTimelineModalOpen(false);
+  
+    try {
+      const base64Image = await domtoimage.toPng(timelineElement);
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", base64Image, "user");
+      setTimelineModalOpen(false);
+    } catch (error) {
+      console.error("Error capturing timeline:", error);
+    }
   };
 
   return (
