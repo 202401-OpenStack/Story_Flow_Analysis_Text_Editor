@@ -464,10 +464,7 @@ function PostWritePage() {
                 <div className="btn-wrapper">
                   <Button
                     className="timeline-btn"
-                    onClick={() => {
-                      alert("yes");
-                      onClick={handleTimelineInsert};
-                    }}
+                    onClick={handleTimelineInsert}
                   >
                     예
                   </Button>
@@ -475,7 +472,6 @@ function PostWritePage() {
                     className="timeline-btn"
                     variant="secondary"
                     onClick={() => {
-                      alert("no");
                       setTimelineModalOpen(false);
                     }}
                   >
