@@ -401,15 +401,27 @@ function PostWritePage() {
 
   const handleTimelineInsert = async () => {
     const timelineElement = document.querySelector(".timeline-component");
-  
+    
+    // 스크롤바를 숨기기 위해 스타일 변경
+    const originalOverflow = timelineElement.style.overflow;
+    timelineElement.style.overflow = "hidden";
+    
     try {
-      const base64Image = await domtoimage.toPng(timelineElement);
+      const base64Image = await domtoimage.toPng(timelineElement, {
+        style: {
+          height: `${timelineElement.scrollHeight}px`,
+          overflow: "hidden",
+        }
+      });
       const quill = quillRef.current.getEditor();
       const range = quill.getSelection(true);
       quill.insertEmbed(range.index, "image", base64Image, "user");
       setTimelineModalOpen(false);
     } catch (error) {
       console.error("Error capturing timeline:", error);
+    } finally {
+      // 원래 스타일로 복원
+      timelineElement.style.overflow = originalOverflow;
     }
   };
 
