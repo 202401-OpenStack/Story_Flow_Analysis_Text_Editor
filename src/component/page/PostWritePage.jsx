@@ -278,12 +278,6 @@ function PostWritePage() {
           }
         );
 
-        console.log(response.data);
-        console.log(response.status);
-        console.log(response.statusText);
-        console.log(response.headers);
-        console.log(response.config);
-
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
         quill.insertText(quill.getLength(), `\n${summary}\n`);
       } catch (error) {
@@ -315,11 +309,9 @@ function PostWritePage() {
         );
 
         const items = response.data.data;
-        const items_parsed = JSON.parse(items);
 
         console.log(items);
-        console.log(items_parsed);
-        setTimelineItems(items_parsed);
+        setTimelineItems(items);
         setTimelineModalOpen(true);
       } catch (error) {
         console.error(error);
