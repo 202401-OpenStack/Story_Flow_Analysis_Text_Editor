@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 // Azure Blob Storage 설정
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const containerName = process.env.CONTAINER_NAME;
+const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
 // Base64 URL 찾기 위한 정규 표현식
 const base64Regex = /data:image\/(png|jpeg|jpg);base64,([a-zA-Z0-9+/=]+)/;
