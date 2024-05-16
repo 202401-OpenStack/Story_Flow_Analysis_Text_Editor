@@ -316,15 +316,14 @@ function PostWritePage() {
             },
           }
         );
+        const { data } = response;
+        console.log(data.data);
+        console.log(data.status);
+        console.log(data.statusText);
+        console.log(data.headers);
+        console.log(data.config);
 
-        console.log(response.data);
-        console.log(response.status);
-        console.log(response.statusText);
-        console.log(response.headers);
-        console.log(response.config);
-
-        const items = response.data;
-        //const items = response.data.data; // 백엔드에서 반환된 타임라인 데이터를 가져옵니다.
+        const items = data.data;
         const items_stringify = JSON.stringify(items);
 
         console.log(items);
