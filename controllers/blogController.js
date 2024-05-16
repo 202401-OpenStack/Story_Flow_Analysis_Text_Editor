@@ -82,12 +82,14 @@ exports.createPost = async (req, res) => {
      // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체함
      const base64RegexGlobal = new RegExp(base64Regex.source, 'g');
      let match;
+     const photoUrls = []; // 업로드된 이미지 URL을 저장할 배열
      while ((match = base64RegexGlobal.exec(content)) !== null) {
        const base64Url = match[0];
        try {
          const blobUrl = await uploadBase64ImageToBlob(base64Url);
          console.log('Blob URL:', blobUrl);
          content = content.replace(base64Url, blobUrl);
+         photoUrls.push(blobUrl); // 업로드된 이미지 URL을 배열에 추가
        } catch (uploadError) {
          console.error('Error uploading image to Blob:', uploadError);
          return res.status(500).json({ message: 'An error occurred while uploading the image' });
@@ -95,6 +97,10 @@ exports.createPost = async (req, res) => {
      }
 
     const data = await Post.create({ title, content, accountId });
+    // Photo 테이블에 이미지 URL을 저장
+    const photoRecords = photoUrls.map(url => ({ postId: Post.id, url }));
+    await Photo.bulkCreate(photoRecords);
+
     res.status(201).json({
       message: "Post created successfully",
       data: data
