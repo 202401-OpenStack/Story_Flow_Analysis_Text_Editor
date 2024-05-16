@@ -301,10 +301,6 @@ function PostWritePage() {
           "http://20.41.113.158/api/analysis/timeline",
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
-            params: { content },
-            headers: {
-              "Content-Type": "application/json",
-            },
           }
         );
 
