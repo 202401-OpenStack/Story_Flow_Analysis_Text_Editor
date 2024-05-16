@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Post } = require('../models');
+const { Post, Photo } = require('../models');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v4: uuidv4 } = require('uuid');
 
@@ -170,10 +170,29 @@ exports.deletePost = async (req, res) => {
       // 사용자가 로그인하지 않았다면 에러 처리
       return res.status(401).json({ message: 'You must be logged in to delete the post' });
     }
-    const post = await Post.findByPk(req.params.id);
+    const postId = req.params.id;
+    const post = await Post.findByPk(postId);
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
+
+    // 연관된 이미지 URL들을 가져옴
+    const photos = await Photo.findAll({ where: { postId } });
+    const photoUrls = photos.map(photo => photo.url);
+
+    // Blob Storage에서 이미지 삭제
+    for (const url of photoUrls) {
+      try {
+        await deleteBlobImage(url); // 실제로 이미지를 Blob Storage에서 삭제하는 함수
+      } catch (deleteError) {
+        console.error('Error deleting image from Blob:', deleteError);
+        return res.status(500).json({ message: 'An error occurred while deleting the image' });
+      }
+    }
+
+    // Photo 테이블에서 이미지 URL 레코드 삭제
+    await Photo.destroy({ where: { postId } });
+
     await post.destroy();
     res.status(200).json({ message: 'Post deleted successfully' });
   } catch (err) {
