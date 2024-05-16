@@ -308,13 +308,7 @@ function PostWritePage() {
           }
         );
 
-        const data = response.data.data;
-        const items = JSON.parse(data);
-        console.log(data);
-        console.log(items);
-        console.log(typeof data);
-        console.log(typeof items);
-
+        const items = JSON.parse(response.data.data);
         setTimelineItems(items);
         setTimelineModalOpen(true);
       } catch (error) {
@@ -329,26 +323,6 @@ function PostWritePage() {
           // 요청 설정 중 문제가 발생한 경우
           alert("Error", error.message);
         }
-        const items = [
-          {
-            cardTitle: "Title0",
-            cardDetailedText: "테스트용 하드코딩 데이터 Text0",
-          },
-          {
-            cardTitle: "Title1",
-            cardDetailedText: "테스트용 하드코딩 데이터 Text1",
-          },
-          {
-            cardTitle: "Title2",
-            cardDetailedText: "테스트용 하드코딩 데이터 Text2",
-          },
-          {
-            cardTitle: "Title3",
-            cardDetailedText: "테스트용 하드코딩 데이터 Text3",
-          },
-        ];
-        setTimelineItems(items);
-        setTimelineModalOpen(true);
       }
     } else if (command === "judgeStoryFlow") {
       const quill = quillRef.current.getEditor();
