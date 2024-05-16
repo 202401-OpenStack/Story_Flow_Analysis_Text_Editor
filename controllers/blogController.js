@@ -98,7 +98,7 @@ exports.createPost = async (req, res) => {
 
     const data = await Post.create({ title, content, accountId });
     // Photo 테이블에 이미지 URL을 저장
-    const photoRecords = photoUrls.map(url => ({ postId: Post.id, url }));
+    const photoRecords = photoUrls.map(url => ({ postId: data.id, url }));
     await Photo.bulkCreate(photoRecords);
 
     res.status(201).json({
