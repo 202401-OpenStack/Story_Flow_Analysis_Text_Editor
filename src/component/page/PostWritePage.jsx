@@ -320,6 +320,18 @@ function PostWritePage() {
           );
   
           console.log(response.data.data);
+        } catch (error) {
+          console.error(error);
+          if (error.response) {
+            // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+            alert(`Error: ${error.response.data.message}`);
+          } else if (error.request) {
+            // 요청이 이루어 졌으나 응답을 받지 못함
+            alert("No response was received");
+          } else {
+            // 요청 설정 중 문제가 발생한 경우
+            alert("Error", error.message);
+          }
         }
     } else if (command === "analyzeTimeline") {
       const quill = quillRef.current.getEditor();
