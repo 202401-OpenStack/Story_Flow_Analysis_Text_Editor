@@ -48,31 +48,40 @@ const TimelineModal = styled.div`
   background: rgba(0, 0, 0, 0.5);
 
   position: absolute;
-  width: calc(100% - 312px);
-  height: calc(100% - 180px);
-  margin-top: 42px;
-
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
   .modal-content {
-    width: 500px;
-    height: 600px;
-    padding: 25px;
-    gap: 15px;
+    width: calc(100% - 100px);
+    height: fit-content;
+    max-height: calc(100% - 32px);
+    min-height: 600px;
+    padding: 16px;
+    gap: 5px;
     background: white;
+    display: grid;
+    align-items: start;
+    position: absolute;
+    z-index: 99;
     overflow-y: scroll;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
   }
 
   .timeline-component {
     width: 100%;
-    height: 400px;
+    height: fit-content;
+  }
+
+  .footer-wrapper {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .btn-wrapper {
@@ -401,6 +410,55 @@ function PostWritePage() {
   return (
     <Wrapper>
       <Sidebar />
+      {timelineModalOpen && ( //타임라인 컴포넌트 모달
+        <TimelineModal
+          ref={timelineModalBackground}
+          onClick={(e) => {
+            if (e.target === timelineModalBackground.current) {
+              setTimelineModalOpen(false);
+            }
+          }}
+        >
+          <div className={"modal-content"}>
+            <div className={"timeline-component"}>
+              <Chrono
+                items={timelineItems}
+                mode="VERTICAL"
+                cardHeight={30}
+                cardWidth="fit-content"
+                allowDynamicUpdate={true}
+                hideControls={true}
+                disableToolbar={true}
+                useReadMore={false}
+              />
+            </div>
+            <div className="footer-wrapper">
+              <p>생성된 타임라인을 에디터에 추가하시겠습니까?</p>
+              <div className="btn-wrapper">
+                <Button
+                  className="timeline-btn"
+                  onClick={() => {
+                    alert("yes");
+                    setTimelineModalOpen(false);
+                  }}
+                >
+                  예
+                </Button>
+                <Button
+                  className="timeline-btn"
+                  variant="secondary"
+                  onClick={() => {
+                    alert("no");
+                    setTimelineModalOpen(false);
+                  }}
+                >
+                  아니오
+                </Button>
+              </div>
+            </div>
+          </div>
+        </TimelineModal>
+      )}
       <Layout>
         <Container>
           <TextInput
@@ -428,51 +486,6 @@ function PostWritePage() {
               left={palettePosition.left}
               onSelect={handleSelectCommand}
             />
-          )}
-          {timelineModalOpen && ( //타임라인 컴포넌트 모달
-            <TimelineModal
-              ref={timelineModalBackground}
-              onClick={(e) => {
-                if (e.target === timelineModalBackground.current) {
-                  setTimelineModalOpen(false);
-                }
-              }}
-            >
-              <div className={"modal-content"}>
-                <div className={"timeline-component"}>
-                  <Chrono
-                    items={timelineItems}
-                    mode="VERTICAL"
-                    cardHeight={80}
-                    cardWidth={650}
-                    disableToolbar={true}
-                    scrollable={{ scrollbar: true }}
-                  />
-                </div>
-                <p>생성된 타임라인을 에디터에 추가하시겠습니까?</p>
-                <div className="btn-wrapper">
-                  <Button
-                    className="timeline-btn"
-                    onClick={() => {
-                      alert("yes");
-                      setTimelineModalOpen(false);
-                    }}
-                  >
-                    예
-                  </Button>
-                  <Button
-                    className="timeline-btn"
-                    variant="secondary"
-                    onClick={() => {
-                      alert("no");
-                      setTimelineModalOpen(false);
-                    }}
-                  >
-                    아니오
-                  </Button>
-                </div>
-              </div>
-            </TimelineModal>
           )}
         </Container>
         <EditorBtn>
