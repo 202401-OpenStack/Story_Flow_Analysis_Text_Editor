@@ -302,6 +302,25 @@ function PostWritePage() {
           alert("Error", error.message);
         }
       }
+
+      } else if (command === "analyzeCharacterRelationships") {
+        const quill = quillRef.current.getEditor();
+        const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+  
+        try {
+          const response = await axios.post(
+            "http://20.41.113.158/api/analysis/character-relationships",
+            { content },
+            {
+              withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+  
+          console.log(response.data.data);
+        }
     } else if (command === "analyzeTimeline") {
       const quill = quillRef.current.getEditor();
       const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
