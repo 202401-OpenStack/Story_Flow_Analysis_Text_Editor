@@ -6,6 +6,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
+import domtoimage from "dom-to-image";
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -407,6 +408,20 @@ function PostWritePage() {
     }
   };
 
+  const handleTimelineInsert = async () => {
+    const timelineElement = document.querySelector(".timeline-component");
+
+    try {
+      const base64Image = await domtoimage.toPng(timelineElement);
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", base64Image, "user");
+      setTimelineModalOpen(false);
+    } catch (error) {
+      console.error("Error capturing timeline:", error);
+    }
+  };
+
   return (
     <Wrapper>
       <Sidebar />
@@ -435,20 +450,13 @@ function PostWritePage() {
             <div className="footer-wrapper">
               <p>생성된 타임라인을 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
-                <Button
-                  className="timeline-btn"
-                  onClick={() => {
-                    alert("yes");
-                    setTimelineModalOpen(false);
-                  }}
-                >
+                <Button className="timeline-btn" onClick={handleTimelineInsert}>
                   예
                 </Button>
                 <Button
                   className="timeline-btn"
                   variant="secondary"
                   onClick={() => {
-                    alert("no");
                     setTimelineModalOpen(false);
                   }}
                 >
