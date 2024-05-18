@@ -5,17 +5,23 @@ import styled from "styled-components";
 import DOMPurify from "dompurify";
 import { Button } from "react-bootstrap";
 
-import Header from "../ui/Header";
+import Sidebar from "../ui/Sidebar";
 
 // 스타일 컴포넌트 정의
 const Wrapper = styled.div`
   width: 100%;
-  height: 100%;
-  padding: 25px;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+`;
+
+const Layout = styled.div`
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 16px;
+  gap: 16px;
 `;
 
 const Container = styled.div`
@@ -23,37 +29,39 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   background: rgb(227, 227, 227);
-
   padding: 20px;
-  margin: 40px auto;
-  border-radius: 10px;
+  margin-bottom: 16px;
+  border-radius: 0.3rem;
 `;
 
-const Title = styled.h1`
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 10px;
-  background: white;
-  border-radius: 0.2rem;
-  padding: 5px 16px;
+const Title = styled.div`
+  width: 100%;
+  height: 20px;
+  padding: 20px;
+  font-size: 16px; /* 글자 크기 */
+  line-height: 0px;
+  border: 1px solid #ccc; /* 경계선 스타일 */
 `;
 
-const DateText = styled.p`
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 20px;
-  padding-left: 5px;
+const DateText = styled.div`
+  width: 100%;
+  height: 16px;
+  padding: 10px;
+  font-size: 12px;
+  line-height: 0px;
+  border: 1px solid #ccc; /* 경계선 스타일 */
 `;
 
 const Content = styled.div`
-  font-size: 18px;
+  width: 100%;
+  height: fit-content;
+  padding: 5px 10px 5px 10px;
+  font-size: 16px;
   color: #444;
   line-height: 1.5;
   text-align: left;
-  width: 100%;
   overflow-wrap: break-word; // 너무 긴 텍스트가 오버플로우 되지 않도록 처리
-  background: white;
-  padding: 5px 10px 5px 10px;
+  overflow-y: scroll;
 
   p,
   h1,
@@ -79,7 +87,7 @@ const ViewerBtn = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-top: auto;
+  margin-top: 16px;
   gap: 16px;
 `;
 
@@ -155,18 +163,20 @@ const PostViewPage = () => {
 
   return (
     <Wrapper>
-      <Header />
-      <Container>
-        <Title>{post.title}</Title>
-        <DateText>{formatDate(post.createdAt)}</DateText>
-        <Content dangerouslySetInnerHTML={createMarkup(post.content)} />
-      </Container>
-      <ViewerBtn>
-        <Button onClick={handleEdit}>수정</Button>
-        <Button variant="secondary" onClick={handleDelete}>
-          삭제
-        </Button>
-      </ViewerBtn>
+      <Sidebar />
+      <Layout>
+        <Container>
+          <Title>{post.title}</Title>
+          <DateText>{formatDate(post.createdAt)}</DateText>
+          <Content dangerouslySetInnerHTML={createMarkup(post.content)} />
+        </Container>
+        <ViewerBtn>
+          <Button onClick={handleEdit}>수정</Button>
+          <Button variant="secondary" onClick={handleDelete}>
+            삭제
+          </Button>
+        </ViewerBtn>
+      </Layout>
     </Wrapper>
   );
 };
