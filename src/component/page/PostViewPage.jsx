@@ -21,17 +21,14 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
   padding: 16px;
-  gap: 16px;
+  gap: 10px;
 `;
 
 const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: rgb(227, 227, 227);
-  padding: 20px;
-  margin-bottom: 16px;
-  border-radius: 0.3rem;
+  gap: 5px;
 `;
 
 const Title = styled.div`
@@ -46,19 +43,19 @@ const Title = styled.div`
 const DateText = styled.div`
   width: 100%;
   height: 16px;
-  padding: 10px;
-  font-size: 12px;
+  padding: 12px;
+  font-size: 14px;
   line-height: 0px;
   border: 1px solid #ccc; /* 경계선 스타일 */
 `;
 
 const Content = styled.div`
   width: 100%;
-  height: fit-content;
-  padding: 5px 10px 5px 10px;
-  font-size: 16px;
-  color: #444;
+  height: calc(100vh - 157px);
+  padding: 5px 16px;
+  font-size: 14px;
   line-height: 1.5;
+  border: 1px solid #ccc; /* 경계선 스타일 */
   text-align: left;
   overflow-wrap: break-word; // 너무 긴 텍스트가 오버플로우 되지 않도록 처리
   overflow-y: scroll;
@@ -79,6 +76,7 @@ const Content = styled.div`
 
   img {
     width: 100%;
+    margin: 10px;
   }
 `;
 
@@ -87,7 +85,6 @@ const ViewerBtn = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-top: 16px;
   gap: 16px;
 `;
 
