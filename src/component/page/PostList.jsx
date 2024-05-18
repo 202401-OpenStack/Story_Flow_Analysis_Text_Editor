@@ -4,7 +4,7 @@ import styled from "styled-components";
 import List from "../list/List";
 import Header from "../ui/Header";
 import { useDispatch, useSelector } from "react-redux";
-import axios from 'axios';
+import axios from "axios";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -20,28 +20,28 @@ const Container = styled.div`
   width: 100%;
 `;
 
-
 function PostList(props) {
   const [posts, setPosts] = useState([]);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated } = useSelector(state => state.auth);
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (!isAuthenticated) {
-      alert('User not found or not logged in.');
-      navigate('/login', { replace: true });
+      alert("User not found or not logged in.");
+      navigate("/login", { replace: true });
     } else {
       fetchPosts();
     }
-
   }, [loading, isAuthenticated, navigate]);
 
   const fetchPosts = async () => {
     try {
       const response = await axios.get("http://20.41.113.158/api/blog/posts", {
-        withCredentials: true // Ensures cookies are sent with the request
+        withCredentials: true, // Ensures cookies are sent with the request
       });
       const { data } = response;
       if (data.message === "Posts fetched successfully") {
@@ -61,10 +61,9 @@ function PostList(props) {
 
   if (error) {
     alert(error);
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
     return <></>;
   }
-
 
   return (
     <Wrapper>

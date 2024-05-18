@@ -75,6 +75,7 @@ const TimelineModal = styled.div`
   .timeline-component {
     width: 100%;
     height: fit-content;
+    background: white;
   }
 
   .footer-wrapper {
