@@ -98,6 +98,40 @@ const TimelineModal = styled.div`
   }
 `;
 
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function initializeGraphData() {
+  const nodes = [
+    { id: "철수", name: "철수" },
+    { id: "영희", name: "영희" },
+    { id: "길동", name: "길동" }
+  ];
+  const links = [
+    { source: "철수", target: "영희", relationship: "친구" },
+    { source: "영희", target: "철수", relationship: "친구" },
+    { source: "영희", target: "길동", relationship: "친구" },
+    { source: "길동", target: "영희", relationship: "친구" },
+    { source: "길동", target: "철수", relationship: "형제" }
+  ];
+
+  // 노드와 링크에 색상 추가
+  nodes.forEach(node => {
+    node.color = getRandomColor();  // 노드 색상 초기화
+  });
+  links.forEach(link => {
+    link.color = 'black';  // 링크 색상 초기화
+  });
+
+  return { nodes, links };
+}
+
 function PostWritePage() {
   const navigate = useNavigate();
   const [editorContent, setEditorContent] = useState("");
@@ -388,11 +422,11 @@ function PostWritePage() {
           }
         );
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        setRelationshipCharacters(response.data.data.character);
-        setRelationshipLinks(response.data.data.links);
+        const { character, links } = response.data;
+        setRelationshipCharacters(character);
+        setRelationshipLinks(links);
         setRelationshipModalOpen(true); // 관계도 모달
-        setGraphData(relationshipCharacters,relationshipLinks);
+        setGraphData({ nodes: character, links });
         quill.insertText(quill.getLength(), `\n${graphData}\n`);
       } catch (error) {
         if (error.response) {
@@ -461,6 +495,20 @@ function PostWritePage() {
       setTimelineModalOpen(false);
     } catch (error) {
       console.error("Error capturing timeline:", error);
+    }
+  };
+
+  const handleRelationshipInsert = async () => {
+    const relationshipElement = document.querySelector(".timeline-component");
+
+    try {
+      const base64Image = await domtoimage.toPng(relationshipElement);
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", base64Image, "user");
+      setRelationshipModalOpen(false);
+    } catch (error) {
+      console.error("Error capturing relationship graph:", error);
     }
   };
 
