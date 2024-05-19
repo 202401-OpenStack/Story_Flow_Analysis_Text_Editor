@@ -148,7 +148,7 @@ exports.analyzeCharacterRelationships = (req, res) => {
                     ...
                 ]
         }
-        두 번째 배열의 경우 모든 등장인물을 적을 필요는 없으며, 글에서 언급되는 relationship만을 적으세요. : \n\n${content}`, 
+        두 번째 배열의 경우 모든 등장인물을 적을 필요는 없으며, 글에서 언급되는 relationship만을 적으세요. 그리고 links의 source, target에는 character에 언급됐던 이름만 나와야 합니다.: \n\n${content}`, 
         "Analyzing Character Relationships completed successfully"
     );
 };
