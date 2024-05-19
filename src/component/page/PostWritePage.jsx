@@ -423,6 +423,7 @@ function PostWritePage() {
         );
 
         const { character, links } = JSON.parse(response.data.data);
+        console.log(response.data.data);
         console.log(character);
         console.log(links);
         setRelationshipCharacters(character);
