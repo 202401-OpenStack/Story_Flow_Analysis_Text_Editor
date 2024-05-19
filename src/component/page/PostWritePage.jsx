@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
 import domtoimage from "dom-to-image";
+import { ForceGraph2D } from 'react-force-graph';
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -108,6 +109,12 @@ function PostWritePage() {
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
   const [timelineItems, setTimelineItems] = useState([]);
+
+  const [relationshipModalOpen, setRelationshipModalOpen] = useState(false);
+  const relationshipModalBackground = useRef();
+  const [relationshipCharacters, setRelationshipCharacters] = useState([]);
+  const [relationshipLinks, setRelationshipLinks] = useState([]);
+  const [graphData, setGraphData] = useState({ nodes:[], links:[]});
 
   const modules = useMemo(
     () => ({
@@ -382,6 +389,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        setRelationshipCharacters(response.data.character);
+        setRelationshipLinks(response.data.links);
+        setRelationshipModalOpen(true);
+        setGraphData(relationshipCharacters,relationshipLinks);
         quill.insertText(quill.getLength(), `\n${summary}\n`);
       } catch (error) {
         if (error.response) {
@@ -489,6 +500,72 @@ function PostWritePage() {
                   variant="secondary"
                   onClick={() => {
                     setTimelineModalOpen(false);
+                  }}
+                >
+                  아니오
+                </Button>
+              </div>
+            </div>
+          </div>
+        </TimelineModal>
+      )}
+      {relationshipModalOpen && ( //관계도 컴포넌트 모달
+        <TimelineModal
+          ref={relationshipModalBackground}
+          onClick={(e) => {
+            if (e.target === relationshipModalBackground.current) {
+              setRelationshipModalOpen(false);
+            }
+          }}
+        >
+          <div className={"modal-content"}>
+            <div className={"timeline-component"}>
+            <ForceGraph2D
+                    graphData={graphData}
+                    nodeAutoColorBy="group"
+                    nodeCanvasObject={(node, ctx, globalScale) => {
+                      const label = node.name;
+                      const fontSize = 12 / globalScale;
+                      ctx.fillStyle = node.color;
+                      ctx.beginPath();
+                      ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
+                      ctx.fill();
+                      ctx.font = `${fontSize}px Sans-Serif`;
+                      ctx.textAlign = 'center';
+                      ctx.textBaseline = 'middle';
+                      ctx.fillStyle = 'white';
+                      ctx.fillText(label, node.x, node.y);
+                    }}
+                    linkDirectionalArrowLength={6}
+                    linkDirectionalArrowRelPos={1}
+                    linkCanvasObjectMode={() => 'before'}
+                    linkCanvasObject={(link, ctx, globalScale) => {
+                      const start = link.source;
+                      const end = link.target;
+                      const textPos = Object.assign(...['x', 'y'].map(c => ({
+                        [c]: start[c] + (end[c] - start[c]) / 2 // calculate midpoint
+                      })));
+          
+            // 텍스트 라벨의 위치를 조정
+            const offset = link.source.id < link.target.id ? -5 : 5;
+            
+            ctx.font = `${12 / globalScale}px Sans-Serif`;
+            ctx.fillStyle = 'black';
+            ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
+          }}
+      />
+    </div>
+            <div className="footer-wrapper">
+              <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
+              <div className="btn-wrapper">
+                <Button className="timeline-btn" onClick={handleTimelineInsert}>
+                  예
+                </Button>
+                <Button
+                  className="timeline-btn"
+                  variant="secondary"
+                  onClick={() => {
+                    setRelationshipModalOpen(false);
                   }}
                 >
                   아니오
