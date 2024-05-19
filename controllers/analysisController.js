@@ -14,7 +14,6 @@ const openAiRequest = async (content, promptTemplate) => {
         messages: [{
             "role": "system",
             "content": prompt,
-            "max_tokens": 100
         }]
     };
 
