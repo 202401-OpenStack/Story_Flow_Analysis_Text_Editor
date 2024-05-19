@@ -107,19 +107,9 @@ function getRandomColor() {
   return color;
 }
 
-function initializeGraphData() {
-  const nodes = [
-    { id: "철수", name: "철수" },
-    { id: "영희", name: "영희" },
-    { id: "길동", name: "길동" }
-  ];
-  const links = [
-    { source: "철수", target: "영희", relationship: "친구" },
-    { source: "영희", target: "철수", relationship: "친구" },
-    { source: "영희", target: "길동", relationship: "친구" },
-    { source: "길동", target: "영희", relationship: "친구" },
-    { source: "길동", target: "철수", relationship: "형제" }
-  ];
+function initializeGraphData(character, link) {
+  const nodes = character;
+  const links = link;
 
   // 노드와 링크에 색상 추가
   nodes.forEach(node => {
