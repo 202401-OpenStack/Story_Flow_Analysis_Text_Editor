@@ -133,10 +133,20 @@ exports.judgeStoryFlow = (req, res) => {
 // 인물 관계 분석
 exports.analyzeCharacterRelationships = (req, res) => {
     handleRequest(req, res, 
-        content => `아래 글을 읽고 등장인물과, 각 등장인물들의 관계를 배열을 포함한 JSON 형태로 적어 반환하세요. 사설 달지 말고 데이터만 보내야 하며, 데이터 형식은 아래 예시처럼 맞추세요.
+        content => `아래 글을 읽고 등장인물과, 각 등장인물들의 관계를 배열을 포함한 JSON 형태로 적어 반환하세요. 사설 달지 말고 데이터만 보내야 하며, 데이터 형식은 아래 예시처럼 맞추세요. 모든 key-value들은 쌍따옴표("")로 감싸져야 합니다.
         {
-            'character': [{id: "이름1", name: "이름1"}, {id: "이름2", name: "이름2"}, ..],
-            'links': [{source: "이름1", target: "이름2", relationship: "관계(예:친구)"}, {source: "이름2", target: "이름1", relationship: "관계(예:짝사랑)"}, ...]
+            "character": 
+                [
+                    {"id": "이름1", "name": "이름1"}, 
+                    {"id": "이름2", "name": "이름2"}, 
+                    ..
+                ],
+            "links": 
+                [
+                    {"source": "이름1", "target": "이름2", "relationship": "관계(예:친구)"}, 
+                    {"source": "이름2", "target": "이름1", "relationship": "관계(예:짝사랑)"}, 
+                    ...
+                ]
         }
         두 번째 배열의 경우 모든 등장인물을 적을 필요는 없으며, 글에서 언급되는 relationship만을 적으세요. : \n\n${content}`, 
         "Analyzing Character Relationships completed successfully"
