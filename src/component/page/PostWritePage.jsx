@@ -409,6 +409,8 @@ function PostWritePage() {
             },
           }
         );
+
+        console.log(response.data.data);
         const { character, links } = JSON.parse(response.data.data);
         console.log(character);
         console.log(links);
