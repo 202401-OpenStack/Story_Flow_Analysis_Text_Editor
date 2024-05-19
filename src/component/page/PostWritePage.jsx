@@ -421,9 +421,9 @@ function PostWritePage() {
             },
           }
         );
-
-        const { character, links } = JSON.parse(response.data.data);
         console.log(response.data.data);
+        const { character, links } = JSON.parse(response.data.data);
+        
         setRelationshipCharacters(character);
         setRelationshipLinks(links);
         setRelationshipModalOpen(true); // 관계도 모달
