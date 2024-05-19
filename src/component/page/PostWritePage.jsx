@@ -427,7 +427,7 @@ function PostWritePage() {
         setRelationshipCharacters(character);
         setRelationshipLinks(links);
         setRelationshipModalOpen(true); // 관계도 모달
-        setGraphData({ nodes: character, links });
+        setGraphData(setGraphData(initializeGraphData()));
         quill.insertText(quill.getLength(), `\n${graphData}\n`);
       } catch (error) {
         if (error.response) {
