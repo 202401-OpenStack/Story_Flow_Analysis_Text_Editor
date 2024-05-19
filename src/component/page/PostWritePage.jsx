@@ -597,7 +597,7 @@ function PostWritePage() {
             <div className="footer-wrapper">
               <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
-                <Button className="timeline-btn" onClick={handleTimelineInsert}>
+                <Button className="timeline-btn" onClick={handleRelationshipInsert}>
                   예
                 </Button>
                 <Button
