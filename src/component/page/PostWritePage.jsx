@@ -424,8 +424,6 @@ function PostWritePage() {
 
         const { character, links } = JSON.parse(response.data.data);
         console.log(response.data.data);
-        console.log(character);
-        console.log(links);
         setRelationshipCharacters(character);
         setRelationshipLinks(links);
         setRelationshipModalOpen(true); // 관계도 모달
