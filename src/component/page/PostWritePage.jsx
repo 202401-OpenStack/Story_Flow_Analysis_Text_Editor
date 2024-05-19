@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
 import domtoimage from "dom-to-image";
-import { ForceGraph2D } from 'react-force-graph';
+import { ForceGraph2D } from 'react-force-graph-2d';
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -393,7 +393,7 @@ function PostWritePage() {
         setRelationshipLinks(response.data.links);
         setRelationshipModalOpen(true);
         setGraphData(relationshipCharacters,relationshipLinks);
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
+        quill.insertText(quill.getLength(), `\n${graphData}\n`);
       } catch (error) {
         if (error.response) {
           // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
