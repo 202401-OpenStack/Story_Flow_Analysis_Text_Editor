@@ -107,19 +107,17 @@ function getRandomColor() {
   return color;
 }
 
-function initializeGraphData(character, link) {
-  const nodes = character;
-  const links = link;
-
-  // 노드와 링크에 색상 추가
+function initializeGraphData(characters, links) {
+  const nodes = characters; // 캐릭터들을 노드로 할당
+  // 노드와 링크에 색상을 추가
   nodes.forEach(node => {
-    node.color = getRandomColor();  // 노드 색상 초기화
+    node.color = getRandomColor(); // 노드 색상 초기화
   });
   links.forEach(link => {
-    link.color = 'black';  // 링크 색상 초기화
+    link.color = 'black'; // 링크 색상 초기화
   });
 
-  return { nodes, links };
+  return { nodes, links }; // 색상이 추가된 노드와 링크 반환
 }
 
 function PostWritePage() {
@@ -411,9 +409,9 @@ function PostWritePage() {
             },
           }
         );
-        console.log(response.data.data);
         const { character, links } = JSON.parse(response.data.data);
-        
+        console.log(character);
+        console.log(links);
         setRelationshipCharacters(character);
         setRelationshipLinks(links);
         setRelationshipModalOpen(true); // 관계도 모달
