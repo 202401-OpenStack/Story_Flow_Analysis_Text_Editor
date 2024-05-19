@@ -389,8 +389,8 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        setRelationshipCharacters(response.data.character);
-        setRelationshipLinks(response.data.links);
+        setRelationshipCharacters(response.data.data.character);
+        setRelationshipLinks(response.data.data.links);
         setRelationshipModalOpen(true); // 관계도 모달
         setGraphData(relationshipCharacters,relationshipLinks);
         quill.insertText(quill.getLength(), `\n${graphData}\n`);
