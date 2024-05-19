@@ -13,8 +13,9 @@ const openAiRequest = async (content, promptTemplate) => {
     const dataAPI = {
         messages: [{
             "role": "system",
-            "content": prompt,
-        }]
+            "content": prompt
+        }],
+        max_tokens: 1000
     };
 
     const response = await axios.post(apiUrl, dataAPI, { headers });
