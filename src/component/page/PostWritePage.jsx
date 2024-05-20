@@ -418,7 +418,6 @@ function PostWritePage() {
         setRelationshipLinks(links);
         setRelationshipModalOpen(true); // 관계도 모달
         setGraphData(initializeGraphData(character, links));
-        quill.insertText(quill.getLength(), `\n${graphData}\n`);
       } catch (error) {
         if (error.response) {
           // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
@@ -588,7 +587,7 @@ function PostWritePage() {
             // 텍스트 라벨의 위치를 조정
             const offset = link.source.id < link.target.id ? -5 : 5;
             
-            ctx.font = `${12 / globalScale}px Sans-Serif`;
+            ctx.font = `${fontsize}px Sans-Serif`;
             ctx.fillStyle = 'black';
             ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
           }}
