@@ -587,7 +587,7 @@ function PostWritePage() {
             // 텍스트 라벨의 위치를 조정
             const offset = link.source.id < link.target.id ? -5 : 5;
             
-            ctx.font = `${fontsize}px Sans-Serif`;
+            ctx.font = `${60 / globalScale}px Sans-Serif`;
             ctx.fillStyle = 'black';
             ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
           }}
