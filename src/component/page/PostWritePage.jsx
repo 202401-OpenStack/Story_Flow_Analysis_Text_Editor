@@ -433,12 +433,6 @@ function PostWritePage() {
     }
     setShowPalette(false);
   };
-  
-  const graphRef = useCallback((node) => {
-                if (node) {
-                  node.zoomToFit(2000,20);
-                }
-              }, []); //노드, 폰트크기 비율 고정
 
   const saveContent = async () => {
     if (!title.trim() || !editorContent.trim()) {
@@ -575,13 +569,12 @@ function PostWritePage() {
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
                 ctx.fill();
-                ctx.font = "14px Arial";
+                ctx.font = "20px Arial";
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillStyle = 'white';
                 ctx.fillText(label, node.x, node.y);
               }}
-              //ref={graphRef}
               linkDirectionalArrowLength={6}
               linkDirectionalArrowRelPos={1}
               linkCanvasObjectMode={() => 'before'}
@@ -595,7 +588,7 @@ function PostWritePage() {
             // 텍스트 라벨의 위치를 조정
             const offset = link.source.id < link.target.id ? -5 : 5;
             
-            ctx.font = `20px Sans-Serif`;
+            ctx.font = "20px Arial";
             ctx.fillStyle = 'black';
             ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
           }}
