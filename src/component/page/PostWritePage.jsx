@@ -581,7 +581,7 @@ function PostWritePage() {
                 ctx.fillStyle = 'white';
                 ctx.fillText(label, node.x, node.y);
               }}
-              ref={graphRef}
+              //ref={graphRef}
               linkDirectionalArrowLength={6}
               linkDirectionalArrowRelPos={1}
               linkCanvasObjectMode={() => 'before'}
