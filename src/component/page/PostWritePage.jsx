@@ -436,7 +436,7 @@ function PostWritePage() {
   
   const graphRef = useCallback((node) => {
                 if (node) {
-                  node.zoomToFit();
+                  node.zoomToFit(1000,10);
                 }
               }, []); //노드, 폰트크기 비율 고정
 
