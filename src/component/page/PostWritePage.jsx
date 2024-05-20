@@ -433,6 +433,12 @@ function PostWritePage() {
     }
     setShowPalette(false);
   };
+  
+  const graphRef = useCallback((node) => {
+                if (node) {
+                  node.zoomToFit(100, 20);
+                }
+              }, []); //노드, 폰트크기 비율 고정
 
   const saveContent = async () => {
     if (!title.trim() || !editorContent.trim()) {
@@ -575,6 +581,7 @@ function PostWritePage() {
                 ctx.fillStyle = 'white';
                 ctx.fillText(label, node.x, node.y);
               }}
+              ref={graphRef}
               linkDirectionalArrowLength={6}
               linkDirectionalArrowRelPos={1}
               linkCanvasObjectMode={() => 'before'}
