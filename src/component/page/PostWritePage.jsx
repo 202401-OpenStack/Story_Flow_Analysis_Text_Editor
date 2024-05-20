@@ -559,35 +559,36 @@ function PostWritePage() {
           <div className={"modal-content"}>
             <div className={"timeline-component"}>
             <ForceGraph2D
-                    graphData={graphData}
-                    nodeAutoColorBy="group"
-                    nodeCanvasObject={(node, ctx, globalScale) => {
-                      const label = node.name;
-                      const fontSize = 60 / globalScale;
-                      ctx.fillStyle = node.color;
-                      ctx.beginPath();
-                      ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
-                      ctx.fill();
-                      ctx.font = `${fontSize}px Sans-Serif`;
-                      ctx.textAlign = 'center';
-                      ctx.textBaseline = 'middle';
-                      ctx.fillStyle = 'white';
-                      ctx.fillText(label, node.x, node.y);
-                    }}
-                    linkDirectionalArrowLength={6}
-                    linkDirectionalArrowRelPos={1}
-                    linkCanvasObjectMode={() => 'before'}
-                    linkCanvasObject={(link, ctx, globalScale) => {
-                      const start = link.source;
-                      const end = link.target;
-                      const textPos = Object.assign(...['x', 'y'].map(c => ({
-                        [c]: start[c] + (end[c] - start[c]) / 2 // calculate midpoint
-                      })));
+              width={window.innerWidth}
+              graphData={graphData}
+              nodeAutoColorBy="group"
+              nodeCanvasObject={(node, ctx, globalScale) => {
+                const label = node.name;
+                const fontSize = 60 / globalScale;
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.font = `20px Sans-Serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.fillText(label, node.x, node.y);
+              }}
+              linkDirectionalArrowLength={6}
+              linkDirectionalArrowRelPos={1}
+              linkCanvasObjectMode={() => 'before'}
+              linkCanvasObject={(link, ctx, globalScale) => {
+                const start = link.source;
+                const end = link.target;
+                const textPos = Object.assign(...['x', 'y'].map(c => ({
+                  [c]: start[c] + (end[c] - start[c]) / 2 // calculate midpoint
+                })));
           
             // 텍스트 라벨의 위치를 조정
             const offset = link.source.id < link.target.id ? -5 : 5;
             
-            ctx.font = `${60 / globalScale}px Sans-Serif`;
+            ctx.font = `$20px Sans-Serif`;
             ctx.fillStyle = 'black';
             ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
           }}
