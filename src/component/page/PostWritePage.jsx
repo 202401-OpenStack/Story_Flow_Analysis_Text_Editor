@@ -570,12 +570,12 @@ function PostWritePage() {
               nodeAutoColorBy="group"
               nodeCanvasObject={(node, ctx, globalScale) => {
                 const label = node.name;
-                const fontSize = 14 * (node.val / 1500);
+                //const fontSize = 14 * (node.val / 1500);
                 ctx.fillStyle = node.color;
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
                 ctx.fill();
-                ctx.font = `${fontSize}px Sans-Serif`;
+                ctx.font = "14px Arial";
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillStyle = 'white';
