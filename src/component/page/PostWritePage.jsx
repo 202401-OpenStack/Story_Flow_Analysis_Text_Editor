@@ -564,7 +564,7 @@ function PostWritePage() {
                     nodeAutoColorBy="group"
                     nodeCanvasObject={(node, ctx, globalScale) => {
                       const label = node.name;
-                      const fontSize = 12 / globalScale;
+                      const fontSize = 60 / globalScale;
                       ctx.fillStyle = node.color;
                       ctx.beginPath();
                       ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
