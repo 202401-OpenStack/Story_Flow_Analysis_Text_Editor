@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
 import domtoimage from "dom-to-image";
+import ForceGraph2D from 'react-force-graph-2d';
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -96,6 +97,28 @@ const TimelineModal = styled.div`
   }
 `;
 
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function initializeGraphData(characters, links) {
+  const nodes = characters; // 캐릭터들을 노드로 할당
+  // 노드와 링크에 색상을 추가
+  nodes.forEach(node => {
+    node.color = getRandomColor(); // 노드 색상 초기화
+  });
+  links.forEach(link => {
+    link.color = 'black'; // 링크 색상 초기화
+  });
+
+  return { nodes, links }; // 색상이 추가된 노드와 링크 반환
+}
+
 function PostWritePage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -107,6 +130,12 @@ function PostWritePage() {
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
   const [timelineItems, setTimelineItems] = useState([]);
+
+  const [relationshipModalOpen, setRelationshipModalOpen] = useState(false);
+  const relationshipModalBackground = useRef();
+  const [relationshipCharacters, setRelationshipCharacters] = useState([]);
+  const [relationshipLinks, setRelationshipLinks] = useState([]);
+  const [graphData, setGraphData] = useState({ nodes:[], links:[]});
 
   const modules = useMemo(
     () => ({
@@ -380,8 +409,14 @@ function PostWritePage() {
           }
         );
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
+        console.log(response.data.data);
+        const { character, links } = JSON.parse(response.data.data);
+        console.log(character);
+        console.log(links);
+        setRelationshipCharacters(character);
+        setRelationshipLinks(links);
+        setRelationshipModalOpen(true); // 관계도 모달
+        setGraphData(initializeGraphData(character, links));
       } catch (error) {
         if (error.response) {
           // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
@@ -452,6 +487,20 @@ function PostWritePage() {
     }
   };
 
+  const handleRelationshipInsert = async () => {
+    const relationshipElement = document.querySelector(".timeline-component");
+
+    try {
+      const base64Image = await domtoimage.toPng(relationshipElement);
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", base64Image, "user");
+      setRelationshipModalOpen(false);
+    } catch (error) {
+      console.error("Error capturing relationship graph:", error);
+    }
+  };
+
   return (
     <Wrapper>
       <Sidebar />
@@ -488,6 +537,73 @@ function PostWritePage() {
                   variant="secondary"
                   onClick={() => {
                     setTimelineModalOpen(false);
+                  }}
+                >
+                  아니오
+                </Button>
+              </div>
+            </div>
+          </div>
+        </TimelineModal>
+      )}
+      {relationshipModalOpen && ( //관계도 컴포넌트 모달
+        <TimelineModal
+          ref={relationshipModalBackground}
+          onClick={(e) => {
+            if (e.target === relationshipModalBackground.current) {
+              setRelationshipModalOpen(false);
+            }
+          }}
+        >
+          <div className={"modal-content"}>
+            <div className={"timeline-component"}>
+            <ForceGraph2D
+              width={window.innerWidth}
+              graphData={graphData}
+              nodeAutoColorBy="group"
+              nodeCanvasObject={(node, ctx, globalScale) => {
+                const label = node.name;
+                const fontSize = 12 / globalScale;
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.font = "${fontSize}px Arial";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'white';
+                ctx.fillText(label, node.x, node.y);
+              }}
+              linkDirectionalArrowLength={16}
+              linkDirectionalArrowRelPos={1}
+              linkCanvasObjectMode={() => 'before'}
+              linkCanvasObject={(link, ctx, globalScale) => {
+                const start = link.source;
+                const end = link.target;
+                const textPos = Object.assign(...['x', 'y'].map(c => ({
+                  [c]: start[c] + (end[c] - start[c]) / 2 // calculate midpoint
+                })));
+          
+            // 텍스트 라벨의 위치를 조정
+            const offset = link.source.id < link.target.id ? -5 : 5;
+            
+            ctx.font = "${12 / globalScale}px Arial";
+            ctx.fillStyle = 'black';
+            ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
+          }}
+      />
+    </div>
+            <div className="footer-wrapper">
+              <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
+              <div className="btn-wrapper">
+                <Button className="timeline-btn" onClick={handleRelationshipInsert}>
+                  예
+                </Button>
+                <Button
+                  className="timeline-btn"
+                  variant="secondary"
+                  onClick={() => {
+                    setRelationshipModalOpen(false);
                   }}
                 >
                   아니오
