@@ -76,7 +76,6 @@ const Content = styled.div`
 
   img {
     width: 100%;
-    margin: 10px;
   }
 `;
 
@@ -153,7 +152,7 @@ const PostViewPage = () => {
   };
 
   const handleEdit = () => {
-    alert("글 수정");
+    navigate(`/post-write/${postId}`);
   };
 
   if (!post) return <div>Loading...</div>;

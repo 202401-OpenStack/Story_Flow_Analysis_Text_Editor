@@ -98,8 +98,10 @@ const TimelineModal = styled.div`
 
 function PostWritePage() {
   const navigate = useNavigate();
-  const [title, setTitle] = useState("");
+  const { postId } = useParams();
+  const [post, setPost] = useState(null);
   const [editorContent, setEditorContent] = useState("");
+  const [title, setTitle] = useState("");
   const [showPalette, setShowPalette] = useState(false);
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const quillRef = useRef(null);
@@ -174,7 +176,7 @@ function PostWritePage() {
       if (textBeforeCursor.endsWith("/")) {
         const bounds = editor.getBounds(cursorPosition);
         setShowPalette(true);
-        setPalettePosition({ top: bounds.bottom, left: bounds.left });
+        setPalettePosition({ top: bounds.bottom, left: bounds.left }); // 드롭다운 위치 관련
       } else {
         setShowPalette(false);
       }
@@ -404,8 +406,8 @@ function PostWritePage() {
       return;
     }
     try {
-      const response = await axios.post(
-        "http://20.41.113.158/api/blog/posts",
+      const response = await axios.put(
+        `http://20.41.113.158/api/blog/posts/${postId}`,
         {
           title,
           content: editorContent,
@@ -417,7 +419,7 @@ function PostWritePage() {
           },
         }
       );
-      alert("Post created successfully! ID: " + response.data.data.id);
+      alert("Post updated successfully! ID: " + response.data.data.id);
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -434,7 +436,7 @@ function PostWritePage() {
         "저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?"
       )
     ) {
-      navigate("/post-list");
+      navigate(`/post/${postId}`);
     }
   };
 
@@ -451,6 +453,41 @@ function PostWritePage() {
       console.error("Error capturing timeline:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(
+          `http://20.41.113.158/api/blog/posts/${postId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.data.message === "Post retrieved successfully") {
+          setPost(response.data.data);
+          setTitle(post.title);
+          setEditorContent(createMarkup(post.content));
+        } else {
+          throw new Error(response.data.message || "Unknown Error");
+        }
+      } catch (error) {
+        console.error("Error fetching the post:", error);
+        alert(error.message || "Failed to fetch post");
+      }
+    };
+
+    fetchPost();
+  }, [postId]);
+
+  if (!post) return <div>Loading...</div>;
+
+  const createMarkup = (htmlContent) => {
+    return {
+      __html: DOMPurify.sanitize(htmlContent),
+    };
+  };
+
+  if (!post) return <div>Loading...</div>;
 
   return (
     <Wrapper>
