@@ -560,6 +560,7 @@ function PostWritePage() {
             <ForceGraph2D
               width={window.innerWidth}
               graphData={graphData}
+              linkDistance={100}
               nodeAutoColorBy="group"
               nodeCanvasObject={(node, ctx, globalScale) => {
                 const label = node.name;
