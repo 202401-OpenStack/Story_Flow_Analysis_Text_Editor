@@ -53,7 +53,7 @@ const Content = styled.div`
   width: 100%;
   height: calc(100vh - 157px);
   padding: 5px 16px;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.5;
   border: 1px solid #ccc; /* 경계선 스타일 */
   text-align: left;

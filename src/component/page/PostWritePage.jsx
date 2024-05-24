@@ -455,7 +455,6 @@ function PostWritePage() {
       const url = `http://20.41.113.158/api/blog/posts${
         isEdit ? `/${postId}` : ""
       }`;
-      console.log(url);
       const method = isEdit ? "PUT" : "POST";
 
       const response = await axios({
@@ -487,7 +486,7 @@ function PostWritePage() {
         "저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?"
       )
     ) {
-      navigate("/post-list");
+      navigate(`/post${isEdit ? `/${postId}` : "-list"}`);
     }
   };
 
@@ -554,12 +553,6 @@ function PostWritePage() {
       fetchPost();
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
-
-  const createMarkup = (htmlContent) => {
-    return {
-      __html: DOMPurify.sanitize(htmlContent),
-    };
-  };
 
   return (
     <Wrapper>
