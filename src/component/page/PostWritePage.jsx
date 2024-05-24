@@ -621,7 +621,7 @@ function PostWritePage() {
                   const fontSize = 12 / globalScale;
                   ctx.fillStyle = node.color;
                   ctx.beginPath();
-                  ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI, false);
+                  ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
                   ctx.fill();
                   ctx.font = "${fontSize}px Arial";
                   ctx.textAlign = "center";
@@ -630,7 +630,7 @@ function PostWritePage() {
                   ctx.fillText(label, node.x, node.y);
                 }}
                 linkDirectionalArrowLength={16}
-                linkDirectionalArrowRelPos={1}
+                linkDirectionalArrowRelPos={3}
                 linkCanvasObjectMode={() => "before"}
                 linkCanvasObject={(link, ctx, globalScale) => {
                   const start = link.source;
