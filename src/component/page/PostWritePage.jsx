@@ -452,7 +452,7 @@ function PostWritePage() {
     }
 
     try {
-      const url = `http://54.161.32.32/rest-api/posts${
+      const url = `http://20.41.113.158/api/blog/posts${
         isEdit ? `/${postId}` : ""
       }`;
       console.log(url);
@@ -539,7 +539,7 @@ function PostWritePage() {
         );
         if (response.data.message === "Post retrieved successfully") {
           setTitle(response.data.data.title);
-          setEditorContent(createMarkup(response.data.data.content));
+          setEditorContent(response.data.data.content);
         } else {
           throw new Error(response.data.message || "Unknown Error");
         }
