@@ -152,7 +152,7 @@ const PostViewPage = () => {
   };
 
   const handleEdit = () => {
-    navigate(`/post-write/${postId}`);
+    navigate(`/post?postId=${postId}&edit=true`);
   };
 
   if (!post) return <div>Loading...</div>;

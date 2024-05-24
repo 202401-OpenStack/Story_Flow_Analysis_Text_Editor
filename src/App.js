@@ -9,7 +9,6 @@ import SignUp from "./component/page/SignUp";
 import PostList from "./component/page/PostList";
 import PostWritePage from "./component/page/PostWritePage";
 import PostViewPage from "./component/page/PostViewPage";
-import PostUpdatePage from "./component/page/PostUpdatePage";
 
 import { useDispatch } from "react-redux";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -50,14 +49,6 @@ function App() {
         element={
           <ProtectedRoute>
             <PostViewPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="post-write/:postId"
-        element={
-          <ProtectedRoute>
-            <PostUpdatePage />
           </ProtectedRoute>
         }
       />

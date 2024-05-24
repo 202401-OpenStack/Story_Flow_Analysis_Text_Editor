@@ -3,11 +3,11 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chrono } from "react-chrono";
 import domtoimage from "dom-to-image";
-import ForceGraph2D from 'react-force-graph-2d';
+import ForceGraph2D from "react-force-graph-2d";
 
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
@@ -98,8 +98,8 @@ const TimelineModal = styled.div`
 `;
 
 function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
+  const letters = "0123456789ABCDEF";
+  let color = "#";
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
@@ -109,11 +109,11 @@ function getRandomColor() {
 function initializeGraphData(characters, links) {
   const nodes = characters; // 캐릭터들을 노드로 할당
   // 노드와 링크에 색상을 추가
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     node.color = getRandomColor(); // 노드 색상 초기화
   });
-  links.forEach(link => {
-    link.color = 'black'; // 링크 색상 초기화
+  links.forEach((link) => {
+    link.color = "black"; // 링크 색상 초기화
   });
 
   return { nodes, links }; // 색상이 추가된 노드와 링크 반환
@@ -121,11 +121,16 @@ function initializeGraphData(characters, links) {
 
 function PostWritePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [title, setTitle] = useState("");
   const [editorContent, setEditorContent] = useState("");
   const [showPalette, setShowPalette] = useState(false);
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const quillRef = useRef(null);
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [postId, setPostId] = useState(null);
 
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
@@ -135,7 +140,7 @@ function PostWritePage() {
   const relationshipModalBackground = useRef();
   const [relationshipCharacters, setRelationshipCharacters] = useState([]);
   const [relationshipLinks, setRelationshipLinks] = useState([]);
-  const [graphData, setGraphData] = useState({ nodes:[], links:[]});
+  const [graphData, setGraphData] = useState({ nodes: [], links: [] });
 
   const modules = useMemo(
     () => ({
@@ -438,20 +443,26 @@ function PostWritePage() {
       alert("제목과 내용을 모두 입력하세요.");
       return;
     }
+
     try {
-      const response = await axios.post(
-        "http://20.41.113.158/api/blog/posts",
-        {
+      const url = `http://54.161.32.32/rest-api/posts${
+        isEdit ? `/${postId}` : ""
+      }`;
+      console.log(url);
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await axios({
+        url: url,
+        method: method,
+        data: {
           title,
           content: editorContent,
         },
-        {
-          withCredentials: true, // Needed to send cookies for the session
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+        withCredentials: true, // Needed to send cookies for the session
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       alert("Post created successfully! ID: " + response.data.data.id);
     } catch (error) {
       if (error.response) {
@@ -499,6 +510,50 @@ function PostWritePage() {
     } catch (error) {
       console.error("Error capturing relationship graph:", error);
     }
+  };
+
+  useEffect(() => {
+    // queryParams 정의
+    const queryParams = new URLSearchParams(location.search);
+    const postIdFromQuery = queryParams.get("postId");
+    const isEditFromQuery = queryParams.get("edit") === "true";
+
+    // 상태 업데이트
+    setPostId(postIdFromQuery);
+    setIsEdit(isEditFromQuery);
+
+    const fetchPost = async () => {
+      try {
+        const response = await axios.get(
+          `http://20.41.113.158/api/blog/posts/${postIdFromQuery}`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.data.message === "Post retrieved successfully") {
+          setTitle(response.data.data.title);
+          setEditorContent(createMarkup(response.data.data.content));
+        } else {
+          throw new Error(response.data.message || "Unknown Error");
+        }
+      } catch (error) {
+        console.error("Error fetching the post:", error);
+        alert(error.message || "Failed to fetch post");
+      }
+    };
+
+    // 수정 모드이고 postId가 있을 경우에만 서버로부터 데이터를 가져옴
+    if (isEditFromQuery && postIdFromQuery) {
+      fetchPost();
+    }
+  }, [location]); // location이 변경될 때마다 useEffect가 실행됨
+
+  if (!post) return <div>Loading...</div>;
+
+  const createMarkup = (htmlContent) => {
+    return {
+      __html: DOMPurify.sanitize(htmlContent),
+    };
   };
 
   return (
@@ -557,47 +612,56 @@ function PostWritePage() {
         >
           <div className={"modal-content"}>
             <div className={"timeline-component"}>
-            <ForceGraph2D
-              width={window.innerWidth}
-              graphData={graphData}
-              linkDistance={100}
-              nodeAutoColorBy="group"
-              nodeCanvasObject={(node, ctx, globalScale) => {
-                const label = node.name;
-                const fontSize = 12 / globalScale;
-                ctx.fillStyle = node.color;
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI, false);
-                ctx.fill();
-                ctx.font = "${fontSize}px Arial";
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'white';
-                ctx.fillText(label, node.x, node.y);
-              }}
-              linkDirectionalArrowLength={16}
-              linkDirectionalArrowRelPos={1}
-              linkCanvasObjectMode={() => 'before'}
-              linkCanvasObject={(link, ctx, globalScale) => {
-                const start = link.source;
-                const end = link.target;
-                const textPos = Object.assign(...['x', 'y'].map(c => ({
-                  [c]: start[c] + (end[c] - start[c]) / 2 // calculate midpoint
-                })));
-          
-            // 텍스트 라벨의 위치를 조정
-            const offset = link.source.id < link.target.id ? -5 : 5;
-            
-            ctx.font = "${12 / globalScale}px Arial";
-            ctx.fillStyle = 'black';
-            ctx.fillText(link.relationship, textPos.x, textPos.y + offset);
-          }}
-      />
-    </div>
+              <ForceGraph2D
+                width={window.innerWidth}
+                graphData={graphData}
+                linkDistance={100}
+                nodeAutoColorBy="group"
+                nodeCanvasObject={(node, ctx, globalScale) => {
+                  const label = node.name;
+                  const fontSize = 12 / globalScale;
+                  ctx.fillStyle = node.color;
+                  ctx.beginPath();
+                  ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI, false);
+                  ctx.fill();
+                  ctx.font = "${fontSize}px Arial";
+                  ctx.textAlign = "center";
+                  ctx.textBaseline = "middle";
+                  ctx.fillStyle = "white";
+                  ctx.fillText(label, node.x, node.y);
+                }}
+                linkDirectionalArrowLength={16}
+                linkDirectionalArrowRelPos={1}
+                linkCanvasObjectMode={() => "before"}
+                linkCanvasObject={(link, ctx, globalScale) => {
+                  const start = link.source;
+                  const end = link.target;
+                  const textPos = Object.assign(
+                    ...["x", "y"].map((c) => ({
+                      [c]: start[c] + (end[c] - start[c]) / 2, // calculate midpoint
+                    }))
+                  );
+
+                  // 텍스트 라벨의 위치를 조정
+                  const offset = link.source.id < link.target.id ? -5 : 5;
+
+                  ctx.font = "${12 / globalScale}px Arial";
+                  ctx.fillStyle = "black";
+                  ctx.fillText(
+                    link.relationship,
+                    textPos.x,
+                    textPos.y + offset
+                  );
+                }}
+              />
+            </div>
             <div className="footer-wrapper">
               <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
-                <Button className="timeline-btn" onClick={handleRelationshipInsert}>
+                <Button
+                  className="timeline-btn"
+                  onClick={handleRelationshipInsert}
+                >
                   예
                 </Button>
                 <Button
