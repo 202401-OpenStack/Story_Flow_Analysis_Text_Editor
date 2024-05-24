@@ -1,9 +1,16 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
 import axios from "axios";
 import { Chrono } from "react-chrono";
 import domtoimage from "dom-to-image";
@@ -547,8 +554,6 @@ function PostWritePage() {
       fetchPost();
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
-
-  if (!post) return <div>Loading...</div>;
 
   const createMarkup = (htmlContent) => {
     return {
