@@ -487,7 +487,6 @@ function PostWritePage() {
         "저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?"
       )
     ) {
-      alert(isEdit, postId);
       navigate(`/post${isEdit ? `/${postId}` : "-list"}`);
     }
   };
