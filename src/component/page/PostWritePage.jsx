@@ -104,6 +104,15 @@ const VisualizeModal = styled.div`
   }
 `;
 
+const PaletteContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  z-index: 100;
+`;
+
 function getRandomColor() {
   const letters = "0123456789ABCDEF";
   let color = "#";
@@ -425,6 +434,7 @@ function PostWritePage() {
         }
       }
     }
+    setShowPalette(false);
     quill.setSelection(quill.getLength(), 0);
   };
 
@@ -685,7 +695,7 @@ function PostWritePage() {
             defaultValue={editorContent}
           />
           {showPalette && (
-            <div
+            <PaletteContainer
               ref={paletteBackground}
               onClick={(e) => {
                 if (e.target === paletteBackground.current) {
@@ -699,7 +709,7 @@ function PostWritePage() {
                 left={palettePosition.left}
                 onSelect={handleSelectCommand}
               />
-            </div>
+            </PaletteContainer>
           )}
         </Container>
         <EditorBtn>
