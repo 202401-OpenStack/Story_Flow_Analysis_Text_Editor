@@ -612,9 +612,9 @@ function PostWritePage() {
           <div className={"modal-content"}>
             <div className={"timeline-component"}>
               <ForceGraph2D
-                width={window.innerWidth}
+                width={80vw}
                 graphData={graphData}
-                //linkDistance={300}
+                linkDistance={300}
                 nodeAutoColorBy="group"
                 nodeCanvasObject={(node, ctx, globalScale) => {
                   const label = node.name;
@@ -623,7 +623,7 @@ function PostWritePage() {
                   ctx.beginPath();
                   ctx.arc(node.x, node.y, 10, 0, 2 * Math.PI, false);
                   ctx.fill();
-                  ctx.font = "${fontSize}px Arial";
+                  ctx.font = "6px Arial";
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "white";
