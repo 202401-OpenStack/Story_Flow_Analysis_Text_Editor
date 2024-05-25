@@ -509,6 +509,8 @@ function PostWritePage() {
       const range = quill.getSelection(true);
       quill.insertEmbed(range.index, "image", base64Image, "user");
       setRelationshipModalOpen(false);
+      setShowPalette(false);
+      quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing relationship graph:", error);
     }
