@@ -107,8 +107,8 @@ const VisualizeModal = styled.div`
 const PaletteContainer = styled.div`
   width: 100%;
   height: 100%;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
   position: absolute;
   z-index: 100;
 `;
@@ -435,7 +435,6 @@ function PostWritePage() {
       }
     }
     setShowPalette(false);
-    quill.setSelection(quill.getLength(), 0);
   };
 
   const saveContent = async () => {
@@ -494,6 +493,8 @@ function PostWritePage() {
       const range = quill.getSelection(true);
       quill.insertEmbed(range.index, "image", base64Image, "user");
       setTimelineModalOpen(false);
+      setShowPalette(false);
+      quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing timeline:", error);
     }
