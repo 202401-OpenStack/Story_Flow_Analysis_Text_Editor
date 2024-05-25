@@ -52,7 +52,7 @@ const EditorBtn = styled.div`
   gap: 16px;
 `;
 
-const TimelineModal = styled.div`
+const VisualizeModal = styled.div`
   width: 100%;
   height: 100%;
   padding: 16px;
@@ -79,7 +79,7 @@ const TimelineModal = styled.div`
     overflow-y: scroll;
   }
 
-  .timeline-component {
+  .visualize-component {
     width: 100%;
     height: fit-content;
     background: white;
@@ -99,7 +99,7 @@ const TimelineModal = styled.div`
     gap: 16px;
   }
 
-  .timeline-btn {
+  .visualize-btn {
     width: 75px;
   }
 `;
@@ -492,7 +492,7 @@ function PostWritePage() {
   };
 
   const handleTimelineInsert = async () => {
-    const timelineElement = document.querySelector(".timeline-component");
+    const timelineElement = document.querySelector(".visualize-component");
 
     try {
       const base64Image = await domtoimage.toPng(timelineElement);
@@ -506,7 +506,7 @@ function PostWritePage() {
   };
 
   const handleRelationshipInsert = async () => {
-    const relationshipElement = document.querySelector(".timeline-component");
+    const relationshipElement = document.querySelector(".visualize-component");
 
     try {
       const base64Image = await domtoimage.toPng(relationshipElement);
@@ -559,7 +559,7 @@ function PostWritePage() {
     <Wrapper>
       <Sidebar />
       {timelineModalOpen && ( //타임라인 컴포넌트 모달
-        <TimelineModal
+        <VisualizeModal
           ref={timelineModalBackground}
           onClick={(e) => {
             if (e.target === timelineModalBackground.current) {
@@ -568,7 +568,7 @@ function PostWritePage() {
           }}
         >
           <div className={"modal-content"}>
-            <div className={"timeline-component"}>
+            <div className={"visualize-component"}>
               <Chrono
                 items={timelineItems}
                 mode="VERTICAL"
@@ -583,11 +583,14 @@ function PostWritePage() {
             <div className="footer-wrapper">
               <p>생성된 타임라인을 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
-                <Button className="timeline-btn" onClick={handleTimelineInsert}>
+                <Button
+                  className="visualize-btn"
+                  onClick={handleTimelineInsert}
+                >
                   예
                 </Button>
                 <Button
-                  className="timeline-btn"
+                  className="visualize-btn"
                   variant="secondary"
                   onClick={() => {
                     setTimelineModalOpen(false);
@@ -598,10 +601,10 @@ function PostWritePage() {
               </div>
             </div>
           </div>
-        </TimelineModal>
+        </VisualizeModal>
       )}
       {relationshipModalOpen && ( //관계도 컴포넌트 모달
-        <TimelineModal
+        <VisualizeModal
           ref={relationshipModalBackground}
           onClick={(e) => {
             if (e.target === relationshipModalBackground.current) {
@@ -610,9 +613,9 @@ function PostWritePage() {
           }}
         >
           <div className={"modal-content"}>
-            <div className={"timeline-component"}>
+            <div className={"visualize-component"}>
               <ForceGraph2D
-                width={80vw}
+                width="80vw"
                 graphData={graphData}
                 linkDistance={300}
                 nodeAutoColorBy="group"
@@ -658,13 +661,13 @@ function PostWritePage() {
               <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
                 <Button
-                  className="timeline-btn"
+                  className="visualize-btn"
                   onClick={handleRelationshipInsert}
                 >
                   예
                 </Button>
                 <Button
-                  className="timeline-btn"
+                  className="visualize-btn"
                   variant="secondary"
                   onClick={() => {
                     setRelationshipModalOpen(false);
@@ -675,7 +678,7 @@ function PostWritePage() {
               </div>
             </div>
           </div>
-        </TimelineModal>
+        </VisualizeModal>
       )}
       <Layout>
         <Container>
