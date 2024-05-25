@@ -134,6 +134,7 @@ function PostWritePage() {
   const [editorContent, setEditorContent] = useState("");
   const [showPalette, setShowPalette] = useState(false);
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
+  const paletteBackground = useRef();
   const quillRef = useRef(null);
 
   const [isEdit, setIsEdit] = useState(false);
@@ -223,10 +224,10 @@ function PostWritePage() {
   };
 
   const handleSelectCommand = async (command) => {
-    if (command === "summarizeArticle") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
+    const quill = quillRef.current.getEditor();
+    const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
+    if (command === "summarizeArticle") {
       try {
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/summarize",
@@ -254,9 +255,6 @@ function PostWritePage() {
         }
       }
     } else if (command === "findTopic") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
-
       try {
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/topic",
@@ -284,9 +282,6 @@ function PostWritePage() {
         }
       }
     } else if (command === "extractKeywords") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
-
       try {
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/keywords",
@@ -314,9 +309,6 @@ function PostWritePage() {
         }
       }
     } else if (command === "analyzeCharacterCount") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
-
       try {
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-count",
@@ -343,72 +335,7 @@ function PostWritePage() {
           alert("Error", error.message);
         }
       }
-    } else if (command === "analyzeTimeline") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
-
-      try {
-        const response = await axios.post(
-          "http://20.41.113.158/api/analysis/timeline",
-          { content },
-          {
-            withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const items = JSON.parse(response.data.data);
-        setTimelineItems(items);
-        setTimelineModalOpen(true);
-      } catch (error) {
-        console.error(error);
-        if (error.response) {
-          // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
-          alert(`Error: ${error.response.data.message}`);
-        } else if (error.request) {
-          // 요청이 이루어 졌으나 응답을 받지 못함
-          alert("No response was received");
-        } else {
-          // 요청 설정 중 문제가 발생한 경우
-          alert("Error", error.message);
-        }
-      }
-    } else if (command === "judgeStoryFlow") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
-
-      try {
-        const response = await axios.post(
-          "http://20.41.113.158/api/analysis/story-flow",
-          { content },
-          {
-            withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
-      } catch (error) {
-        if (error.response) {
-          // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
-          alert(`Error: ${error.response.data.message}`);
-        } else if (error.request) {
-          // 요청이 이루어 졌으나 응답을 받지 못함
-          alert("No response was received");
-        } else {
-          // 요청 설정 중 문제가 발생한 경우
-          alert("Error", error.message);
-        }
-      }
     } else if (command === "analyzeCharacterRelationships") {
-      const quill = quillRef.current.getEditor();
-      const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
-
       try {
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-relationships",
@@ -441,12 +368,69 @@ function PostWritePage() {
           alert("Error", error.message);
         }
       }
+    } else if (command === "analyzeTimeline") {
+      try {
+        const response = await axios.post(
+          "http://20.41.113.158/api/analysis/timeline",
+          { content },
+          {
+            withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const items = JSON.parse(response.data.data); // 백엔드에서 반환된 string 텍스트를 파싱합니다.
+        setTimelineItems(items);
+        setTimelineModalOpen(true);
+      } catch (error) {
+        console.error(error);
+        if (error.response) {
+          // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+          alert(`Error: ${error.response.data.message}`);
+        } else if (error.request) {
+          // 요청이 이루어 졌으나 응답을 받지 못함
+          alert("No response was received");
+        } else {
+          // 요청 설정 중 문제가 발생한 경우
+          alert("Error", error.message);
+        }
+      }
+    } else if (command === "judgeStoryFlow") {
+      try {
+        const response = await axios.post(
+          "http://20.41.113.158/api/analysis/story-flow",
+          { content },
+          {
+            withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        quill.insertText(quill.getLength(), `\n${summary}\n`);
+      } catch (error) {
+        if (error.response) {
+          // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
+          alert(`Error: ${error.response.data.message}`);
+        } else if (error.request) {
+          // 요청이 이루어 졌으나 응답을 받지 못함
+          alert("No response was received");
+        } else {
+          // 요청 설정 중 문제가 발생한 경우
+          alert("Error", error.message);
+        }
+      }
     }
     setShowPalette(false);
   };
 
   const saveContent = async () => {
     if (!title.trim() || !editorContent.trim()) {
+      // 제목과 내용이 모두 입력될 때만 저장합니다.
       alert("제목과 내용을 모두 입력하세요.");
       return;
     }
@@ -706,6 +690,12 @@ function PostWritePage() {
               top={palettePosition.top}
               left={palettePosition.left}
               onSelect={handleSelectCommand}
+              ref={paletteBackground}
+              onClick={(e) => {
+                if (e.target === paletteBackground.current) {
+                  setShowPalette(false);
+                }
+              }}
             />
           )}
         </Container>
