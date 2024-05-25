@@ -54,9 +54,15 @@ const Content = styled.div`
   height: calc(100vh - 157px);
   padding: 5px 16px;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.42;
   border: 1px solid #ccc; /* 경계선 스타일 */
+  outline: none;
+  box-sizing: border-box;
+  tab-size: 4;
+  -moz-tab-size: 4;
   text-align: left;
+  white-space: pre-wrap;
+  word-wrap: break-word;
   overflow-wrap: break-word; // 너무 긴 텍스트가 오버플로우 되지 않도록 처리
   overflow-y: scroll;
 
