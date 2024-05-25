@@ -425,7 +425,7 @@ function PostWritePage() {
         }
       }
     }
-    setShowPalette(false);
+    quill.setSelection(quill.getLength(), 0);
   };
 
   const saveContent = async () => {
@@ -685,18 +685,21 @@ function PostWritePage() {
             defaultValue={editorContent}
           />
           {showPalette && (
-            <CommandPalette
-              show={showPalette}
-              top={palettePosition.top}
-              left={palettePosition.left}
-              onSelect={handleSelectCommand}
+            <div
               ref={paletteBackground}
               onClick={(e) => {
                 if (e.target === paletteBackground.current) {
                   setShowPalette(false);
                 }
               }}
-            />
+            >
+              <CommandPalette
+                show={showPalette}
+                top={palettePosition.top}
+                left={palettePosition.left}
+                onSelect={handleSelectCommand}
+              />
+            </div>
           )}
         </Container>
         <EditorBtn>
