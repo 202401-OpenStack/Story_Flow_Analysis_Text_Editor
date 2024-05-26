@@ -13,7 +13,7 @@ const fadeInDown = keyframes`
 `;
 
 const Dropdown = styled.div`
-  position: absolute;
+  position: sticky;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   border-radius: 8px;

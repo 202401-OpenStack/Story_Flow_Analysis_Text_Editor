@@ -109,6 +109,7 @@ const PaletteContainer = styled.div`
   height: 100%;
   top: 0;
   left: 0;
+  padding: 16px;
   position: absolute;
   z-index: 100;
 `;
