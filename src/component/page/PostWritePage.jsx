@@ -332,6 +332,7 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        console.log(response.data.data);
         quill.insertText(quill.getLength(), `\n${summary}\n`);
       } catch (error) {
         if (error.response) {
