@@ -334,10 +334,8 @@ function PostWritePage() {
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
         */
         const summary = ["철수", "영희", "길동"];
-        console.log(summary);
-        // quill.insertText(quill.getLength(), `\n${summary}\n`);
         const characterCount = summary.length;
-        const text = `이 글의 등장인물은 ${summary} 으로 총 ${characterCount} 명입니다.`;
+        const text = `이 글의 등장인물은 ${summary}(으)로 총 ${characterCount}명입니다.`;
         quill.insertText(quill.getLength(), text);
       } catch (error) {
         if (error.response) {
