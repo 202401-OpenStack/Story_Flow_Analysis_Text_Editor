@@ -320,7 +320,7 @@ function PostWritePage() {
       }
     } else if (command === "analyzeCharacterCount") {
       try {
-        const response = await axios.post(
+        /*const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-count",
           { content },
           {
@@ -332,8 +332,13 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        console.log(response.data.data);
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
+        */
+        const summary = ["철수", "영희", "길동"];
+        console.log(summary);
+        // quill.insertText(quill.getLength(), `\n${summary}\n`);
+        const characterCount = summary.length;
+        const text = `이 글의 등장인물은 ${summary} 으로 총 ${characterCount} 명입니다.`;
+        quill.insertText(quill.getLength(), text);
       } catch (error) {
         if (error.response) {
           // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
