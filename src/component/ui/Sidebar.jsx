@@ -43,12 +43,12 @@ function Sidebar() {
   const dispatch = useDispatch();
 
   const redirectToHome = () => {
-    navigate("/"); // 헤더 클릭 시 메인 페이지로 이동하기 위해 훅 사용
+    navigate("/login"); // 헤더 클릭 시 메인 페이지로 이동하기 위해 훅 사용
   };
 
   const handleLogout = async () => {
     await dispatch(logout());
-    navigate("/");
+    navigate("/login");
   }
 
   const [posts, setPosts] = useState([]);

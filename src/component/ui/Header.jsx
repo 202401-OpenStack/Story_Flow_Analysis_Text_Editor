@@ -35,12 +35,12 @@ function Header(props) {
   const title = "한국어 이야기\n흐름 분석 시스템";
 
   const redirectToHome = () => {
-    navigate("/"); // 헤더 클릭 시 메인 페이지로 이동하기 위해 훅 사용
+    navigate("/login"); // 헤더 클릭 시 메인 페이지로 이동하기 위해 훅 사용
   };
 
   const handleLogout = async () => {
     await dispatch(logout());  // 로그아웃 액션 호출
-    navigate("/");  // 로그아웃 후 메인 페이지로 리다이렉트
+    navigate("/login");  // 로그아웃 후 메인 페이지로 리다이렉트
   };
 
   return (
