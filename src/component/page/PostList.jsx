@@ -31,13 +31,14 @@ function PostList(props) {
 
   useEffect(() => {
     if (loading) return; // 로딩 중이면 아무것도 하지 않음
-    
+
     if (!isAuthenticated) {
       alert("User not found or not logged in.");
       navigate("/login", { replace: true });
-    } else {
-      fetchPosts();
+      return;
     }
+
+    fetchPosts();
   }, [loading, isAuthenticated, navigate]);
 
   const fetchPosts = async () => {
