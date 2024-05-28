@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
+import {useDispatch} from 'react-redux';
 
 import List from "../list/EditorList";
 
@@ -38,10 +39,16 @@ const Title = styled.h1`
 function Sidebar() {
   const navigate = useNavigate();
   const title = "한국어 이야기\n흐름 분석 시스템";
+  const dispatch = useDispatch();
 
   const redirectToHome = () => {
     navigate("/"); // 헤더 클릭 시 메인 페이지로 이동하기 위해 훅 사용
   };
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate("/");
+  }
 
   const [posts, setPosts] = useState([]);
 
@@ -100,9 +107,7 @@ function Sidebar() {
         <Button
           variant="primary"
           style={{ height: "40px" }}
-          onClick={() => {
-            navigate("/");
-          }}
+          onClick={handleLogout}
         >
           로그아웃
         </Button>
