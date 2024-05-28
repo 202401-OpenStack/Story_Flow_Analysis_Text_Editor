@@ -39,7 +39,7 @@ function Header(props) {
   };
 
   const handleLogout = async () => {
-    dispatch(logout());  // 로그아웃 액션 호출
+    await dispatch(logout());  // 로그아웃 액션 호출
     navigate("/");  // 로그아웃 후 메인 페이지로 리다이렉트
   };
 
