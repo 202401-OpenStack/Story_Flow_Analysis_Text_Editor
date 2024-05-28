@@ -468,6 +468,7 @@ function PostWritePage() {
         },
       });
       alert("Post created successfully! ID: " + response.data.data.id);
+      location.reload();
       if (isEdit) navigate(`/post/${postId}`);
     } catch (error) {
       if (error.response) {
