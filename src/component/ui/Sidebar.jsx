@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import {useDispatch} from 'react-redux';
+import { logout } from "../../redux/actions/authActions";
 
 import List from "../list/EditorList";
 
