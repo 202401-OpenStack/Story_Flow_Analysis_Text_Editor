@@ -468,7 +468,7 @@ function PostWritePage() {
         },
       });
       alert("Post created successfully! ID: " + response.data.data.id);
-      location.reload();
+      window.location.replace("/"); //새로고침
       if (isEdit) navigate(`/post/${postId}`);
     } catch (error) {
       if (error.response) {
