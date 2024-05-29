@@ -67,7 +67,7 @@ exports.extractKeywords = (req, res) => {
 // 인물 수 분석
 exports.analyzeCharacterCount = (req, res) => {
     handleRequest(req, res, 
-        content => `아래 글에서 등장하는 인물들을 작성하세요. 만약 이름이 명시되지 않았다면 글에 나온 대로(그 사람, 선생 등) 작성하세요. 사설 달지 말고 "철수, 영희, 길동" 처럼 따옴표로 구분해서 작성하세요.: \n\n${content}`, 
+        content => `아래 글에서 등장하는 인물들을 배열 형태로 작성하세요. 만약 이름이 명시되지 않았다면 글에 나온 대로(그 사람, 선생 등) 작성하세요. 사설 달지 말고 "[철수, 영희, 길동]" 처럼 대괄호 안에 쉼표로 구분해서 작성하세요.: \n\n${content}`, 
         "Analyzing character counts completed successfully"
     );
 };
