@@ -337,12 +337,11 @@ function PostWritePage() {
           }
         );
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        console.log(summary, typeof summary);
-        const summary2 = summary.replace(/(\w+)/g, '"$1"');
-        console.log(JSON.parse(summary2), typeof JSON.parse(summary2));
-        const characterCount = summary.length;
-        const text = `이 글의 등장인물은 ${summary}(으)로 총 ${characterCount}명입니다.`;
+        const summary = response.data.data.slice(1, -1).split(","); // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        const characterList = summary.map((item) => item.trim());
+        console.log(characterList, typeof characterList);
+        const characterCount = characterList.length;
+        const text = `이 글의 등장인물은 ${characterList}(으)로 총 ${characterCount}명입니다.`;
         quill.insertText(quill.getLength(), text);
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
