@@ -349,7 +349,7 @@ function PostWritePage() {
         const characterCount = characterList.length;
         const text = `이 글의 등장인물은 ${characterList}(으)로 총 ${characterCount}명입니다.`;
         quill.insertText(quill.getLength(), "\n<인물 수>");
-        quill.insertText(quill.getLength(), text, {
+        quill.insertText(quill.getLength(), '${text}, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
