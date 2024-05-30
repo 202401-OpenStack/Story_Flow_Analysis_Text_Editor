@@ -146,6 +146,7 @@ function PostWritePage() {
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const paletteBackground = useRef();
   const quillRef = useRef(null);
+  const savedCallback = useRef();
 
   const [isEdit, setIsEdit] = useState(false);
   const [postId, setPostId] = useState(null);
@@ -452,11 +453,13 @@ function PostWritePage() {
 
   const saveContent = async () => {
     if (!title.trim()) {
+      console.log("기존 title: ", title);
       const date = new Date();
       const formatted = `${date.getFullYear()}-${String(
         date.getMonth() + 1
       ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       setTitle(formatted);
+      console.log(title);
     }
 
     try {
@@ -478,7 +481,9 @@ function PostWritePage() {
         },
       });
 
-      console.log("saved", title);
+      console.log("saved", title, editorContent, isEdit);
+      if (!isEdit) setIsEdit(true);
+      return response;
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -486,6 +491,7 @@ function PostWritePage() {
       } else {
         alert("An unexpected error occurred");
       }
+      return;
     }
   };
 
@@ -503,9 +509,32 @@ function PostWritePage() {
       alert("Post updated successfully! ID: " + response.data.data.id);
     } else {
       alert("Post created successfully! ID: " + response.data.data.id);
-      setIsEdit(true);
     }
   };
+
+  useEffect(() => {
+    useInterval(() => {
+      saveContent();
+      console.log("saved", title, isEdit);
+    }, 10000);
+  }, []);
+
+  function useInterval(callback, delay) {
+    const savedCallback = useRef();
+
+    useEffect(() => {
+      savedCallback.current = callback;
+    });
+
+    useEffect(() => {
+      function tick() {
+        savedCallback.current();
+      }
+
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }, [delay]);
+  }
 
   const handleCancel = () => {
     // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
@@ -586,12 +615,7 @@ function PostWritePage() {
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      saveContent();
-    }, 5000); // 60000ms = 1분
-    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 타이머 정리
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Wrapper>
@@ -722,7 +746,10 @@ function PostWritePage() {
           <TextInput
             placeholder="제목을 입력하세요"
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) => {
+              setTitle(event.target.value);
+              console.log("title: ", title);
+            }}
           />
         </Container>
         <Container>
