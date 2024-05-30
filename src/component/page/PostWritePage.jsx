@@ -120,6 +120,7 @@ const MessageText = styled.div`
   color: gray;
   padding: 10px;
   margin-top: 10px;
+  margint-right: 16px;
   align-self: flex-end;
 `;
 
