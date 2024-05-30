@@ -865,13 +865,7 @@ function PostWritePage() {
           <MessageText>{savedMessage}</MessageText>
         </Container>
         <EditorBtn>
-          <Button
-            onClick={() => {
-              setSavedMessage("저장되었습니다.");
-            }}
-          >
-            저장
-          </Button>
+          <Button onClick={handleSave}>저장</Button>
           <Button variant="secondary" onClick={handleCancel}>
             취소
           </Button>
