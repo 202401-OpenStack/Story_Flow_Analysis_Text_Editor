@@ -115,6 +115,7 @@ const PaletteContainer = styled.div`
 `;
 
 const MessageText = styled.div`
+  height: 16px;
   font-size: 0.8rem;
   color: gray;
   padding: 10px;
@@ -157,7 +158,7 @@ function PostWritePage() {
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const paletteBackground = useRef();
   const quillRef = useRef(null);
-  const [savedMessage, setSavedMessage] = useState("\n");
+  const [savedMessage, setSavedMessage] = useState("");
 
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
@@ -635,7 +636,7 @@ function PostWritePage() {
     setSavedMessage(`저장되었습니다: ${savedTime}`);
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      setSavedMessage("\n");
+      setSavedMessage("");
     }, 5000);
   };
 
