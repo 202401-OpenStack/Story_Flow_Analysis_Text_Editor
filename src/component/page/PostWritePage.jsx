@@ -477,6 +477,8 @@ function PostWritePage() {
           "Content-Type": "application/json",
         },
       });
+
+      console.log("saved", title);
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -485,8 +487,6 @@ function PostWritePage() {
         alert("An unexpected error occurred");
       }
     }
-    console.log("saved", title);
-    return response;
   };
 
   const handleSave = () => {
