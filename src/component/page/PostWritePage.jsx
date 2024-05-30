@@ -656,7 +656,7 @@ function PostWritePage() {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [editorContent]);
 
   return (
     <Wrapper>
