@@ -547,10 +547,6 @@ function PostWritePage() {
     }
   }, 20000);
 
-  useEffect(() => {
-    console.log(title, " // ", editorContent, " // ", postId, " // ", isEdit);
-  }, [title, editorContent, postId, isEdit]);
-
   const handleCancel = () => {
     // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
     if (
