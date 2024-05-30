@@ -498,7 +498,7 @@ function PostWritePage() {
     }
 
     const response = saveContent();
-    window.location.replace("/"); //새로고침
+    window.location.replace(`/post-write?postId=${postId}&edit=true`); //새로고침
 
     if (isEdit) {
       alert("Post updated successfully! ID: " + response.data.data.id);
