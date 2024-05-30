@@ -237,10 +237,6 @@ function PostWritePage() {
     const quill = quillRef.current.getEditor();
     const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
-    if (!editorContent.trim()) {
-      alert("내용을 입력하세요.");
-      return;
-    }
     saveContent();
 
     if (command === "summarizeArticle") {
@@ -468,6 +464,38 @@ function PostWritePage() {
     setShowPalette(false);
   };
 
+  const handleTimelineInsert = async () => {
+    const timelineElement = document.querySelector(".visualize-component");
+
+    try {
+      const base64Image = await domtoimage.toPng(timelineElement);
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", base64Image, "user");
+      setTimelineModalOpen(false);
+      setShowPalette(false);
+      quill.setSelection(quill.getLength(), 0);
+    } catch (error) {
+      console.error("Error capturing timeline:", error);
+    }
+  };
+
+  const handleRelationshipInsert = async () => {
+    const relationshipElement = document.querySelector(".visualize-component");
+
+    try {
+      const base64Image = await domtoimage.toPng(relationshipElement);
+      const quill = quillRef.current.getEditor();
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, "image", base64Image, "user");
+      setRelationshipModalOpen(false);
+      setShowPalette(false);
+      quill.setSelection(quill.getLength(), 0);
+    } catch (error) {
+      console.error("Error capturing relationship graph:", error);
+    }
+  };
+
   const saveContent = async () => {
     let curTitle = title;
     let curEditorContent = editorContent;
@@ -537,9 +565,9 @@ function PostWritePage() {
 
     saveContent();
     if (isEdit) {
-      alert("Post updated successfully! ID: " + postId);
+      alert("Post updated successfully!");
     } else {
-      alert("Post created successfully! ID: " + postId);
+      alert("Post created successfully!");
     }
   };
 
@@ -571,45 +599,13 @@ function PostWritePage() {
   }, 20000); // 20초에 한 번씩 글 저장
 
   const handleCancel = () => {
-    // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
+    // 취소 버튼 클릭 시 실행
     if (
       window.confirm(
         "저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?"
       )
     ) {
       navigate(`/post${isEdit ? `/${postId}` : "-list"}`);
-    }
-  };
-
-  const handleTimelineInsert = async () => {
-    const timelineElement = document.querySelector(".visualize-component");
-
-    try {
-      const base64Image = await domtoimage.toPng(timelineElement);
-      const quill = quillRef.current.getEditor();
-      const range = quill.getSelection(true);
-      quill.insertEmbed(range.index, "image", base64Image, "user");
-      setTimelineModalOpen(false);
-      setShowPalette(false);
-      quill.setSelection(quill.getLength(), 0);
-    } catch (error) {
-      console.error("Error capturing timeline:", error);
-    }
-  };
-
-  const handleRelationshipInsert = async () => {
-    const relationshipElement = document.querySelector(".visualize-component");
-
-    try {
-      const base64Image = await domtoimage.toPng(relationshipElement);
-      const quill = quillRef.current.getEditor();
-      const range = quill.getSelection(true);
-      quill.insertEmbed(range.index, "image", base64Image, "user");
-      setRelationshipModalOpen(false);
-      setShowPalette(false);
-      quill.setSelection(quill.getLength(), 0);
-    } catch (error) {
-      console.error("Error capturing relationship graph:", error);
     }
   };
 
@@ -648,6 +644,19 @@ function PostWritePage() {
       fetchPost();
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      saveContent();
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <Wrapper>
