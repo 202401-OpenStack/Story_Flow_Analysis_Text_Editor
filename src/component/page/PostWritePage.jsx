@@ -114,6 +114,14 @@ const PaletteContainer = styled.div`
   z-index: 100;
 `;
 
+const MessageText = styled.div`
+  font-size: 0.8rem;
+  color: gray;
+  padding: 10px;
+  margin-top: 10px;
+  align-self: flex-end;
+`;
+
 function getRandomColor() {
   const letters = "0123456789ABCDEF";
   let color = "#";
@@ -149,6 +157,7 @@ function PostWritePage() {
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const paletteBackground = useRef();
   const quillRef = useRef(null);
+  const [savedMessage, setSavedMessage] = useState("");
 
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
@@ -547,6 +556,7 @@ function PostWritePage() {
         " // ",
         curIsEdit
       );
+      handleSavedMessage();
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -597,6 +607,27 @@ function PostWritePage() {
       console.log("need content");
     }
   }, 20000); // 20초에 한 번씩 글 저장
+
+  const timeoutRef = useRef(null);
+
+  const handleSavedMessage = () => {
+    const now = new Date();
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    };
+    const savedTime = now.toLocaleString("en-US", options).replace(",", "");
+    setSavedMessage(`저장되었습니다: ${savedTime}`);
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setSavedMessage("");
+    }, 2000);
+  };
 
   const handleCancel = () => {
     // 취소 버튼 클릭 시 실행
@@ -821,9 +852,16 @@ function PostWritePage() {
               />
             </PaletteContainer>
           )}
+          <MessageText>{savedMessage}</MessageText>
         </Container>
         <EditorBtn>
-          <Button onClick={handleSave}>저장</Button>
+          <Button
+            onClick={() => {
+              setSavedMessage("저장되었습니다.");
+            }}
+          >
+            저장
+          </Button>
           <Button variant="secondary" onClick={handleCancel}>
             취소
           </Button>
