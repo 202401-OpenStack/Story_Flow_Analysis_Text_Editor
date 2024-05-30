@@ -4,7 +4,7 @@
 
 ## 1. 개발 환경
 ### 프론트엔드
-1. Runtime Environment: >= Node v20.9.0
+1. Runtime Environment: Node >= v20.9.0
 2. Frontend Library: React v18.0
 3. State Management Library: react-redux
 4. Editor Library: react-quill
