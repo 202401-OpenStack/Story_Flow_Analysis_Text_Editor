@@ -157,7 +157,7 @@ function PostWritePage() {
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const paletteBackground = useRef();
   const quillRef = useRef(null);
-  const [savedMessage, setSavedMessage] = useState("");
+  const [savedMessage, setSavedMessage] = useState("\n");
 
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
@@ -616,7 +616,7 @@ function PostWritePage() {
     } else {
       console.log("need content");
     }
-  }, 20000); // 20초에 한 번씩 글 저장
+  }, 15000); // 20초에 한 번씩 글 저장
 
   const timeoutRef = useRef(null);
 
@@ -635,8 +635,8 @@ function PostWritePage() {
     setSavedMessage(`저장되었습니다: ${savedTime}`);
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      setSavedMessage("");
-    }, 2000);
+      setSavedMessage("\n");
+    }, 5000);
   };
 
   const handleCancel = () => {
