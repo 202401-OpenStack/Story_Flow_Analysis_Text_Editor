@@ -451,13 +451,15 @@ function PostWritePage() {
   };
 
   const saveContent = async () => {
-    if (!title.trim() || !editorContent.trim()) {
-      // 제목과 내용이 모두 입력될 때만 저장합니다.
-      alert("제목과 내용을 모두 입력하세요.");
-      return;
+    if (!title.trim()) {
+      const date = new Date();
+      const formatted = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      setTitle(formatted);
     }
 
-    try {
+    /*try {
       const url = `http://20.41.113.158/api/blog/posts${
         isEdit ? `/${postId}` : ""
       }`;
@@ -475,9 +477,6 @@ function PostWritePage() {
           "Content-Type": "application/json",
         },
       });
-      alert("Post created successfully! ID: " + response.data.data.id);
-      window.location.replace("/"); //새로고침
-      if (isEdit) navigate(`/post/${postId}`);
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -485,10 +484,32 @@ function PostWritePage() {
       } else {
         alert("An unexpected error occurred");
       }
+    }*/
+    const response = "test contents";
+    console.log("saved");
+    return response;
+  };
+
+  const handleSave = () => {
+    // 저장 버튼 클릭 시 동작
+    if (!editorContent.trim()) {
+      alert("내용을 입력하세요.");
+      return;
+    }
+
+    const response = saveContent();
+    window.location.replace("/"); //새로고침
+
+    if (isEdit) {
+      alert("Post updated successfully! ID: " + response.data.data.id);
+    } else {
+      alert("Post created successfully! ID: " + response.data.data.id);
+      setIsEdit(true);
     }
   };
 
   const handleCancel = () => {
+    // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
     if (
       window.confirm(
         "저장되지 않은 콘텐츠는 모두 잃게 됩니다. 계속 진행하시겠습니까?"
@@ -565,6 +586,15 @@ function PostWritePage() {
       fetchPost();
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
+
+  useEffect(() => {
+    if (editorContent.trim()) {
+      const intervalId = setInterval(() => {
+        saveContent();
+      }, 5000); // 60000ms = 1분
+      return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 타이머 정리
+    } else console.log("need content");
+  }, []);
 
   return (
     <Wrapper>
@@ -729,7 +759,7 @@ function PostWritePage() {
           )}
         </Container>
         <EditorBtn>
-          <Button onClick={saveContent}>저장</Button>
+          <Button onClick={handleSave}>저장</Button>
           <Button variant="secondary" onClick={handleCancel}>
             취소
           </Button>
