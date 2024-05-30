@@ -237,6 +237,12 @@ function PostWritePage() {
     const quill = quillRef.current.getEditor();
     const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
+    if (!editorContent.trim()) {
+      alert("내용을 입력하세요.");
+      return;
+    }
+    saveContent();
+
     if (command === "summarizeArticle") {
       try {
         const response = await axios.post(
@@ -468,6 +474,7 @@ function PostWritePage() {
     let curPostId = postId;
     let curIsEdit = isEdit;
 
+    // 제목이 없을 경우 임시 제목 삽입("yyyy-mm-dd" 형식 날짜)
     if (!title.trim()) {
       const date = new Date();
       const formatted = `${date.getFullYear()}-${String(
@@ -501,7 +508,8 @@ function PostWritePage() {
         curPostId = response.data.data.id;
         curIsEdit = true;
       }
-      console.log(title, " // ", editorContent, " // ", postId, " // ", isEdit);
+
+      // 테스트용 출력 -> quill 하단 문구로 변경 필요
       console.log(
         curTitle,
         " // ",
@@ -511,7 +519,6 @@ function PostWritePage() {
         " // ",
         curIsEdit
       );
-      //window.location.replace(`/post-write?postId=${postId}&edit=true`);
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -529,8 +536,6 @@ function PostWritePage() {
     }
 
     saveContent();
-    //window.location.replace(`/post-write?postId=${postId}&edit=true`); //새로고침
-
     if (isEdit) {
       alert("Post updated successfully! ID: " + postId);
     } else {
@@ -539,6 +544,7 @@ function PostWritePage() {
   };
 
   function useInterval(callback, delay) {
+    //delay(ms)마다 callback 함수 작동
     const savedCallback = useRef();
 
     useEffect(() => {
@@ -562,7 +568,7 @@ function PostWritePage() {
     } else {
       console.log("need content");
     }
-  }, 20000);
+  }, 20000); // 20초에 한 번씩 글 저장
 
   const handleCancel = () => {
     // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
