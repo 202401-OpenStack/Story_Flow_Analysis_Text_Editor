@@ -533,7 +533,7 @@ function PostWritePage() {
   useInterval(() => {
     if (editorContent.trim()) {
       saveContent();
-      console.log("auto saved");
+      console.log("content auto saved");
     } else {
       console.log("need content");
     }
