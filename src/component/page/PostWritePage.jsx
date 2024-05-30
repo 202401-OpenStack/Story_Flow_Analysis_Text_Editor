@@ -459,7 +459,7 @@ function PostWritePage() {
       setTitle(formatted);
     }
 
-    /*try {
+    try {
       const url = `http://20.41.113.158/api/blog/posts${
         isEdit ? `/${postId}` : ""
       }`;
@@ -484,9 +484,8 @@ function PostWritePage() {
       } else {
         alert("An unexpected error occurred");
       }
-    }*/
-    const response = "test contents";
-    console.log("saved");
+    }
+    console.log("saved", title);
     return response;
   };
 
@@ -498,7 +497,7 @@ function PostWritePage() {
     }
 
     const response = saveContent();
-    window.location.replace(`/post-write?postId=${postId}&edit=true`); //새로고침
+    //window.location.replace(`/post-write?postId=${postId}&edit=true`); //새로고침
 
     if (isEdit) {
       alert("Post updated successfully! ID: " + response.data.data.id);
@@ -588,12 +587,10 @@ function PostWritePage() {
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
 
   useEffect(() => {
-    if (editorContent.trim()) {
-      const intervalId = setInterval(() => {
-        saveContent();
-      }, 5000); // 60000ms = 1분
-      return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 타이머 정리
-    } else console.log("need content");
+    const intervalId = setInterval(() => {
+      saveContent();
+    }, 5000); // 60000ms = 1분
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 타이머 정리
   }, []);
 
   return (
