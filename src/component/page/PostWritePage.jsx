@@ -251,7 +251,9 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n요약 내용", 'bold');
+        quill.insertText(quill.getLength(), "\n요약 내용", {
+          bold: true,
+        });
         quill.insertText(quill.getLength(), `\n${summary}\n`, {
           color: "#0040FF",
         });
