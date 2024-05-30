@@ -251,9 +251,7 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n요약 내용", {
-          bold: true,
-        });
+        quill.insertText(quill.getLength(), "\n<요약 내용>");
         quill.insertText(quill.getLength(), `\n${summary}\n`, {
           color: "#0040FF",
         });
@@ -284,7 +282,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
+        quill.insertText(quill.getLength(), "\n<주제>");
+        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+          color: "#0040FF",
+        });
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
@@ -312,7 +313,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
+        quill.insertText(quill.getLength(), "\n<키워드>");
+        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+          color: "#0040FF",
+        });
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
@@ -344,7 +348,10 @@ function PostWritePage() {
         console.log(characterList, typeof characterList);
         const characterCount = characterList.length;
         const text = `이 글의 등장인물은 ${characterList}(으)로 총 ${characterCount}명입니다.`;
-        quill.insertText(quill.getLength(), text);
+        quill.insertText(quill.getLength(), "\n<인물 수>\n");
+        quill.insertText(quill.getLength(), text, {
+          color: "#0040FF",
+        });
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
@@ -434,7 +441,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), `\n${summary}\n`);
+        quill.insertText(quill.getLength(), "\n<이야기 흐름>");
+        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+          color: "#0040FF",
+        });
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
@@ -685,12 +695,12 @@ function PostWritePage() {
                 nodeAutoColorBy="group"
                 nodeCanvasObject={(node, ctx, globalScale) => {
                   const label = node.name;
-                  const fontSize = 12 / globalScale;
+                  const fontSize = 6;
                   ctx.fillStyle = node.color;
                   ctx.beginPath();
-                  ctx.arc(node.x, node.y, 8, 0, 2 * Math.PI, false);
+                  ctx.arc(node.x, node.y, 6, 0, 2 * Math.PI, false);
                   ctx.fill();
-                  ctx.font = "${fontSize}px Arial";
+                  ctx.font = "6px Arial";
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "white";
@@ -711,7 +721,7 @@ function PostWritePage() {
                   // 텍스트 라벨의 위치를 조정
                   const offset = link.source.id < link.target.id ? -5 : 5;
 
-                  ctx.font = "${12 / globalScale}px Arial";
+                  ctx.font = "4px Arial";
                   ctx.fillStyle = "black";
                   ctx.fillText(
                     link.relationship,
