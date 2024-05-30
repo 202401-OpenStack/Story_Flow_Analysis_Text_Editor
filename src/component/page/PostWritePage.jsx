@@ -253,8 +253,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<요약 내용>");
-        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+        quill.insertText(quill.getLength(), "\n<요약 내용>", {
+          color: "#0040FF",
+        });
+        quill.insertText(quill.getLength(), `${summary}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
@@ -284,8 +286,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<주제>");
-        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+        quill.insertText(quill.getLength(), "\n<주제>", {
+          color: "#0040FF",
+        });
+        quill.insertText(quill.getLength(), `${summary}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
@@ -315,8 +319,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<키워드>");
-        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+        quill.insertText(quill.getLength(), "\n<키워드>", {
+          color: "#0040FF",
+        });
+        quill.insertText(quill.getLength(), `${summary}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
@@ -350,7 +356,9 @@ function PostWritePage() {
         console.log(characterList, typeof characterList);
         const characterCount = characterList.length;
         const text = `이 글의 등장인물은 ${characterList}(으)로 총 ${characterCount}명입니다.`;
-        quill.insertText(quill.getLength(), "\n<인물 수>\n");
+        quill.insertText(quill.getLength(), "\n<인물 수>", {
+          color: "#0040FF",
+        });
         quill.insertText(quill.getLength(), text, {
           color: "#0040FF",
         });
@@ -443,8 +451,10 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<이야기 흐름>");
-        quill.insertText(quill.getLength(), `\n${summary}\n`, {
+        quill.insertText(quill.getLength(), "\n<이야기 흐름>", {
+          color: "#0040FF",
+        });
+        quill.insertText(quill.getLength(), `${summary}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
