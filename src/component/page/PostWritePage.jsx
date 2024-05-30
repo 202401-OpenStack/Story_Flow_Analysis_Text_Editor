@@ -252,9 +252,9 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(0,{ insert: '\n요약 내용', attributes: {
+        quill.insertText(5, "\n요약 내용", {
           color: "#0040FF",
-        }});
+        });
         quill.insertText(quill.getLength(), `\n${summary}\n`);
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
@@ -512,13 +512,6 @@ function PostWritePage() {
     }
   };
 
-  useEffect(() => {
-    useInterval(() => {
-      saveContent();
-      console.log("saved", title, isEdit);
-    }, 10000);
-  }, []);
-
   function useInterval(callback, delay) {
     const savedCallback = useRef();
 
@@ -535,6 +528,10 @@ function PostWritePage() {
       return () => clearInterval(id);
     }, [delay]);
   }
+
+  useInterval(() => {
+    saveContent();
+  }, 30000);
 
   const handleCancel = () => {
     // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
@@ -615,7 +612,12 @@ function PostWritePage() {
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      saveContent();
+    }, 30000); // 60000ms = 1분
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 타이머 정리
+  }, []);
 
   return (
     <Wrapper>
