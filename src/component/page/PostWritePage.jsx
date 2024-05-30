@@ -463,12 +463,18 @@ function PostWritePage() {
   };
 
   const saveContent = async () => {
+    let curTitle = title;
+    let curEditorContent = editorContent;
+    let curPostId = postId;
+    let curIsEdit = isEdit;
+
     if (!title.trim()) {
       const date = new Date();
       const formatted = `${date.getFullYear()}-${String(
         date.getMonth() + 1
       ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       setTitle(formatted);
+      curTitle = formatted;
     }
 
     try {
@@ -480,8 +486,8 @@ function PostWritePage() {
         url: url,
         method: method,
         data: {
-          title,
-          content: editorContent,
+          title: curTitle,
+          content: curEditorContent,
         },
         withCredentials: true, // Needed to send cookies for the session
         headers: {
@@ -489,12 +495,23 @@ function PostWritePage() {
         },
       });
 
-      if (!isEdit) {
+      if (!curIsEdit) {
         setPostId(response.data.data.id);
         setIsEdit(true);
+        curPostId = response.data.data.id;
+        curIsEdit = true;
       }
       console.log(title, " // ", editorContent, " // ", postId, " // ", isEdit);
-      window.location.replace(`/post-write?postId=${postId}&edit=true`);
+      console.log(
+        curTitle,
+        " // ",
+        curEditorContent,
+        " // ",
+        curPostId,
+        " // ",
+        curIsEdit
+      );
+      //window.location.replace(`/post-write?postId=${postId}&edit=true`);
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
