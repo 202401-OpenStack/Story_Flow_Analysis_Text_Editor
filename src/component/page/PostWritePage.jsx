@@ -142,13 +142,13 @@ function PostWritePage() {
 
   const [title, setTitle] = useState("");
   const [editorContent, setEditorContent] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [postId, setPostId] = useState(null);
+
   const [showPalette, setShowPalette] = useState(false);
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const paletteBackground = useRef();
   const quillRef = useRef(null);
-
-  const [isEdit, setIsEdit] = useState(false);
-  const [postId, setPostId] = useState(null);
 
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
@@ -454,13 +454,11 @@ function PostWritePage() {
 
   const saveContent = async () => {
     if (!title.trim()) {
-      alert("제목을 입력하세요");
       const date = new Date();
       const formatted = `${date.getFullYear()}-${String(
         date.getMonth() + 1
       ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
       setTitle(formatted);
-      console.log("수정된 title: ", title);
     }
 
     try {
@@ -484,9 +482,9 @@ function PostWritePage() {
       if (!isEdit) {
         setPostId(response.data.data.id);
         setIsEdit(true);
-        navigate(`/post-write?postId=${postId}&edit=true`);
       }
       console.log(title, " // ", editorContent, " // ", postId, " // ", isEdit);
+      window.location.replace(`/post-write?postId=${postId}&edit=true`);
     } catch (error) {
       if (error.response) {
         // Handle responses outside the 2xx range
@@ -538,6 +536,10 @@ function PostWritePage() {
       console.log("need content");
     }
   }, 20000);
+
+  useEffect(() => {
+    console.log(title, " // ", editorContent, " // ", postId, " // ", isEdit);
+  }, [title, editorContent, postId, isEdit]);
 
   const handleCancel = () => {
     // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
