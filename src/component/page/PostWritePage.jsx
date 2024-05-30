@@ -451,6 +451,16 @@ function PostWritePage() {
   };
 
   const saveContent = async () => {
+    if (!title.trim()) {
+      alert("제목을 입력하세요");
+      const date = new Date();
+      const formatted = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      setTitle(formatted);
+      console.log("수정된 title: ", title);
+    }
+
     try {
       const url = `http://20.41.113.158/api/blog/posts${
         isEdit ? `/${postId}` : ""
@@ -469,12 +479,10 @@ function PostWritePage() {
         },
       });
 
-      if (isEdit) {
-        alert("Post updated successfully! ID: " + response.data.data.id);
-      } else {
-        alert("Post created successfully! ID: " + response.data.data.id);
+      if (!isEdit) {
         setPostId(response.data.data.id);
         setIsEdit(true);
+        navigate(`/post-write?postId=${postId}&edit=true`);
       }
       console.log(title, " // ", editorContent, " // ", postId, " // ", isEdit);
     } catch (error) {
@@ -486,67 +494,8 @@ function PostWritePage() {
       }
     }
   };
-  /*
-  const saveContent = async (title, editorContent, isEdit, postId) => {
-    console.log(title, editorContent, isEdit, postId);
 
-    if (!title.trim()) {
-      console.log("기존 title: ", title);
-      const date = new Date();
-      const formatted = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-      setTitle(formatted);
-      console.log("수정된 title: ", title);
-    }
-
-    try {
-      const url = `http://20.41.113.158/api/blog/posts${
-        isEdit ? `/${postId}` : ""
-      }`;
-      const method = isEdit ? "PUT" : "POST";
-
-      const response = await axios({
-        url: url,
-        method: method,
-        data: {
-          title,
-          content: editorContent,
-        },
-        withCredentials: true, // Needed to send cookies for the session
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("saved", title, editorContent, isEdit, postId);
-      if (isEdit) navigate(`/post/${postId}`);
-      if (!isEdit) {
-        setIsEdit(true);
-        navigate(`/post-write?postId=${postId}&edit=true`);
-      }
-      return response;
-    } catch (error) {
-      if (error.response) {
-        // Handle responses outside the 2xx range
-        alert(`Error: ${error.response.data.message}`);
-      } else {
-        alert("An unexpected error occurred");
-      }
-      return;
-    }
-  };
-*/
   const handleSave = () => {
-    if (!title.trim()) {
-      alert("제목을 입력하세요");
-      const date = new Date();
-      const formatted = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-      setTitle(formatted);
-      console.log("수정된 title: ", title);
-    }
     if (!editorContent.trim()) {
       alert("내용을 입력하세요.");
       return;
@@ -554,6 +503,12 @@ function PostWritePage() {
 
     saveContent();
     //window.location.replace(`/post-write?postId=${postId}&edit=true`); //새로고침
+
+    if (isEdit) {
+      alert("Post updated successfully! ID: " + postId);
+    } else {
+      alert("Post created successfully! ID: " + postId);
+    }
   };
 
   function useInterval(callback, delay) {
@@ -574,8 +529,13 @@ function PostWritePage() {
   }
 
   useInterval(() => {
-    if (editorContent.trim()) saveContent();
-  }, 30000);
+    if (editorContent.trim()) {
+      saveContent();
+      console.log("auto saved");
+    } else {
+      console.log("need content");
+    }
+  }, 20000);
 
   const handleCancel = () => {
     // 취소 버튼 클릭 시 동작 -> if (!isEdit) 자동저장한 내용 삭제?
@@ -655,14 +615,7 @@ function PostWritePage() {
       fetchPost();
     }
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
-  /*
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      saveContent();
-    }, 30000); // 60000ms = 1분
-    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 타이머 정리
-  }, []);
-*/
+
   return (
     <Wrapper>
       <Sidebar />
@@ -794,7 +747,6 @@ function PostWritePage() {
             value={title}
             onChange={(event) => {
               setTitle(event.target.value);
-              console.log("title: ", title);
             }}
           />
         </Container>
