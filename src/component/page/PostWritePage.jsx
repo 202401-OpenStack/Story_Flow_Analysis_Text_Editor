@@ -451,7 +451,7 @@ function PostWritePage() {
     setShowPalette(false);
   };
 
-  const saveContent = async () => {
+  const saveContent = async (title, editorContent, isEdit, postId) => {
     if (!title.trim()) {
       console.log("기존 title: ", title);
       const date = new Date();
@@ -502,7 +502,7 @@ function PostWritePage() {
       return;
     }
 
-    const response = saveContent();
+    const response = saveContent(title, editorContent, isEdit, postId);
     //window.location.replace(`/post-write?postId=${postId}&edit=true`); //새로고침
 
     if (isEdit) {
@@ -530,7 +530,7 @@ function PostWritePage() {
   }
 
   useInterval(() => {
-    saveContent();
+    if (editorContent.trim()) saveContent();
   }, 30000);
 
   const handleCancel = () => {
