@@ -775,7 +775,7 @@ function PostWritePage() {
                   ctx.beginPath();
                   ctx.arc(node.x, node.y, 6, 0, 2 * Math.PI, false);
                   ctx.fill();
-                  ctx.font = "4px Arial";
+                  ctx.font = "3px Arial";
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "white";
