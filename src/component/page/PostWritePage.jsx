@@ -504,6 +504,7 @@ function PostWritePage() {
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
       quill.insertText(quill.getLength(), "\n");
+      quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing timeline:", error);
     }
@@ -520,6 +521,7 @@ function PostWritePage() {
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
       quill.insertText(quill.getLength(), "\n");
+      quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing relationship graph:", error);
     }
