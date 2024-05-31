@@ -566,15 +566,11 @@ function PostWritePage() {
         curIsEdit = true;
       }
 
-      // 테스트용 출력 -> quill 하단 문구로 변경 필요
       console.log(
-        curTitle,
-        " // ",
-        curEditorContent,
-        " // ",
-        curPostId,
-        " // ",
-        curIsEdit
+        `title: ${curTitle}\n
+        content: ${curEditorContent}\n
+        postId: ${curPostId}\n
+        isEdit: ${curIsEdit}\n`
       );
       handleSavedMessage();
     } catch (error) {
