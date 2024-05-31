@@ -1,21 +1,23 @@
 # Story_Flow_Analysis_Text_Editor
 
-(작성 중)
-
 ## 1. 개발 환경
 ### 프론트엔드
 1. Runtime Environment: Node >= v20.9.0
-2. Frontend Library: React v18.0
-3. State Management Library: react-redux
-4. Editor Library: react-quill
+2. Frontend Library: React v18.2.0
+3. State Management Library: react-redux ^9.1.0, @reduxjs/toolkit ^2.2.3, redux-thunk ^3.1.0
+4. Editor Library: react-quill ^2.0.0
+5. CSS Library: styled-components ^6.1.8
+6. Other middlewares: axios ^1.6.8, bootstrap ^5.3.3, dom-to-image ^2.6.0, react-chrono ^2.6.1, react-force-graph-2d ^1.25.5, react-pro-sidebar ^1.1.0,
+   
 ### 백엔드
-1. Runtime Environment: Node v21.0.0
-2. Backend Framework: express
+1. Runtime Environment: Node >= v20.9.0
+2. Backend Framework: express ^4.19.2
 3. Database Server: MySQL
-4. Database Middleware: mysql2
-5. ORM Middleware: sequelize
-6. Session Management Middleware: cookie-parser, express-mysql-session, express-session
-7. Encryption: bycrypt
+4. Database Middleware: mysql2 ^3.9.3
+5. ORM Middleware: sequelize ^6.37.2, sequelize-cli ^6.6.2
+6. Session Management Middleware: cookie-parser ^1.4.6, express-mysql-session ^3.0.0, express-session ^1.18.0
+7. Encryption Middleware: bcrypt ^5.1.1
+8. Other middlewares: axios ^1.6.8, body-parser ^1.20.2, cors ^2.8.5, dotenv ^16.4.5
 
 ## 2. 개발 브랜치
 1. Frontend: frontend
