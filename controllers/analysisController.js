@@ -50,6 +50,8 @@ exports.summarizeArticle = async (req, res) => {
     const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
     const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
     const prompt1 = (content) => `${summarize_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${summarize_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (message1, message2) => `${summarize_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
         const accountId = req.session.accountId;
         if (!accountId) {
@@ -95,10 +97,12 @@ exports.summarizeArticle = async (req, res) => {
         }
 
         const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message1, message2));
 
         return res.status(200).json({
             message: "Article successfully summarized",
-            data: message1
+            data: message3
         })
 
     } catch (err) {
