@@ -763,6 +763,7 @@ function PostWritePage() {
         >
           <div className={"modal-content"}>
             <div className={"visualize-component"}>
+              <p>적당한 크기가 될 때까지 드래그해주세요.</p>
               <ForceGraph2D
                 width={window.innerWidth}
                 graphData={graphData}
