@@ -2,7 +2,8 @@ const axios = require('axios');
 require('dotenv').config();
 
 const common_prompt = require('../prompt/commonPrompt');
-const summarize_prompt = require('../prompt/summarizeArticlePrompt');
+const summarizeArticle_prompt = require('../prompt/summarizeArticlePrompt');
+const findTopic_prompt = require('../prompt/findTopicPrompt');
 
 // 코드 리팩토링
 const openAiRequest = async (content, promptTemplate) => {
@@ -49,9 +50,9 @@ const splitContent = (content, maxTokens = 500, overlap = 100) => {
 exports.summarizeArticle = async (req, res) => {
     const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
     const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
-    const prompt1 = (content) => `${summarize_prompt[0].replace('{소설 원본 텍스트}', content)}`;
-    const prompt2 = (content) => `${summarize_prompt[1].replace('{소설 원본 텍스트}', content)}`;
-    const prompt3 = (message1, message2) => `${summarize_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
+    const prompt1 = (content) => `${summarizeArticle_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${summarizeArticle_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (message1, message2) => `${summarizeArticle_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
         const accountId = req.session.accountId;
         if (!accountId) {
@@ -112,8 +113,69 @@ exports.summarizeArticle = async (req, res) => {
 };
 
 // 주제 찾기
-exports.findTopic = (req, res) => {
-    res.status(500).json({ message: '개발 중입니다'});
+exports.findTopic = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${findTopic_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${findTopic_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (message1, message2) => `${findTopic_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
+    try {
+        const accountId = req.session.accountId;
+        if (!accountId) {
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
+        }
+
+        const { content } = req.body;
+
+        // 글이 너무 짧은 경우
+        if (content.length <= 10) {
+            return res.status(500).json({ message: '글이 너무 짧습니다' });
+        }
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
+            }
+            finalContent = summaries.join(' ');
+        }
+
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
+
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
+
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message1, message2));
+
+        return res.status(200).json({
+            message: "Article successfully summarized",
+            data: message3
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
+    }
 };
 
 // 키워드 추출
