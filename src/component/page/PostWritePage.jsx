@@ -255,6 +255,7 @@ function PostWritePage() {
     if (command === "summarizeArticle") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/summarize",
           { content },
@@ -286,6 +287,7 @@ function PostWritePage() {
     } else if (command === "findTopic") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/topic",
           { content },
@@ -317,6 +319,7 @@ function PostWritePage() {
     } else if (command === "extractKeywords") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/keywords",
           { content },
@@ -352,6 +355,7 @@ function PostWritePage() {
     } else if (command === "analyzeCharacterCount") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-count",
           { content },
@@ -390,6 +394,7 @@ function PostWritePage() {
     } else if (command === "analyzeCharacterRelationships") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-relationships",
           { content },
@@ -424,6 +429,7 @@ function PostWritePage() {
     } else if (command === "analyzeTimeline") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/timeline",
           { content },
@@ -454,6 +460,7 @@ function PostWritePage() {
     } else if (command === "judgeStoryFlow") {
       try {
         setLoading(true);
+        setShowPalette(false);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/story-flow",
           { content },
@@ -484,7 +491,6 @@ function PostWritePage() {
       }
     }
     setLoading(false);
-    setShowPalette(false);
   };
 
   const handleTimelineInsert = async () => {
