@@ -499,11 +499,11 @@ function PostWritePage() {
     try {
       const base64Image = await domtoimage.toPng(timelineElement);
       const quill = quillRef.current.getEditor();
-      const range = quill.getSelection(true);
-      quill.insertEmbed(range.index, "image", base64Image, "user");
+      quill.insertEmbed(quill.getLength(), "image", base64Image, "user");
       setTimelineModalOpen(false);
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
+      quill.insertText(quill.getLength(), "\n");
     } catch (error) {
       console.error("Error capturing timeline:", error);
     }
@@ -515,11 +515,11 @@ function PostWritePage() {
     try {
       const base64Image = await domtoimage.toPng(relationshipElement);
       const quill = quillRef.current.getEditor();
-      const range = quill.getSelection(true);
-      quill.insertEmbed(range.index, "image", base64Image, "user");
+      quill.insertEmbed(quill.getLength(), "image", base64Image, "user");
       setRelationshipModalOpen(false);
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
+      quill.insertText(quill.getLength(), "\n");
     } catch (error) {
       console.error("Error capturing relationship graph:", error);
     }
