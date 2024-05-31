@@ -1,13 +1,16 @@
 const axios = require('axios');
 require('dotenv').config();
 
+const common_prompt = require('../prompt/commonPrompt');
+const summarize_prompt = require('../prompt/summarizeArticlePrompt');
+
 // 코드 리팩토링
 const openAiRequest = async (content, promptTemplate) => {
     const headers = {
         'Content-Type': 'application/json',
         'api-key': process.env.OPENAI_API_KEY
     };
-    const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
+    const apiUrl = `https://aoai-test-foro.openai.azure.com/openai/deployments/globalstandard/chat/completions?api-version=2024-02-15-preview`;
 
     const prompt = promptTemplate(content);
     const dataAPI = {
@@ -15,123 +18,119 @@ const openAiRequest = async (content, promptTemplate) => {
             "role": "system",
             "content": prompt
         }],
-        max_tokens: 1000
+        max_tokens: 1000,
+        temperature: 0.7,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        top_p: 0.95,
+        stop: null
     };
 
     const response = await axios.post(apiUrl, dataAPI, { headers });
     return response.data.choices[0].message.content;
 };
 
-const handleRequest = async (req, res, promptTemplate, successMessage) => {
+// 글을 500토큰 단위로 100토큰씩 겹치게 분리
+const splitContent = (content, maxTokens = 500, overlap = 100) => {
+    const words = content.split(/\s+/);
+    const chunks = [];
+    for (let i = 0; i < words.length; i += (maxTokens - overlap)) {
+        chunks.push(words.slice(i, i + maxTokens).join(' '));
+        if (i + maxTokens >= words.length) {
+            break;
+        }
+    }
+    return chunks;
+};
+
+
+
+// 요약하기
+exports.summarizeArticle = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${summarize_prompt[0].replace('{소설 원본 텍스트}', content)}`;
     try {
         const accountId = req.session.accountId;
         if (!accountId) {
             return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
+
         const { content } = req.body;
-        const messageContent = await openAiRequest(content, promptTemplate);
+
+        // 글이 너무 짧은 경우
+        if (content.length <= 10) {
+            return res.status(500).json({ message: '글이 너무 짧습니다' });
+        }
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
+            }
+            finalContent = summaries.join(' ');
+        }
+
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
+
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
+
+        const message1 = await openAiRequest(finalContent, prompt1);
+
         return res.status(200).json({
-            message: successMessage,
-            data: messageContent
-        });
+            message: "Article successfully summarized",
+            data: message1
+        })
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
-// 요약하기
-exports.summarizeArticle = (req, res) => {
-    handleRequest(req, res, 
-        content => `아래 내용을 20자 이내로 요약하시오: \n\n${content}`, 
-        "Article successfully summarized"
-    );
-};
-
 // 주제 찾기
 exports.findTopic = (req, res) => {
-    handleRequest(req, res, 
-        content => `아래 글의 주제를 짧게 요약해서 제시하시오.: \n\n${content}`, 
-        "Topic identification completed successfully"
-    );
+    res.status(500).json({ message: '개발 중입니다'});
 };
 
 // 키워드 추출
 exports.extractKeywords = (req, res) => {
-    handleRequest(req, res, 
-        content => `아래 글에서 키워드를 3개 추출하여 쉼표로 구분해서 작성하시오: \n\n${content}`, 
-        "Keyword extraction completed successfully"
-    );
+    res.status(500).json({ message: '개발 중입니다'});
 };
 
 // 인물 수 분석
 exports.analyzeCharacterCount = (req, res) => {
-    handleRequest(req, res, 
-        content => `아래 글에서 등장하는 인물들을 배열 형태로 작성하세요. 만약 이름이 명시되지 않았다면 글에 나온 대로(그 사람, 선생 등) 작성하세요. 사설 달지 말고 "[철수, 영희, 길동]" 처럼 대괄호 안에 쉼표로 구분해서 작성하세요.: \n\n${content}`, 
-        "Analyzing character counts completed successfully"
-    );
+    res.status(500).json({ message: '개발 중입니다'});
 };
 
 // 이야기 흐름 판단
 exports.judgeStoryFlow = (req, res) => {
-    handleRequest(req, res, 
-        content => `
-다음 소설의 작문 수준을 평가해 주세요. 각 항목에 대해 구체적으로 피드백해주세요. 다음 기준에 따라 평가해 주세요:
-------
-1. **플롯 전개**
-    - 이야기의 흐름이 논리적이고 일관성이 있는가?
-    - 이야기가 흥미를 끌고 긴장감을 유지하는가?
-    - 기승전결이 잘 구성되어 있는가?
-
-2. **캐릭터 개발**
-    - 등장인물들이 생동감 있고 다차원적으로 그려졌는가?
-    - 각 인물의 동기와 행동이 이야기 전개에 잘 부합하는가?
-    - 주인공과 주요 인물들의 성장이 명확하게 묘사되었는가?
-
-3. **설정과 배경**
-    - 이야기의 배경이 구체적이고 생생하게 그려졌는가?
-    - 배경 설정이 이야기와 잘 맞물리고 일관성이 있는가?
-    - 독자가 배경과 설정에 쉽게 몰입할 수 있는가?
-
-4. **문체와 문법**
-    - 글의 문체가 일관되고 적절한가?
-    - 문법과 맞춤법이 정확한가?
-    - 문장이 명확하고 읽기 쉬운가?
-
-5. **전반적인 인상**
-    - 소설이 독자를 끌어들이고 감동을 주는가?
-    - 이야기의 전반적인 완성도가 높은가?
-    - 소설을 읽은 후 독자에게 강한 인상을 남기는가?
-------
-평가 글 작성 방법은 아래 양식대로만 해주세요. 각 문장은 20자 내외로 유지하세요.
-------
-1. 플롯 전개: ~하기 때문에 논리적이고 일관성이 있으며(혹은 반대), ~하므로 독자의 흥미를 끌고 긴장감을 유지하며(혹은 반대), ~하므로 기승전결이 잘 구성되어 있습니다(혹은 반대).
-2. 캐릭터 개발: ~하기 때문에 생동감 있고 다차원적으로 그려졌으며(혹은 반대), ~하므로 각 인물의 동기와 행동이 이야기 전개에 잘 부합하며(혹은 반대), ~하므로 주인공 및 주요 인물들의 성장이 명확하게 묘사됩니다(혹은 반대).
-3. 설정과 배경: ~하기 때문에 이야기의 배경이 구체적이고 생생하게 그려지며(혹은 반대), ~하므로 배경 설정이 이야기와 잘 맞물리고 일관성이 있으며(혹은 반대), ~하므로 독자가 배경과 설정에 쉽게 몰입할 수 있습니다(혹은 반대).
-4. 문체와 문법: ~하기 때문에 글의 문체가 일관되고 적절하며(혹은 반대), 문법과 맞춤법이 정확하며(혹은 반대, 반대일 경우 이 부분에 오류가 있다고 말하기), 문장이 명확하고 읽기 쉽습니다(혹은 반대).
-5. 전반적인 인상: ~하기 때문에 소설이 독자를 끌어들이고 감동을 주며(혹은 반대), ~하므로 이야기의 전반적인 완성도가 높으며(혹은 반대), ~하므로 소설을 읽은 후 독자에게 강한 인상을 남깁니다(혹은 반대).
-6. 결론: 올바름/올바르지 않음 (2지선다이며, 6번 결론 항목에서만 표시하세요)
-7. 추가 피드백: 자유롭게 (예시가 있어도 좋음). 피드백할 게 없다면 "없음" 두 글자로 표시하세요.
-------
-답변 작성 예시는 아래를 참고하세요.
-------
-1. 플롯 전개: ~~
-2.캐릭터 개발: ~~
-3. 설정과 배경: ~~
-4. 문체와 문법: ~~
-5. 전반적인 인상: ~~
-6. 결론: ~~
-7. 추가 피드백: ~~
-------
-
-소설 내용:
-        \n\n${content}`, 
-        "Judging the story flow completed successfully"
-    );
+    res.status(500).json({ message: '개발 중입니다'});
 };
 
 // 인물 관계 분석
 exports.analyzeCharacterRelationships = (req, res) => {
+    res.status(500).json({ message: '개발 중입니다'});
+    /*
     handleRequest(req, res, 
         content => `
 아래 글을 읽고 등장인물과, 각 등장인물들의 관계를 배열을 포함한 JSON 형태로 적어 반환하세요. 사설 달지 말고 데이터만 보내야 하며, 데이터 형식은 아래 예시처럼 맞추세요.
@@ -158,14 +157,18 @@ exports.analyzeCharacterRelationships = (req, res) => {
 * links의 source, target에는 character 배열에 직접 언급됐던 이름만 나와야 합니다.: \n\n${content}`, 
         "Analyzing Character Relationships completed successfully"
     );
+    */
 };
 
 // 타임라인 분석
 exports.analyzeTimeline = (req, res) => {
+    res.status(500).json({ message: '개발 중입니다'});
+    /*
     handleRequest(req, res, 
         content => `아래 글에서 주요 사건들을 뽑아서, 순서대로 items라는 JSON 객체 변수로 제시해주세요. 
         사설달지 말고 [{cardTitle: "사건명1", cardDetailedText: "사건의 간략한 설명1"}, {cardTitle: "사건명2", cardDetailedText: "사건의 간략한 설명2"}, ...] 형태로 답장하세요. 
         cardTitle 변수에는 사건의 이름을 넣고, cardDetailedText 에는 이 사건이 뭔지 간략하게 설명하면 됩니다. : \n\n${content}`, 
         "Analyzing Timeline completed successfully"
     );
+    */
 };
