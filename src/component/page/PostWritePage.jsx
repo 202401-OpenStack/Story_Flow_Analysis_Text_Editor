@@ -620,7 +620,7 @@ function PostWritePage() {
     } else {
       console.log("need content");
     }
-  }, 15000); // 15초에 한 번씩 글 저장
+  }, 60000); // 1분에 한 번씩 글 저장
 
   const handleSavedMessage = () => {
     // 저장 시 에디터 오른쪽 하단에 문구 표시
