@@ -754,7 +754,6 @@ function PostWritePage() {
       )}
       {relationshipModalOpen && ( //관계도 컴포넌트 모달
         <VisualizeModal
-          width="300px"
           ref={relationshipModalBackground}
           onClick={(e) => {
             if (e.target === relationshipModalBackground.current) {
