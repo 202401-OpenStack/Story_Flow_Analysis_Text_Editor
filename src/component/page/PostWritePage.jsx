@@ -56,7 +56,7 @@ const VisualizeModal = styled.div`
   width: 100%;
   height: 100%;
   padding: 16px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -332,13 +332,9 @@ function PostWritePage() {
         );
 
         const keywords = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(
-          quill.getLength(),
-          `\n<키워드>\n이 글의 키워드는 ${keywords} 입니다.\n`,
-          {
-            color: "#0040FF",
-          }
-        );
+        quill.insertText(quill.getLength(), `\n<키워드>\n${keywords}\n`, {
+          color: "#0040FF",
+        });
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
