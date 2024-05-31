@@ -8,6 +8,7 @@ const extractKeywords_prompt = require('../prompt/extractKeywordsPrompt');
 const analyzeCharacterCount_prompt = require('../prompt/analyzeCharacterCountPrompt');
 const analyzeCharacterRelationships_prompt = require('../prompt/analyzeCharacterRelationshipsPrompt');
 const analyzeTimeline_prompt = require('../prompt/analyzeTimelinePrompt');
+const judgeStoryFlow_prompt = require('../prompt/judgeStoryFlowPrompt');
 
 // 코드 리팩토링
 const openAiRequest = async (content, promptTemplate) => {
@@ -315,8 +316,71 @@ exports.analyzeCharacterCount = async (req, res) => {
 };
 
 // 이야기 흐름 판단
-exports.judgeStoryFlow = (req, res) => {
-    res.status(500).json({ message: '개발 중입니다'});
+exports.judgeStoryFlow = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${judgeStoryFlow_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${judgeStoryFlow_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (content) => `${judgeStoryFlow_prompt[2].replace('{소설 원본 텍스트}', content)}`;
+    const prompt4 = (message1, message2, message3) => `${judgeStoryFlow_prompt[3].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2).replace('{3번 프롬프트의 출력 결과}')}`
+    try {
+        const accountId = req.session.accountId;
+        if (!accountId) {
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
+        }
+
+        const { content } = req.body;
+
+        // 글이 너무 짧은 경우
+        if (content.length <= 10) {
+            return res.status(500).json({ message: '글이 너무 짧습니다' });
+        }
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
+            }
+            finalContent = summaries.join(' ');
+        }
+
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
+
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
+
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, prompt3);
+        const message4 = await openAiRequest(finalContent, (content) => prompt3(message1, message2, message3));
+
+        return res.status(200).json({
+            message: "Topic identification completed successfully",
+            data: message4
+        })
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
+    }
 };
 
 // 인물 관계 분석
