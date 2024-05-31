@@ -49,7 +49,18 @@ const splitContent = (content, maxTokens = 500, overlap = 100) => {
     return chunks;
 };
 
+const extractJsonContent = (message) => {
+    // 정규 표현식을 사용하여 ```json``` 블록 제거
+    const regex = /```json\s*([\s\S]*?)\s*```/;
+    const match = message.match(regex);
 
+    // 매치된 경우 JSON 내용 추출, 아니면 원래 메시지 반환
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        return message;
+    }
+};
 
 // 요약하기
 exports.summarizeArticle = async (req, res) => {
@@ -437,6 +448,9 @@ exports.analyzeCharacterRelationships = async (req, res) => {
         const message1 = await openAiRequest(finalContent, prompt1);
         const message2 = await openAiRequest(finalContent, (content) => prompt2(finalContent, message1));
         const message3 = await openAiRequest(finalContent, (content) => prompt3(message2));
+
+        // JSON 내용 추출
+        message3 = extractJsonContent(message3);
 
         return res.status(200).json({
             message: "Analyzing Character Relationships completed successfully",
