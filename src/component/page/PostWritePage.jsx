@@ -53,7 +53,6 @@ const EditorBtn = styled.div`
 `;
 
 const VisualizeModal = styled.div`
-  width: 100%;
   height: 100%;
   padding: 16px;
   background: rgba(0, 0, 0, 0.6);
@@ -709,6 +708,7 @@ function PostWritePage() {
       <Sidebar />
       {timelineModalOpen && ( //타임라인 컴포넌트 모달
         <VisualizeModal
+          width="100%"
           ref={timelineModalBackground}
           onClick={(e) => {
             if (e.target === timelineModalBackground.current) {
