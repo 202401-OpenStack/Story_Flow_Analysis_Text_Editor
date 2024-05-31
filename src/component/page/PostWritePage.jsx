@@ -10,7 +10,6 @@ import "react-quill/dist/quill.snow.css";
 import styled from "styled-components";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import DOMPurify from "dompurify";
 import axios from "axios";
 import { Chrono } from "react-chrono";
 import domtoimage from "dom-to-image";
@@ -19,6 +18,7 @@ import ForceGraph2D from "react-force-graph-2d";
 import Sidebar from "../ui/Sidebar";
 import TextInput from "../ui/TextInput";
 import CommandPalette from "../ui/CommandPalatte";
+import Loading from "../ui/Loading";
 
 // 스타일 컴포넌트 정의
 const Wrapper = styled.div`
@@ -158,8 +158,11 @@ function PostWritePage() {
   const [showPalette, setShowPalette] = useState(false);
   const [palettePosition, setPalettePosition] = useState({ top: 0, left: 0 });
   const paletteBackground = useRef();
+
   const quillRef = useRef(null);
+  const timeoutRef = useRef(null);
   const [savedMessage, setSavedMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const timelineModalBackground = useRef();
@@ -249,9 +252,9 @@ function PostWritePage() {
     const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
     saveContent();
-
     if (command === "summarizeArticle") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/summarize",
           { content },
@@ -264,10 +267,7 @@ function PostWritePage() {
         );
 
         const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<요약 내용>", {
-          color: "#0040FF",
-        });
-        quill.insertText(quill.getLength(), `${summary}\n`, {
+        quill.insertText(quill.getLength(), `\n<요약 내용>\n${summary}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
@@ -285,6 +285,7 @@ function PostWritePage() {
       }
     } else if (command === "findTopic") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/topic",
           { content },
@@ -296,11 +297,8 @@ function PostWritePage() {
           }
         );
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<주제>", {
-          color: "#0040FF",
-        });
-        quill.insertText(quill.getLength(), `${summary}\n`, {
+        const topic = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        quill.insertText(quill.getLength(), `\n<주제>\n${topic}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
@@ -318,6 +316,7 @@ function PostWritePage() {
       }
     } else if (command === "extractKeywords") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/keywords",
           { content },
@@ -329,13 +328,14 @@ function PostWritePage() {
           }
         );
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<키워드>", {
-          color: "#0040FF",
-        });
-        quill.insertText(quill.getLength(), `${summary}\n`, {
-          color: "#0040FF",
-        });
+        const keywords = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        quill.insertText(
+          quill.getLength(),
+          `\n<키워드>\n이 글의 키워드는 ${keywords} 입니다.\n`,
+          {
+            color: "#0040FF",
+          }
+        );
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
@@ -351,6 +351,7 @@ function PostWritePage() {
       }
     } else if (command === "analyzeCharacterCount") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-count",
           { content },
@@ -366,13 +367,13 @@ function PostWritePage() {
         const characterList = summary.map((item) => item.trim());
         console.log(characterList, typeof characterList);
         const characterCount = characterList.length;
-        const text = `이 글의 등장인물은 ${characterList}(으)로 총 ${characterCount}명입니다.`;
-        quill.insertText(quill.getLength(), "\n<인물 수>", {
-          color: "#0040FF",
-        });
-        quill.insertText(quill.getLength(), text, {
-          color: "#0040FF",
-        });
+        quill.insertText(
+          quill.getLength(),
+          `\n<인물 수>\n이 글의 등장인물은 ${characterList}(으)로 총 ${characterCount}명입니다.`,
+          {
+            color: "#0040FF",
+          }
+        );
         quill.setSelection(quill.getLength(), 0);
       } catch (error) {
         if (error.response) {
@@ -388,6 +389,7 @@ function PostWritePage() {
       }
     } else if (command === "analyzeCharacterRelationships") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/character-relationships",
           { content },
@@ -421,6 +423,7 @@ function PostWritePage() {
       }
     } else if (command === "analyzeTimeline") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/timeline",
           { content },
@@ -450,6 +453,7 @@ function PostWritePage() {
       }
     } else if (command === "judgeStoryFlow") {
       try {
+        setLoading(true);
         const response = await axios.post(
           "http://20.41.113.158/api/analysis/story-flow",
           { content },
@@ -461,11 +465,8 @@ function PostWritePage() {
           }
         );
 
-        const summary = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
-        quill.insertText(quill.getLength(), "\n<이야기 흐름>", {
-          color: "#0040FF",
-        });
-        quill.insertText(quill.getLength(), `${summary}\n`, {
+        const judgement = response.data.data; // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
+        quill.insertText(quill.getLength(), `\n<이야기 흐름>\n${judgement}\n`, {
           color: "#0040FF",
         });
         quill.setSelection(quill.getLength(), 0);
@@ -482,6 +483,7 @@ function PostWritePage() {
         }
       }
     }
+    setLoading(false);
     setShowPalette(false);
   };
 
@@ -618,11 +620,10 @@ function PostWritePage() {
     } else {
       console.log("need content");
     }
-  }, 15000); // 20초에 한 번씩 글 저장
-
-  const timeoutRef = useRef(null);
+  }, 15000); // 15초에 한 번씩 글 저장
 
   const handleSavedMessage = () => {
+    // 저장 시 에디터 오른쪽 하단에 문구 표시
     const now = new Date();
     const options = {
       year: "numeric",
@@ -653,6 +654,7 @@ function PostWritePage() {
   };
 
   useEffect(() => {
+    // 글 수정 모드일 때 기존 글 내용 불러오기
     // queryParams 정의
     const queryParams = new URLSearchParams(location.search);
     const postIdFromQuery = queryParams.get("postId");
@@ -689,6 +691,7 @@ function PostWritePage() {
   }, [location]); // location이 변경될 때마다 useEffect가 실행됨
 
   useEffect(() => {
+    // 페이지 종료 시 자동저장
     const handleBeforeUnload = (event) => {
       saveContent();
       event.preventDefault();
@@ -825,6 +828,7 @@ function PostWritePage() {
           </div>
         </VisualizeModal>
       )}
+      {loading && <Loading /> /*로딩 화면*/}
       <Layout>
         <Container>
           <TextInput
