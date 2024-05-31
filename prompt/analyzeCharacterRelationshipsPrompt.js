@@ -72,7 +72,7 @@ const analyzeCharacterRelationships_prompt = [`
 3. links의 source, target에는 character 배열에 직접 언급됐던 이름만 나와야 합니다.
 4. relationship은 10자 이내로 아주 간결하게 작성해야 합니다.
 5. 모든 key-value들은 반드시 쌍따옴표("")로 감싸져야 합니다.
-6. 답변은 무조건 JSON 데이터만 하세요. 다른 사설을 붙이면 안됩니다.
+6. 답변은 무조건 JSON 데이터만 하세요. 다른 사설을 붙이면 안됩니다. 딱 답변 예시처럼만 작성하세요.
 
 답변 예시:
 {
