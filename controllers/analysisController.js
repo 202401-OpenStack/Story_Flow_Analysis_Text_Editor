@@ -441,7 +441,7 @@ exports.analyzeTimeline = async (req, res) => {
         const message3 = await openAiRequest(finalContent, (content) => prompt3(message2));
 
         return res.status(200).json({
-            message: "Analyzing Character Relationships completed successfully",
+            message: "Analyzing Timeline completed successfully",
             data: message3
         })
 
