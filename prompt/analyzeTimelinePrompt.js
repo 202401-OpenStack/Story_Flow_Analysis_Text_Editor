@@ -70,7 +70,11 @@ const analyzeTimeline_prompt = [`
 
 주요 사건 요약:
 `, `
-아래 소설의 주요 사건들을 뽑아서, 순서대로 JSON 객체 변수로 제시해주세요. 사설달지 말고 [{cardTitle: "사건명1", cardDetailedText: "사건의 간략한 설명1"}, {cardTitle: "사건명2", cardDetailedText: "사건의 간략한 설명2"}, ...] 형태로 답장하세요. cardTitle 변수에는 사건의 이름을 넣고, cardDetailedText 에는 이 사건이 뭔지 간략하게 설명하면 됩니다.
+아래 소설의 주요 사건들을 뽑아서, 순서대로 JSON 객체 변수로 제시해주세요. 
+
+조건:
+1. 사설달지 말고 [{cardTitle: "사건명1", cardDetailedText: "사건의 간략한 설명1"}, {cardTitle: "사건명2", cardDetailedText: "사건의 간략한 설명2"}, ...] 형태로 답장하세요. cardTitle 변수에는 사건의 이름을 넣고, cardDetailedText 에는 이 사건이 뭔지 간략하게 설명하면 됩니다.
+2. 모든 key-value들은 반드시 쌍따옴표("")로 감싸져야 합니다.
 
 예시:
 분석 내용:
