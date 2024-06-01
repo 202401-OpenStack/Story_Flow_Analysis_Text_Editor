@@ -69,8 +69,7 @@ const analyzeCharacterRelationships_prompt = [`
 조건:
 1. 인물 간 관계 분석 내용을 기반으로 합니다.
 2. links는 모든 등장인물들 간의 경우의 수를 전부 적을 필요는 없으며, 글에서 언급되는 relationships만을 적으세요.
-3. 만약 {"source": "철수", "target": "영희", "relationship": "친구"}, 
-{"source": "영희", "target": "철수", "relationship": "친구"} 처럼 source와 target의 순서만 다르고, relationship은 같다면 두 번 적지 말고 {"source": "철수", "target": "영희", "relationship": "친구"} 한 번만 적으세요.
+3. relationships는 "친구", "의사", "환자" 등으로 적습니다. "의사-환자"와 같은 식으로 합쳐서 작성해서는 안됩니다. "source" 기준에서 relationship을 작성하세요.
 4. links의 source, target에는 character 배열에 직접 언급됐던 이름만 나와야 합니다.
 5. relationship은 10자 이내로 아주 간결하게 작성해야 합니다.
 6. 모든 key-value들은 반드시 쌍따옴표("")로 감싸져야 합니다.
