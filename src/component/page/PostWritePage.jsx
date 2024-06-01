@@ -146,6 +146,33 @@ function initializeGraphData(characters, links) {
   return { nodes, links }; // 색상이 추가된 노드와 링크 반환
 }
 
+function removeDuplicateLinks(data) { // 중복 데이터 삭제
+    const uniqueLinks1 = [];
+    const uniqueLinks2 = [];
+    const linkMap = new Map();
+    const linkSet = new Set();
+
+    data.links.forEach(link => { // source, target 동일한 값 삭제
+        const key = link.source + "|" + link.target;
+        if (!linkMap.has(key)) {
+            linkMap.set(key, true);
+            uniqueLinks1.push(link);
+        }
+    }
+     data.uniqueLinks1.forEach(link => { // source, target이 반전되고 relationship 동일한 값 삭제
+        const direct = `${link.source}-${link.target}-${link.relationship}`;
+        const reverse = `${link.target}-${link.source}-${link.relationship}`;
+
+        if (!linkSet.has(reverse)) {
+            uniqueLinks2.push(link);
+            linkSet.add(direct);
+        }
+    });
+
+    return { uniqueLinks2 };
+}
+
+
 function PostWritePage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -409,12 +436,13 @@ function PostWritePage() {
         );
 
         const { character, links } = JSON.parse(response.data.data);
-        console.log(character);
+        const newLinks = removeDuplicateLinks(links);
         console.log(links);
+        console.log(newLinks);
         setRelationshipCharacters(character);
-        setRelationshipLinks(links);
+        setRelationshipLinks(newLinks);
         setRelationshipModalOpen(true); // 관계도 모달
-        setGraphData(initializeGraphData(character, links));
+        setGraphData(initializeGraphData(character, newLinks));
       } catch (error) {
         if (error.response) {
           // 요청이 이루어졌으나 서버가 2xx 범위가 아닌 상태 코드로 응답
@@ -500,13 +528,14 @@ function PostWritePage() {
     try {
       const base64Image = await domtoimage.toPng(timelineElement);
       const quill = quillRef.current.getEditor();
+      quill.insertText(quill.getLength(), `\n<타임라인>\n`, {
+          color: "#0040FF",
+        });
       quill.insertEmbed(quill.getLength(), "image", base64Image, "user");
       setTimelineModalOpen(false);
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
-      quill.insertText(quill.getLength(), `\n<타임라인>\n`, {
-          color: "#0040FF",
-        });
+      quill.insertText(quill.getLength(), `\n`);
       quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing timeline:", error);
@@ -519,13 +548,14 @@ function PostWritePage() {
     try {
       const base64Image = await domtoimage.toPng(relationshipElement);
       const quill = quillRef.current.getEditor();
+      quill.insertText(quill.getLength(), `\n<관계도>\n`, {
+          color: "#0040FF",
+        });
       quill.insertEmbed(quill.getLength(), "image", base64Image, "user");
       setRelationshipModalOpen(false);
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
-      quill.insertText(quill.getLength(), `\n<관계도>\n`, {
-          color: "#0040FF",
-        });
+      quill.insertText(quill.getLength(), `\n`);
       quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing relationship graph:", error);
