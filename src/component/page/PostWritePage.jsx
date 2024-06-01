@@ -174,6 +174,8 @@ function PostWritePage() {
   const [relationshipLinks, setRelationshipLinks] = useState([]);
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
 
+  const [key, setKey] = useState(0); //사이드바 새로고침에 이용
+
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -523,7 +525,6 @@ function PostWritePage() {
     }
   };
 
-  var isSaved = 0;
   const saveContent = async () => {
     let curTitle = title;
     let curEditorContent = editorContent;
@@ -571,7 +572,8 @@ function PostWritePage() {
         postId: ${curPostId}\n
         isEdit: ${curIsEdit}\n`
       );
-      isSaved = 1;
+      
+      setkey(prevKey => prevKey + 1); //key 상태를 변경하여 사이드바 새로고침
       handleSavedMessage();
     } catch (error) {
       if (error.response) {
@@ -708,7 +710,7 @@ function PostWritePage() {
 
   return (
     <Wrapper>
-      <Sidebar isSaved = {isSaved} />
+      <Sidebar key={key} />
       {timelineModalOpen && ( //타임라인 컴포넌트 모달
         <VisualizeModal
           ref={timelineModalBackground}
