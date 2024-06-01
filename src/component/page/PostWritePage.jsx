@@ -571,7 +571,7 @@ function PostWritePage() {
         postId: ${curPostId}\n
         isEdit: ${curIsEdit}\n`
       );
-      isSaved++;
+      isSaved = 1;
       handleSavedMessage();
     } catch (error) {
       if (error.response) {
