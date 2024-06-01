@@ -405,7 +405,6 @@ function PostWritePage() {
 
         const summary = response.data.data.slice(1, -1).split(","); // 백엔드에서 반환된 요약 텍스트를 가져옵니다.
         const characterList = summary.map((item) => item.trim());
-        console.log(characterList, typeof characterList);
         const characterCount = characterList.length;
         quill.insertText(
           quill.getLength(),
@@ -445,8 +444,7 @@ function PostWritePage() {
         const { character, links } = JSON.parse(response.data.data);
         console.log("Original links:" ,links);
         const newLinks = removeDuplicateLinks(links);
-        console.log(links);
-        console.log(newLinks);
+        console.log("New links:" ,newLinks);
         setRelationshipCharacters(character);
         setRelationshipLinks(newLinks);
         setRelationshipModalOpen(true); // 관계도 모달
@@ -610,13 +608,13 @@ function PostWritePage() {
         curPostId = response.data.data.id;
         curIsEdit = true;
       }
-
+/*
       console.log(
         `title: ${curTitle}\n
         content: ${curEditorContent}\n
         postId: ${curPostId}\n
         isEdit: ${curIsEdit}\n`
-      );
+      ); */
       
       handleSavedMessage();
     } catch (error) {
