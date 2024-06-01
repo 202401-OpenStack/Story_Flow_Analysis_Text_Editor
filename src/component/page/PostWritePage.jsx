@@ -154,6 +154,7 @@ function removeDuplicateLinks(data) {
 
   // source, target이 동일한 값 중복 제거 (하나는 남김)
   data.links.forEach(link => {
+      console.log("3");
       const key = link.source + "|" + link.target + "|" + link.relationship;
       console.log("1");
       if (!linkMap.has(key)) {
