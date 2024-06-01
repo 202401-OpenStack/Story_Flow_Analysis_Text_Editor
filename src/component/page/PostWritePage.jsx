@@ -765,7 +765,6 @@ function PostWritePage() {
         >
           <div className={"modal-content"}>
             <div className={"visualize-component"}>
-              <p>적당한 크기가 될 때까지 드래그해주세요.</p>
               <ForceGraph2D
                 width={window.innerWidth}
                 graphData={graphData}
@@ -809,6 +808,7 @@ function PostWritePage() {
               />
             </div>
             <div className="footer-wrapper">
+              <p>적당한 크기가 될 때까지 드래그해주세요.</p>
               <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
                 <Button
