@@ -65,7 +65,9 @@ const ContentButton = styled.button`
 `;
 
 function List({ posts, onClickItem }) {
-  const navigate = useNavigate();
+  const handleNewPostClick = () => {
+    window.location.href = "/post-write"; // 페이지 리로드로 이동
+  };
 
   return (
     <Wrapper>
@@ -84,13 +86,7 @@ function List({ posts, onClickItem }) {
           />
         ))}
       </TableBody>
-      <ContentButton
-        onClick={() => {
-          navigate("/post-write");
-        }}
-      >
-        +
-      </ContentButton>
+      <ContentButton onClick={handleNewPostClick}>+</ContentButton>
     </Wrapper>
   );
 }
