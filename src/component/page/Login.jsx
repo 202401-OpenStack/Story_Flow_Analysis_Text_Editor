@@ -67,19 +67,7 @@ function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { error, isAuthenticated } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (error) {
-      alert(error);
-      dispatch(clearErrors());
-    }
-
-    // isAuthenticated 상태가 true 일때만 post-list로 보냄
-    if (isAuthenticated) {
-      navigate("/post-list");
-    }
-  }, [error, isAuthenticated, dispatch, navigate]);
+  
 
   const handleInput = (event) => {
     setValues((prev) => ({ ...prev, [event.target.name]: event.target.value }));

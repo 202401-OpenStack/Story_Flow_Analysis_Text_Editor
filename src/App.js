@@ -12,6 +12,7 @@ import PostViewPage from "./component/page/PostViewPage";
 
 import { useDispatch } from "react-redux";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import RedirectRoute from "./routes/RedirectRoute";
 import { loadUser } from "./redux/actions/authActions";
 
 import "./styles/quillStyles.css";
@@ -26,7 +27,11 @@ function App() {
   return (
     <Routes>
       <Route index element={<Main />} />
-      <Route path="login" element={<Login />} />
+      <Route path="login" 
+             element={
+             <RedirectRoute redirectTo="/post-list">
+              <Login/>
+             </RedirectRoute>} />
       <Route path="sign-up" element={<SignUp />} />
       <Route
         path="post-list"
