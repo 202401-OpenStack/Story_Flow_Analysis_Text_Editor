@@ -786,7 +786,7 @@ function PostWritePage() {
                   ctx.font = "3px Sans-Serif";
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
-                  ctx.fillStyle = "#A9A9A9";
+                  ctx.fillStyle = "black";
                   ctx.fillText(label, node.x, node.y);
                 }}
                 linkDirectionalArrowLength={6}
