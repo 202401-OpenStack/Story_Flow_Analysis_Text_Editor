@@ -449,9 +449,6 @@ exports.analyzeCharacterRelationships = async (req, res) => {
         const message2 = await openAiRequest(finalContent, (content) => prompt2(finalContent, message1));
         const message3 = await openAiRequest(finalContent, (content) => prompt3(message2));
 
-        // JSON 내용 추출
-        message3 = extractJsonContent(message3);
-
         return res.status(200).json({
             message: "Analyzing Character Relationships completed successfully",
             data: message3
