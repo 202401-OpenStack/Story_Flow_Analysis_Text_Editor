@@ -577,7 +577,6 @@ function PostWritePage() {
         isEdit: ${curIsEdit}\n`
       );
       
-      setkey(prevKey => prevKey + 1); //key 상태를 변경하여 사이드바 새로고침
       handleSavedMessage();
     } catch (error) {
       if (error.response) {
