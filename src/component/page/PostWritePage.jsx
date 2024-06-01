@@ -159,7 +159,7 @@ function removeDuplicateLinks(data) { // 중복 데이터 삭제
             uniqueLinks1.push(link);
         }
     }
-     data.uniqueLinks1.forEach(link => { // source, target이 반전되고 relationship 동일한 값 삭제
+     data.uniqueLinks1.forEach(link => { // source target이 반전되고 relationship 동일한 값 삭제
         const direct = `${link.source}-${link.target}-${link.relationship}`;
         const reverse = `${link.target}-${link.source}-${link.relationship}`;
 
