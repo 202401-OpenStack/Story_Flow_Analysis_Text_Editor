@@ -16,12 +16,12 @@ const openAiRequest = async (content, promptTemplate) => {
         'Content-Type': 'application/json',
         'api-key': process.env.OPENAI_API_KEY
     };
-    const apiUrl = `https://aoai-test-foro.openai.azure.com/openai/deployments/globalstandard/chat/completions?api-version=2024-02-15-preview`;
+    const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
 
     const prompt = promptTemplate(content);
     const dataAPI = {
         messages: [{
-            "role": "system",
+            "role": "user",
             "content": prompt
         }],
         max_tokens: 1000,
