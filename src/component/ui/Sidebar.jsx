@@ -39,7 +39,7 @@ const Title = styled.h1`
 
 var isSaved = 0;
 
-function Sidebar({ isSaved ) {
+function Sidebar({ isSaved }) {
   const navigate = useNavigate();
   const title = "한국어 이야기\n흐름 분석 시스템";
   const dispatch = useDispatch();
