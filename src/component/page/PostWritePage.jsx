@@ -146,40 +146,33 @@ function initializeGraphData(characters, links) {
   return { nodes, links }; // 색상이 추가된 노드와 링크 반환
 }
 
-function removeDuplicateLinks(data) {
+function removeDuplicateLinks(links) {
   const uniqueLinks1 = [];
   const uniqueLinks2 = [];
   const linkMap = new Map();
   const linkSet = new Set();
 
   // source, target이 동일한 값 중복 제거 (하나는 남김)
-  data.links.forEach(link => {
-      console.log("3");
+  links.forEach(link => {
       const key = link.source + "|" + link.target + "|" + link.relationship;
-      console.log("1");
       if (!linkMap.has(key)) {
           linkMap.set(key, true);
           uniqueLinks1.push(link);
       }
   });
-  console.log("source, target 동일한 값 중복 제거");
 
   // source, target이 반전되고 relationship 동일한 값 중복 제거
   uniqueLinks1.forEach(link => {
       const direct = `${link.source}-${link.target}-${link.relationship}`;
       const reverse = `${link.target}-${link.source}-${link.relationship}`;
-      console.log("2");
+
       if (!linkSet.has(reverse)) {
           uniqueLinks2.push(link);
           linkSet.add(direct);
       }
   });
-  console.log("source, target 이 반전되고 relationship 동일한 값 중복 제거");
 
-  return {
-      ...data,
-      links: uniqueLinks2
-  };
+  return uniqueLinks2;
 }
 
 
