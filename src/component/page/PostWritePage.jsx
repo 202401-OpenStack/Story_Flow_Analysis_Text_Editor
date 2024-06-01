@@ -443,6 +443,7 @@ function PostWritePage() {
         );
 
         const { character, links } = JSON.parse(response.data.data);
+        console.log("Original links:" ,links);
         const newLinks = removeDuplicateLinks(links);
         console.log(links);
         console.log(newLinks);
