@@ -146,31 +146,38 @@ function initializeGraphData(characters, links) {
   return { nodes, links }; // 색상이 추가된 노드와 링크 반환
 }
 
-function removeDuplicateLinks(data) { // 중복 데이터 삭제
-    const uniqueLinks1 = [];
-    const uniqueLinks2 = [];
-    const linkMap = new Map();
-    const linkSet = new Set();
+function removeDuplicateLinks(data) {
+  const uniqueLinks1 = [];
+  const uniqueLinks2 = [];
+  const linkMap = new Map();
+  const linkSet = new Set();
 
-    data.links.forEach(link => { // source, target 동일한 값 삭제
-        const key = link.source + "|" + link.target;
-        if (!linkMap.has(key)) {
-            linkMap.set(key, true);
-            uniqueLinks1.push(link);
-        }
-    }
-    uniqueLinks1.forEach(link => { // source, target이 반전되고 relationship 동일한 값 삭제
-        const direct = `${link.source}-${link.target}-${link.relationship}`;
-        const reverse = `${link.target}-${link.source}-${link.relationship}`;
+  // source, target이 동일한 값 중복 제거 (하나는 남김)
+  data.links.forEach(link => {
+      const key = link.source + "|" + link.target + "|" + link.relationship;
+      if (!linkMap.has(key)) {
+          linkMap.set(key, true);
+          uniqueLinks1.push(link);
+      }
+  });
 
-        if (!linkSet.has(reverse)) {
-            uniqueLinks2.push(link);
-            linkSet.add(direct);
-        }
-    });
+  // source, target이 반전되고 relationship 동일한 값 중복 제거
+  uniqueLinks1.forEach(link => {
+      const direct = `${link.source}-${link.target}-${link.relationship}`;
+      const reverse = `${link.target}-${link.source}-${link.relationship}`;
 
-    return { uniqueLinks2 };
+      if (!linkSet.has(reverse)) {
+          uniqueLinks2.push(link);
+          linkSet.add(direct);
+      }
+  });
+
+  return {
+      ...data,
+      links: uniqueLinks2
+  };
 }
+
 
 
 function PostWritePage() {
