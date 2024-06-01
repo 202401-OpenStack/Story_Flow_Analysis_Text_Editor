@@ -72,8 +72,9 @@ function Sidebar({ isSaved }) {
         alert(error.message || "An error occurred while retrieving posts"); // Display error to the user
       }
     };
-
+    
     fetchPosts();
+    isSaved++;
   }, []);
 
   return (
