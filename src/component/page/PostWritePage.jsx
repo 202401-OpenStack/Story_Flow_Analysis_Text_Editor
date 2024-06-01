@@ -773,7 +773,7 @@ function PostWritePage() {
           <div className={"modal-content"}>
             <div className={"visualize-component"}>
               <ForceGraph2D
-                width={window.innerWidth}
+                width={400}
                 graphData={graphData}
                 nodeAutoColorBy="group"
                 nodeCanvasObject={(node, ctx, globalScale) => {
@@ -783,7 +783,7 @@ function PostWritePage() {
                   ctx.beginPath();
                   ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
                   ctx.fill();
-                  ctx.font = '${fontSize}px Sans-Serif';
+                  ctx.font = '${fontSize}px Arial';
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "white";
@@ -804,7 +804,7 @@ function PostWritePage() {
                   // 텍스트 라벨의 위치를 조정
                   const offset = link.source.id < link.target.id ? -5 : 5;
 
-                  ctx.font = '${12 / globalScale}px Sans-Serif';
+                  ctx.font = '${12 / globalScale}px Arial';
                   ctx.fillStyle = "black";
                   ctx.fillText(
                     link.relationship,
