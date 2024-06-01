@@ -37,6 +37,8 @@ const Title = styled.h1`
   white-space: pre-wrap;
 `;
 
+var isSaved = 0;
+
 function Sidebar({ isSaved ) {
   const navigate = useNavigate();
   const title = "한국어 이야기\n흐름 분석 시스템";
