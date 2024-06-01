@@ -523,6 +523,7 @@ function PostWritePage() {
     }
   };
 
+  var isSaved = 0;
   const saveContent = async () => {
     let curTitle = title;
     let curEditorContent = editorContent;
@@ -570,6 +571,7 @@ function PostWritePage() {
         postId: ${curPostId}\n
         isEdit: ${curIsEdit}\n`
       );
+      isSaved++;
       handleSavedMessage();
     } catch (error) {
       if (error.response) {
@@ -706,7 +708,7 @@ function PostWritePage() {
 
   return (
     <Wrapper>
-      <Sidebar />
+      <Sidebar isSaved = {isSaved} />
       {timelineModalOpen && ( //타임라인 컴포넌트 모달
         <VisualizeModal
           ref={timelineModalBackground}
