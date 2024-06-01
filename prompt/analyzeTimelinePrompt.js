@@ -70,11 +70,12 @@ const analyzeTimeline_prompt = [`
 
 주요 사건 요약:
 `, `
-아래 소설의 주요 사건들을 뽑아서, 순서대로 JSON 객체 변수로 제시해주세요. 
+아래 소설의 주요 사건들을 뽑아서, 순서대로 JSON 배열에 담아 제시해주세요. 
 
 조건:
-1. 사설달지 말고 [{cardTitle: "사건명1", cardDetailedText: "사건의 간략한 설명1"}, {cardTitle: "사건명2", cardDetailedText: "사건의 간략한 설명2"}, ...] 형태로 답장하세요. cardTitle 변수에는 사건의 이름을 넣고, cardDetailedText 에는 이 사건이 뭔지 간략하게 설명하면 됩니다.
-2. 모든 key-value들은 반드시 쌍따옴표("")로 감싸져야 합니다.
+1. 사설달지 말고 [{cardTitle: "사건명1", cardDetailedText: "사건의 간략한 설명1"}, {cardTitle: "사건명2", cardDetailedText: "사건의 간략한 설명2"}, ...]의 JSON 배열 형태로 답장하세요. 
+2. cardTitle 변수에는 사건의 이름을 넣고, cardDetailedText 에는 이 사건이 뭔지 간략하게 설명하면 됩니다.
+3. 모든 key-value들은 반드시 쌍따옴표("")로 감싸져야 합니다.
 
 예시:
 분석 내용:
@@ -85,13 +86,13 @@ const analyzeTimeline_prompt = [`
 
 JSON 객체:
 [
-  {cardTitle: "존의 모험 결심", cardDetailedText: "존은 새로운 경험을 찾아 모험을 떠나기로 결심한다."},
-  {cardTitle: "사라와 함께 출발", cardDetailedText: "존과 사라는 함께 모험을 시작한다."},
-  {cardTitle: "험난한 산을 넘음", cardDetailedText: "두 사람은 여러 어려움을 극복하고 산을 넘는다."},
-  {cardTitle: "고대의 보물 발견", cardDetailedText: "두 사람은 마침내 보물을 발견한다."}
+  {"cardTitle": "존의 모험 결심", "cardDetailedText": "존은 새로운 경험을 찾아 모험을 떠나기로 결심한다."},
+  {"cardTitle": "사라와 함께 출발", "cardDetailedText": "존과 사라는 함께 모험을 시작한다."},
+  {"cardTitle": "험난한 산을 넘음", "cardDetailedText": "두 사람은 여러 어려움을 극복하고 산을 넘는다."},
+  {"cardTitle": "고대의 보물 발견", "cardDetailedText": "두 사람은 마침내 보물을 발견한다."}
 ]
 
-이제 주어진 소설에 대해 각 주요 사건의 시기와 요약 내용을 JSON 객체 형태로 나열하세요.
+이제 주어진 소설에 대해 각 주요 사건의 시기와 요약 내용을 JSON 배열 형태로 나열하세요.
 오로지 배열 '만' 반환하세요.
 
 
