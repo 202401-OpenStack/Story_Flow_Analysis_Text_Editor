@@ -586,6 +586,7 @@ function PostWritePage() {
         alert("An unexpected error occurred");
       }
     }
+    refreshComponent();
   };
 
   const handleSave = () => {
@@ -600,7 +601,6 @@ function PostWritePage() {
     } else {
       alert("Post created successfully!");
     }
-    refreshComponent();
   };
 
   function useInterval(callback, delay) {
@@ -786,7 +786,7 @@ function PostWritePage() {
                   ctx.font = "3px Sans-Serif";
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
-                  ctx.fillStyle = "white";
+                  ctx.fillStyle = "#A9A9A9";
                   ctx.fillText(label, node.x, node.y);
                 }}
                 linkDirectionalArrowLength={6}
