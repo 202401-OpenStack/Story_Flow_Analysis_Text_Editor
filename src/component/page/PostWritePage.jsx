@@ -160,6 +160,7 @@ function removeDuplicateLinks(data) {
           uniqueLinks1.push(link);
       }
   });
+  console.log("source, target 동일한 값 중복 제거");
 
   // source, target이 반전되고 relationship 동일한 값 중복 제거
   uniqueLinks1.forEach(link => {
@@ -171,6 +172,7 @@ function removeDuplicateLinks(data) {
           linkSet.add(direct);
       }
   });
+  console.log("source, target 이 반전되고 relationship 동일한 값 중복 제거");
 
   return {
       ...data,
@@ -534,9 +536,6 @@ function PostWritePage() {
     try {
       const base64Image = await domtoimage.toPng(timelineElement);
       const quill = quillRef.current.getEditor();
-      quill.insertText(quill.getLength(), `\n<타임라인>\n`, {
-          color: "#0040FF",
-        });
       quill.insertEmbed(quill.getLength(), "image", base64Image, "user");
       setTimelineModalOpen(false);
       setShowPalette(false);
@@ -554,9 +553,6 @@ function PostWritePage() {
     try {
       const base64Image = await domtoimage.toPng(relationshipElement);
       const quill = quillRef.current.getEditor();
-      quill.insertText(quill.getLength(), `\n<관계도>\n`, {
-          color: "#0040FF",
-        });
       quill.insertEmbed(quill.getLength(), "image", base64Image, "user");
       setRelationshipModalOpen(false);
       setShowPalette(false);
