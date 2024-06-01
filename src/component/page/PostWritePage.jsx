@@ -717,6 +717,7 @@ function PostWritePage() {
       <Sidebar key={key} />
       {timelineModalOpen && ( //타임라인 컴포넌트 모달
         <VisualizeModal
+          width={400}
           ref={timelineModalBackground}
           onClick={(e) => {
             if (e.target === timelineModalBackground.current) {
@@ -782,7 +783,7 @@ function PostWritePage() {
                   ctx.beginPath();
                   ctx.arc(node.x, node.y, 7, 0, 2 * Math.PI, false);
                   ctx.fill();
-                  ctx.font = '${fontSize}px Arial';
+                  ctx.font = '${fontSize}px Sans-Serif';
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "white";
@@ -803,7 +804,7 @@ function PostWritePage() {
                   // 텍스트 라벨의 위치를 조정
                   const offset = link.source.id < link.target.id ? -5 : 5;
 
-                  ctx.font = '${12 / globalScale}px Arial';
+                  ctx.font = '${12 / globalScale}px Sans-Serif';
                   ctx.fillStyle = "black";
                   ctx.fillText(
                     link.relationship,
