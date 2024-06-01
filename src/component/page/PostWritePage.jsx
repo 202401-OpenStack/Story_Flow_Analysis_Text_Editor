@@ -174,6 +174,12 @@ function PostWritePage() {
   const [relationshipLinks, setRelationshipLinks] = useState([]);
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
 
+  const [key, setKey] = useState(0); //사이드바 새로고침에 이용
+  const refreshComponent = () => {
+    // key 상태를 변경하여 사이드바를 새로고침
+    setKey(prevKey => prevKey + 1);
+  };
+
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -528,7 +534,6 @@ function PostWritePage() {
     let curEditorContent = editorContent;
     let curPostId = postId;
     let curIsEdit = isEdit;
-    const [key, setKey] = useState(0); //사이드바 새로고침에 이용
 
     // 제목이 없을 경우 임시 제목 삽입("yyyy-mm-dd" 형식 날짜)
     if (!title.trim()) {
@@ -596,6 +601,7 @@ function PostWritePage() {
     } else {
       alert("Post created successfully!");
     }
+    refreshComponent();
   };
 
   function useInterval(callback, delay) {
