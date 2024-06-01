@@ -4,6 +4,7 @@ import axios from "axios";
 import styled from "styled-components";
 import DOMPurify from "dompurify";
 import { Button } from "react-bootstrap";
+import {useDispatch, useSelector} from "react-redux";
 
 import Sidebar from "../ui/Sidebar";
 
@@ -111,29 +112,41 @@ const PostViewPage = () => {
   const [post, setPost] = useState(null);
   const { postId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await axios.get(
-          `http://20.41.113.158/api/blog/posts/${postId}`,
-          {
-            withCredentials: true,
-          }
-        );
-        if (response.data.message === "Post retrieved successfully") {
-          setPost(response.data.data);
-        } else {
-          throw new Error(response.data.message || "Unknown Error");
-        }
-      } catch (error) {
-        console.error("Error fetching the post:", error);
-        alert(error.message || "Failed to fetch post");
-      }
-    };
+    if (loading) return; // 로딩 중이면 아무것도 하지 않음
+
+    if (!isAuthenticated) {
+      alert("User not found or not logged in.");
+      navigate("/login", { replace: true });
+      return;
+    }
 
     fetchPost();
-  }, [postId]);
+  }, [loading, isAuthenticated, navigate]);
+
+  const fetchPost = async () => {
+    try {
+      const response = await axios.get(
+        `http://20.41.113.158/api/blog/posts/${postId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.data.message === "Post retrieved successfully") {
+        setPost(response.data.data);
+      } else {
+        throw new Error(response.data.message || "Unknown Error");
+      }
+    } catch (error) {
+      console.error("Error fetching the post:", error);
+      alert(error.message || "Failed to fetch post");
+    }
+  };
 
   if (!post) return <div>Loading...</div>;
 
