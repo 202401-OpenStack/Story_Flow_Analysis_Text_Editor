@@ -408,7 +408,6 @@ function PostWritePage() {
           }
         );
 
-        console.log(response.data.data);
         const { character, links } = JSON.parse(response.data.data);
         console.log(character);
         console.log(links);
@@ -505,7 +504,9 @@ function PostWritePage() {
       setTimelineModalOpen(false);
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
-      quill.insertText(quill.getLength(), "\n");
+      quill.insertText(quill.getLength(), `\n<타임라인>\n`, {
+          color: "#0040FF",
+        });
       quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing timeline:", error);
@@ -522,7 +523,9 @@ function PostWritePage() {
       setRelationshipModalOpen(false);
       setShowPalette(false);
       quill.setSelection(quill.getLength(), 0);
-      quill.insertText(quill.getLength(), "\n");
+      quill.insertText(quill.getLength(), `\n<관계도>\n`, {
+          color: "#0040FF",
+        });
       quill.setSelection(quill.getLength(), 0);
     } catch (error) {
       console.error("Error capturing relationship graph:", error);
