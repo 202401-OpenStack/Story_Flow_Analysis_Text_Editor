@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Item from "./Item";
@@ -28,7 +28,6 @@ const TableHeader = styled.div`
 
 const HeaderInfo = styled.span`
   display: flex;
-  
   justify-content: center; // 세로 축에서 아이템들을 중앙에 배치
   flex: 1; // Flex 아이템들이 컨테이너 공간을 동등하게 나누도록 설정
   font-size: 0.9rem;
@@ -65,6 +64,14 @@ const ContentButton = styled.button`
 `;
 
 function List({ posts, onClickItem }) {
+  const tableBodyRef = useRef(null);
+
+  useEffect(() => {
+    if (tableBodyRef.current) {
+      tableBodyRef.current.scrollTop = tableBodyRef.current.scrollHeight;
+    }
+  }, [posts]);
+
   const handleNewPostClick = () => {
     window.location.href = "/post-write"; // 페이지 리로드로 이동
   };
@@ -76,7 +83,7 @@ function List({ posts, onClickItem }) {
         <HeaderInfo style={{ textAlign: "center" }}>제목</HeaderInfo>
         <HeaderInfo style={{ textAlign: "right" }}>작성일</HeaderInfo>
       </TableHeader>
-      <TableBody>
+      <TableBody ref={tableBodyRef}>
         {posts.map((post, index) => (
           <Item
             key={post.id}
