@@ -627,9 +627,9 @@ function PostWritePage() {
 
     saveContent();
     if (isEdit) {
-      alert("Post updated successfully!");
+      alert("글이 성공적으로 수정되었습니다.");
     } else {
-      alert("Post created successfully!");
+      alert("글이 성공적으로 저장되었습니다.");
     }
   };
 
