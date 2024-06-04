@@ -211,6 +211,17 @@ function PostWritePage() {
     setKey(prevKey => prevKey + 1);
   };
 
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => {
+        setCooldown(cooldown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -285,10 +296,17 @@ function PostWritePage() {
   };
 
   const handleSelectCommand = async (command) => {
+    if (cooldown > 0) {
+      alert(`${cooldown}초 후 재사용하실 수 있습니다.`);
+      return;
+    }
+
     const quill = quillRef.current.getEditor();
     const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
     saveContent();
+    setCooldown(10); // 10초 쿨다운
+
     if (command === "summarizeArticle") {
       try {
         setLoading(true);
