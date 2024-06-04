@@ -132,7 +132,7 @@ const PostViewPage = () => {
   const fetchPost = async () => {
     try {
       const response = await axios.get(
-        `http://20.41.113.158/api/blog/posts/${postId}`,
+        `https://story-flow-analysis.kro.kr/api/blog/posts/${postId}`,
         {
           withCredentials: true,
         }
@@ -159,7 +159,7 @@ const PostViewPage = () => {
   const handleDelete = async () => {
     if (window.confirm("정말로 이 글을 삭제하시겠습니까?")) {
       try {
-        await axios.delete(`http://20.41.113.158/api/blog/posts/${postId}`, {
+        await axios.delete(`https://story-flow-analysis.kro.kr/api/blog/posts/${postId}`, {
           withCredentials: true,
         });
         navigate("/post-list"); // 삭제 후 글 목록 페이지로 이동
