@@ -305,7 +305,6 @@ function PostWritePage() {
     const content = quill.getText(); // 에디터의 전체 텍스트를 가져옵니다.
 
     saveContent();
-    setCooldown(10); // 10초 쿨다운
 
     if (command === "summarizeArticle") {
       try {
@@ -540,6 +539,8 @@ function PostWritePage() {
         }
       }
     }
+    setCooldown(10); // 10초 쿨다운
+    
     setLoading(false);
   };
 
