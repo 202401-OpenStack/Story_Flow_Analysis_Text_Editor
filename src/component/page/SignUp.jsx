@@ -82,7 +82,7 @@ function SignUp() {
           password: values.password,
         })
         .then((res) => {
-          alert("User registered successfully");
+          alert("정상적으로 회원가입되었습니다.");
           navigate("/login");
         })
         .catch((err) => {
