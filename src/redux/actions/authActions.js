@@ -11,7 +11,7 @@ import {
 
 export const loadUser = () => async (dispatch) => {
   try {
-    const res = await axios.get('http://20.41.113.158/api/auth/check');
+    const res = await axios.get('https://story-flow-analysis.kro.kr/api/auth/check');
     if (res.data.data.authenticated) {
       dispatch({
         type: USER_LOADED,
@@ -33,7 +33,7 @@ export const loadUser = () => async (dispatch) => {
 
 export const login = (username, password) => async (dispatch) => {
   try {
-    const res = await axios.post('http://20.41.113.158/api/accounts/login', { username, password });
+    const res = await axios.post('https://story-flow-analysis.kro.kr/api/accounts/login', { username, password });
 
     if (res.data.data.username) {
       dispatch({
@@ -56,7 +56,7 @@ export const login = (username, password) => async (dispatch) => {
 
 export const logout = () => async (dispatch) => {
   try {
-    await axios.post('http://20.41.113.158/api/accounts/logout', {}, {
+    await axios.post('https://story-flow-analysis.kro.kr/api/accounts/logout', {}, {
       withCredentials: true  // 쿠키를 전송하도록 설정
     });
     dispatch({
