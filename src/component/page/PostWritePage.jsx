@@ -294,7 +294,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/summarize",
+          "https://story-flow-analysis.kro.kr/api/analysis/summarize",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -326,7 +326,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/topic",
+          "https://story-flow-analysis.kro.kr/api/analysis/topic",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -358,7 +358,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/keywords",
+          "https://story-flow-analysis.kro.kr/api/analysis/keywords",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -390,7 +390,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/character-count",
+          "https://story-flow-analysis.kro.kr/api/analysis/character-count",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -428,7 +428,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/character-relationships",
+          "https://story-flow-analysis.kro.kr/api/analysis/character-relationships",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -463,7 +463,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/timeline",
+          "https://story-flow-analysis.kro.kr/api/analysis/timeline",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -494,7 +494,7 @@ function PostWritePage() {
         setLoading(true);
         setShowPalette(false);
         const response = await axios.post(
-          "http://20.41.113.158/api/analysis/story-flow",
+          "https://story-flow-analysis.kro.kr/api/analysis/story-flow",
           { content },
           {
             withCredentials: true, // 쿠키 정보를 요청과 함께 보내기 위해 사용
@@ -576,7 +576,7 @@ function PostWritePage() {
     }
 
     try {
-      const url = `http://20.41.113.158/api/blog/posts${
+      const url = `https://story-flow-analysis.kro.kr/api/blog/posts${
         isEdit ? `/${postId}` : ""
       }`;
       const method = isEdit ? "PUT" : "POST";
@@ -705,7 +705,7 @@ function PostWritePage() {
     const fetchPost = async () => {
       try {
         const response = await axios.get(
-          `http://20.41.113.158/api/blog/posts/${postIdFromQuery}`,
+          `https://story-flow-analysis.kro.kr/api/blog/posts/${postIdFromQuery}`,
           {
             withCredentials: true,
           }

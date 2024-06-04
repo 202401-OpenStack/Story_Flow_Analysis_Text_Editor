@@ -77,7 +77,7 @@ function SignUp() {
     // 둘 다 이상이 없을 때만 API 요청 보냄
     if (!validationErrors.username && !validationErrors.password) {
       axios
-        .post("http://20.41.113.158/api/accounts/register", {
+        .post("https://story-flow-analysis.kro.kr/api/accounts/register", {
           username: values.username,
           password: values.password,
         })
