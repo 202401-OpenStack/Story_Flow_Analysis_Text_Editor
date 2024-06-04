@@ -58,7 +58,7 @@ function Sidebar({ key }) {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://20.41.113.158/api/blog/posts", {
+        const response = await axios.get("https://story-flow-analysis.kro.kr/api/blog/posts", {
           withCredentials: true // Ensures cookies are sent with the request
         });
         const { data } = response;
