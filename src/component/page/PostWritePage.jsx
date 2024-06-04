@@ -540,7 +540,7 @@ function PostWritePage() {
       }
     }
     setCooldown(10); // 10초 쿨다운
-    
+
     setLoading(false);
   };
 
@@ -864,7 +864,8 @@ function PostWritePage() {
               />
             </div>
             <div className="footer-wrapper">
-              <p>적당한 크기가 될 때까지 드래그해주세요.</p>
+              <p> ※ 마우스 드래그를 통해 크기를 조정해주세요.</p>
+              <p> ※ 동그라미들을 눌러 관계도 모양을 간단히 조정할 수 있습니다.</p>
               <p>생성된 관계도를 에디터에 추가하시겠습니까?</p>
               <div className="btn-wrapper">
                 <Button
