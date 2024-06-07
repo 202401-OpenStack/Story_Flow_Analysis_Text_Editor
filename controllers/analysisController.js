@@ -78,7 +78,7 @@ exports.summarizeArticle = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
@@ -144,7 +144,7 @@ exports.findTopic = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
@@ -210,7 +210,7 @@ exports.extractKeywords = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
@@ -276,7 +276,7 @@ exports.analyzeCharacterCount = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
@@ -343,7 +343,7 @@ exports.judgeStoryFlow = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
@@ -410,7 +410,7 @@ exports.analyzeCharacterRelationships = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
@@ -476,7 +476,7 @@ exports.analyzeTimeline = async (req, res) => {
         const { content } = req.body;
 
         // 글이 너무 짧은 경우
-        if (content.length <= 10) {
+        if (content.length <= 100) {
             return res.status(500).json({ message: '글이 너무 짧습니다' });
         }
 
