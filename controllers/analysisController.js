@@ -79,7 +79,7 @@ exports.summarizeArticle = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
@@ -145,7 +145,7 @@ exports.findTopic = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
@@ -211,7 +211,7 @@ exports.extractKeywords = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
@@ -277,7 +277,7 @@ exports.analyzeCharacterCount = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
@@ -344,7 +344,7 @@ exports.judgeStoryFlow = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
@@ -411,7 +411,7 @@ exports.analyzeCharacterRelationships = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
@@ -477,7 +477,7 @@ exports.analyzeTimeline = async (req, res) => {
 
         // 글이 너무 짧은 경우
         if (content.length <= 100) {
-            return res.status(500).json({ message: '글이 너무 짧습니다' });
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
 
         const tokenCount = content.split(/\s+/).length;
