@@ -21,6 +21,15 @@ URL: [https://story-flow-analysis.kro.kr]
 7. Encryption Middleware: bcrypt ^5.1.1
 8. Other middlewares: axios ^1.6.8, body-parser ^1.20.2, cors ^2.8.5, dotenv ^16.4.5
 
+### 클라우드 리소스
+1. Azure VM
+2. Azure Blob
+3. Azure OpenAI
+
+### CI/CD
+1. 프론트엔드: Github Action
+2. 백엔드: Github Action
+
 ## 2. 브랜치
 1. 프론트엔드 최종 배포: frontend
 2. 백엔드 최종 배포: development
