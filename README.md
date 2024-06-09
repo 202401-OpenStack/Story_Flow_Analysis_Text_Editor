@@ -1,5 +1,7 @@
 # Story_Flow_Analysis_Text_Editor
 
+URL: [https://story-flow-analysis.kro.kr]
+
 ## 1. 개발 환경
 ### 프론트엔드
 1. Runtime Environment: Node >= v20.9.0
