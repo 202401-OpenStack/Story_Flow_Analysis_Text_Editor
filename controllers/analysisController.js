@@ -1,344 +1,527 @@
 const axios = require('axios');
 require('dotenv').config();
 
+const common_prompt = require('../prompt/commonPrompt');
+const summarizeArticle_prompt = require('../prompt/summarizeArticlePrompt');
+const findTopic_prompt = require('../prompt/findTopicPrompt');
+const extractKeywords_prompt = require('../prompt/extractKeywordsPrompt');
+const analyzeCharacterCount_prompt = require('../prompt/analyzeCharacterCountPrompt');
+const analyzeCharacterRelationships_prompt = require('../prompt/analyzeCharacterRelationshipsPrompt');
+const analyzeTimeline_prompt = require('../prompt/analyzeTimelinePrompt');
+const judgeStoryFlow_prompt = require('../prompt/judgeStoryFlowPrompt');
+
+// 코드 리팩토링
+const openAiRequest = async (content, promptTemplate) => {
+    const headers = {
+        'Content-Type': 'application/json',
+        'api-key': process.env.OPENAI_API_KEY
+    };
+    const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
+
+    const prompt = promptTemplate(content);
+    const dataAPI = {
+        messages: [{
+            "role": "user",
+            "content": prompt
+        }],
+        max_tokens: 1000,
+        temperature: 0.7,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        top_p: 0.95,
+        stop: null
+    };
+
+    const response = await axios.post(apiUrl, dataAPI, { headers });
+    return response.data.choices[0].message.content;
+};
+
+// 글을 500토큰 단위로 100토큰씩 겹치게 분리
+const splitContent = (content, maxTokens = 500, overlap = 100) => {
+    const words = content.split(/\s+/);
+    const chunks = [];
+    for (let i = 0; i < words.length; i += (maxTokens - overlap)) {
+        chunks.push(words.slice(i, i + maxTokens).join(' '));
+        if (i + maxTokens >= words.length) {
+            break;
+        }
+    }
+    return chunks;
+};
+
+const extractJsonContent = (message) => {
+    // 정규 표현식을 사용하여 ```json``` 블록 제거
+    const regex = /```json\s*([\s\S]*?)\s*```/;
+    const match = message.match(regex);
+
+    // 매치된 경우 JSON 내용 추출, 아니면 원래 메시지 반환
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        return message;
+    }
+};
+
 // 요약하기
 exports.summarizeArticle = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${summarizeArticle_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${summarizeArticle_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (message1, message2) => `${summarizeArticle_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access summarizeArticle API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `아래 내용을 20자 이내로 요약하시오: \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message1, message2));
+
         return res.status(200).json({
             message: "Article successfully summarized",
-            data: messageContent
-        });
+            data: message3
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing summarizeArticle API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
 // 주제 찾기
 exports.findTopic = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${findTopic_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${findTopic_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (message1, message2) => `${findTopic_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access findTopic API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `아래 글의 주제를 짧게 요약해서 제시하시오.: \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
-        console.log('openAI API access');
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message1, message2));
+
         return res.status(200).json({
             message: "Topic identification completed successfully",
-            data: messageContent
-        });
+            data: message3
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing findTopic API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
 // 키워드 추출
 exports.extractKeywords = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${extractKeywords_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${extractKeywords_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (message1, message2) => `${extractKeywords_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access extractKeywords API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `아래 글에서 키워드를 3개 추출하여 쉼표로 구분해서 작성하시오: \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message1, message2));
+
         return res.status(200).json({
             message: "Keyword extraction completed successfully",
-            data: messageContent
-        });
+            data: message3
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing extractKeywords API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
 // 인물 수 분석
 exports.analyzeCharacterCount = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${analyzeCharacterCount_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content, message1) => `${analyzeCharacterCount_prompt[1].replace('{소설 원본 텍스트}', content).replace('{1번 프롬프트의 출력 결과}', message1)}`;
+    const prompt3 = (message1, message2) => `${analyzeCharacterCount_prompt[2].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access analyzeCharacterCount API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `아래 글에서 등장하는 인물들을 작성하세요. 만약 이름이 명시되지 않았다면 글에 나온 대로(그 사람, 선생 등) 작성하세요. 사설 달지 말고 "철수, 영희, 길동" 처럼 따옴표로 구분해서 작성하세요.: \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, (content) => prompt2(finalContent, message1));
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message1, message2));
+
         return res.status(200).json({
             message: "Analyzing character counts completed successfully",
-            data: messageContent
-        });
+            data: message3
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing analyzeCharacterCount API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
 // 이야기 흐름 판단
 exports.judgeStoryFlow = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${judgeStoryFlow_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content) => `${judgeStoryFlow_prompt[1].replace('{소설 원본 텍스트}', content)}`;
+    const prompt3 = (content) => `${judgeStoryFlow_prompt[2].replace('{소설 원본 텍스트}', content)}`;
+    const prompt4 = (message1, message2, message3) => `${judgeStoryFlow_prompt[3].replace('{1번 프롬프트의 출력 결과}', message1).replace('{2번 프롬프트의 출력 결과}', message2).replace('{3번 프롬프트의 출력 결과}')}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access judgeStoryFlow API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `다음 글의 흐름이 전통적인 소설 방식을 따르는지 평가하시오. 보완이 필요한 부분이 있다면 어떤 식으로 고쳐야 하는지 피드백하시오.: \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, prompt2);
+        const message3 = await openAiRequest(finalContent, prompt3);
+        const message4 = await openAiRequest(finalContent, (content) => prompt3(message1, message2, message3));
+
         return res.status(200).json({
-            message: "Judging the story flow completed successfully",
-            data: messageContent
-        });
+            message: "Topic identification completed successfully",
+            data: message4
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing judgeStoryFlow API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
-// 시각화
-
 // 인물 관계 분석
 exports.analyzeCharacterRelationships = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${analyzeCharacterRelationships_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content, message1) => `${analyzeCharacterRelationships_prompt[1].replace('{소설 원본 텍스트}', content).replace('{1번 프롬프트의 출력 결과}', message1)}`;
+    const prompt3 = (message2) => `${analyzeCharacterRelationships_prompt[2].replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access analyzeCharacterRelationships API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `아래 글을 읽고 등장인물과, 각 등장인물들의 관계를 JSON 배열 2개로 적어 반환하세요. 사설 달지 말고 데이터만 보내야 하며, 데이터 형식은 아래 예시처럼 맞추세요.
-        [{id: 1, name: "이름1"}, {id: 2, name: "이름2"}, ..]
-        [{source: "이름1", target: "이름2", relationship: "관계(예:친구)"}, {source: "이름2", target: "이름1", relationship: "관계(예:짝사랑)"}, ...]
-        두 번째 배열의 경우 모든 등장인물을 적을 필요는 없으며, 글에서 언급되는 relationship만을 적으세요. : \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, (content) => prompt2(finalContent, message1));
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message2));
+
         return res.status(200).json({
             message: "Analyzing Character Relationships completed successfully",
-            data: messageContent
-        });
+            data: message3
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing analyzeCharacterRelationships API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };
 
 // 타임라인 분석
 exports.analyzeTimeline = async (req, res) => {
+    const prompt_policy = (content) => `${common_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt_summary = (content) => `${common_prompt[1]}: ${content}`;
+    const prompt1 = (content) => `${analyzeTimeline_prompt[0].replace('{소설 원본 텍스트}', content)}`;
+    const prompt2 = (content, message1) => `${analyzeTimeline_prompt[1].replace('{소설 원본 텍스트}', content).replace('{1번 프롬프트의 출력 결과}', message1)}`;
+    const prompt3 = (message2) => `${analyzeTimeline_prompt[2].replace('{2번 프롬프트의 출력 결과}', message2)}`
     try {
-        // 세션에서 accountId 추출
         const accountId = req.session.accountId;
         if (!accountId) {
-            // 사용자가 로그인하지 않았다면 에러 처리
-            return res.status(401).json({ message: 'You must be logged in to access analyzeTimeline API' });
+            return res.status(401).json({ message: 'You must be logged in to access this API' });
         }
-        // 클라이언트로부터 데이터 받아오기
+
         const { content } = req.body;
 
-        // OpenAI API에 필요한 헤더 설정
-        const headers = {
-            'Content-Type': 'application/json',
-            'api-key': process.env.OPENAI_API_KEY
+        // 글이 너무 짧은 경우
+        if (content.length <= 100) {
+            return res.status(500).json({ message: '글이 너무 짧습니다. 최소 100자 이상부터 분석 가능합니다.' });
         }
-        // OpenAI API에 요청 보내기
-        const apiUrl = `https://aoai-test-ian.openai.azure.com/openai/deployments/gpt35/chat/completions?api-version=2024-02-01`;
-        
-        const prompt = `아래 글에서 주요 사건들을 뽑아서, 순서대로 items라는 JSON 객체 변수로 제시해주세요. 사설달지 말고 [{cardTitle: "사건명1", cardSubtitle: "사건의 간략한 설명1"}, {cardTitle: "사건명2", cardSubtitle: "사건의 간략한 설명2"}, ...] 형태로 답장하세요. cardTitle 변수에는 사건의 이름을 넣고, cardSubtitle에는 이 사건이 뭔지 간략하게 설명하면 됩니다. : \n\n${content}`;
-        const dataAPI = {
-            messages: [{
-                "role": "system",
-                "content": prompt
+
+        const tokenCount = content.split(/\s+/).length;
+        let finalContent = content;
+
+        if (tokenCount > 500) {
+            console.log("500토큰이 넘습니다");
+            const chunks = splitContent(content);
+
+            let summaries = [];
+            for (const chunk of chunks) {
+                const policyCheck = await openAiRequest(chunk, prompt_policy);
+                if (policyCheck === "부적절한 내용") {
+                    return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.' });
+                }
+
+                const summary = await openAiRequest(chunk, prompt_summary);
+                summaries.push(summary);
             }
-            ]
-        };
+            finalContent = summaries.join(' ');
+        }
 
-        const response = await axios.post(apiUrl, dataAPI, {headers});
+        else {
+            const policy = await openAiRequest(finalContent, prompt_policy);
 
-        // message의 content 부분만 추출
-        const messageContent = response.data.choices[0].message.content;
+            if (policy === "부적절한 내용") {
+                return res.status(500).json({ message: '욕설, 반사회적 내용 등 부적절한 내용이 포함돼있습니다.'});
+            }
+            else if (policy === "무의미한 문자열") {
+                return res.status(500).json({ message: '분석이 불가능한 텍스트입니다. 올바른 내용을 작성한 후 다시 시도해주세요.'});
+            }
+        }
 
-        // OpenAI API로부터 받은 응답을 클라이언트에 전송
+        const message1 = await openAiRequest(finalContent, prompt1);
+        const message2 = await openAiRequest(finalContent, (content) => prompt2(finalContent, message1));
+        const message3 = await openAiRequest(finalContent, (content) => prompt3(message2));
+
         return res.status(200).json({
             message: "Analyzing Timeline completed successfully",
-            data: messageContent
-        });
+            data: message3
+        })
 
-
-        // 현재까지의 글 저장
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'An error occurred while accessing analyzeTimeline API' });
+        res.status(500).json({ message: 'An error occurred while accessing the API' });
     }
 };

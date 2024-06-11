@@ -146,16 +146,62 @@ exports.updatePost = async (req, res) => {
       return res.status(401).json({ message: 'You must be logged in to update the post' });
     }
 
-    const post = await Post.findByPk(req.params.id);
-    if (post) {
-      await post.update(req.body);
-      res.status(200).json({
-        message: "Post updated successfully",
-        data: post
-      });
-    } else {
-      res.status(404).json({ message: 'Post not found' });
+    const postId = req.params.id;
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
     }
+
+    let { title, content } = req.body;
+
+    // 기존 사진 URL들을 가져옴
+    const existingPhotos = await Photo.findAll({ where: { postId } });
+    const existingPhotoUrls = existingPhotos.map(photo => photo.url);
+
+    // base64 이미지 URL들을 찾아서 Blob Storage에 업로드하고, 링크로 대체함
+    const base64RegexGlobal = new RegExp(base64Regex.source, 'g');
+    let match;
+    const newPhotoUrls = []; // 새로 업로드된 이미지 URL을 저장할 배열
+    while ((match = base64RegexGlobal.exec(content)) !== null) {
+      const base64Url = match[0];
+      try {
+        const blobUrl = await uploadBase64ImageToBlob(base64Url);
+        console.log('Blob URL:', blobUrl);
+        content = content.replace(base64Url, blobUrl);
+        newPhotoUrls.push(blobUrl); // 업로드된 이미지 URL을 배열에 추가
+      } catch (uploadError) {
+        console.error('Error uploading image to Blob:', uploadError);
+        return res.status(500).json({ message: 'An error occurred while uploading the image' });
+      }
+    }
+
+    // 기존 URL 중 사용되지 않는 URL 찾기
+    const unusedPhotoUrls = existingPhotoUrls.filter(url => !content.includes(url));
+
+    // Blob Storage에서 사용되지 않는 이미지 삭제
+    for (const url of unusedPhotoUrls) {
+      try {
+        await deleteBlobImage(url); // 실제로 이미지를 Blob Storage에서 삭제하는 함수
+      } catch (deleteError) {
+        console.error('Error deleting image from Blob:', deleteError);
+        return res.status(500).json({ message: 'An error occurred while deleting the image' });
+      }
+    }
+
+    // Photo 테이블에서 사용되지 않는 이미지 URL 레코드 삭제
+    await Photo.destroy({ where: { url: unusedPhotoUrls } });
+
+    // Photo 테이블에 새 이미지 URL 저장
+    const photoRecords = newPhotoUrls.map(url => ({ postId: postId, url }));
+    await Photo.bulkCreate(photoRecords);
+
+    // 글 수정
+    await post.update({ title, content });
+
+    res.status(200).json({
+      message: "Post updated successfully",
+      data: post
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'An error occurred while updating the post' });
