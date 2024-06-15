@@ -40,7 +40,7 @@ app.use(express.static(buildPath)); 부분이 정적 파일 제공에 해당함
 
 ### Web Server(Nginx)
 - 설치: sudo apt-get update 후 sudo apt-get install nginx
--  
+-  내도메인.한국 에서 도메인 발급 후 /etc/nginx/sites-available/default 파일에 도메인을 추가함
 
 ## 2. 브랜치
 1. 프론트엔드 최종 배포: frontend
