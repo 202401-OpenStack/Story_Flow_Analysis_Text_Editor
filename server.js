@@ -14,9 +14,9 @@ const analysisRoutes = require('./routes/analysisRoutes');
 // app 설정
 const app = express();
 app.use(cookieParser());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
-app.use(express.text({ limit: '200mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({limit: "500mb", extended: true, parameterLimit:500000}));
+app.use(express.text({ limit: '2000mb' }));
 
 // CORS 설정: 배포 환경에서는 삭제
 // 모든 접근 허용
