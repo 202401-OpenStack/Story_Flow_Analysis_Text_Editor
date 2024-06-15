@@ -29,7 +29,7 @@ URL: [https://story-flow-analysis.kro.kr]
 ### CI/CD
 1. 프론트엔드: Github Action
    - frontend 브랜치에 push하면 Github Action에 의해 자동으로 빌드된 후 Azure VM에 접속하여 build 파일을 갱신함 (frontend 브랜치의 .github/workflows 폴더에서 워크플로우 파일(.yml) 확인 가능)
-   - React는 기본적으로 CSR을 지원하므로 정적파일로 빌드 후 정적파일 호스팅이 가능한 서버(여기서는 Azure VM에 배포되고 있는 백엔드)에 업로드만 해도 실행이 됨
+   - React는 기본적으로 CSR을 지원하므로 정적파일로 빌드 후 정적파일 호스팅이 가능한 서버(여기서는 Azure VM에 배포되고 있는 백엔드)에 업로드만 해도 정상적으로 실행이 됨
    - development 브랜치의 server.js 파일에서 const buildPath = path.join(__dirname, 'build');
 app.use(express.static(buildPath)); 부분이 정적 파일 제공에 해당함
 2. 백엔드: Github Action
@@ -61,7 +61,11 @@ app.use(express.static(buildPath)); 부분이 정적 파일 제공에 해당함
    - MySQL에 story_flow_analysis_text_editor 데이터베이스 생성
    - npx sequelize db:migrate --env development 명령어 실행 (마이그레이션 과정)
    - nodemon server.js (만약 안된다면 node server.js)
-
+3. 배포 (Azure VM을 사용한다고 가정)
+   - npm install pm2 -g
+   - sudo apt-get install nginx
+   - 프론트엔드: Visual Studio Code 등에서 터미널을 띄우고 npm run build하면 생기는 build 폴더를 위 [백엔드 코드 폴더] 에 폴더 째로 넣음
+   - 백엔드: VM에서 git pull 하여 코드를 내려받은 다음 cd [백엔드 코드 폴더] 한 후 pm2 start server.js --name server
 ## 3. 홈페이지 사용 가이드
 ### 1. 도메인 진입
 - 로그인/회원가입 중 고를 수 있음
