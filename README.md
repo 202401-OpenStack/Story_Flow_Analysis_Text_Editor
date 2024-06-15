@@ -28,9 +28,9 @@ URL: [https://story-flow-analysis.kro.kr]
 
 ### CI/CD
 1. 프론트엔드: Github Action
-   - frontend 브랜치에 push하면 Github Action에 의해 자동으로 빌드된 후 Azure VM에 접속하여 build 파일을 갱신함
+   - frontend 브랜치에 push하면 Github Action에 의해 자동으로 빌드된 후 Azure VM에 접속하여 build 파일을 갱신함 (frontend 브랜치의 .github/workflows 폴더에서 워크플로우 파일(.yml) 확인 가능)
 2. 백엔드: Github Action
-   - development 브랜치에 push하면 Github Action에 의해 Azure VM에 git pull됨
+   - development 브랜치에 push하면 Github Action에 의해 Azure VM에 git pull됨 (development 브랜치의 .github/workflows 폴더에서 워크플로우 파일(.yml) 확인 가능)
    
 
 ## 2. 브랜치
