@@ -32,7 +32,7 @@ app.use(cors({
 // session 스토어 설정
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const dbConfig = require('./config/config.json').development;
+const dbConfig = require('./config/config.js').development;
 
 const options = {
   host: dbConfig.host,
