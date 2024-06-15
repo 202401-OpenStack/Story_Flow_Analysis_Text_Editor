@@ -29,9 +29,17 @@ URL: [https://story-flow-analysis.kro.kr]
 ### CI/CD
 1. 프론트엔드: Github Action
    - frontend 브랜치에 push하면 Github Action에 의해 자동으로 빌드된 후 Azure VM에 접속하여 build 파일을 갱신함 (frontend 브랜치의 .github/workflows 폴더에서 워크플로우 파일(.yml) 확인 가능)
+   - React는 기본적으로 CSR을 지원하므로 정적파일로 빌드 후 정적파일 호스팅이 가능한 서버(여기서는 Azure VM에 배포되고 있는 백엔드)에 업로드만 해도 실행이 됨
+   - 
 2. 백엔드: Github Action
    - development 브랜치에 push하면 Github Action에 의해 Azure VM에 git pull됨 (development 브랜치의 .github/workflows 폴더에서 워크플로우 파일(.yml) 확인 가능)
-   
+3. PM2 설치
+   - npm install pm2 -g
+   - 이후 실행은 워크플로우 파일에 의해 자동으로 됨 (pm2 restart server 등)
+
+### Web Server(Nginx)
+- 설치: sudo apt-get update 후 sudo apt-get install nginx
+-  
 
 ## 2. 브랜치
 1. 프론트엔드 최종 배포: frontend
